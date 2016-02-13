@@ -12,8 +12,12 @@
   - Brian Chiang
   - Steven Truong
 
+===
+
 ## Overview
 You are an interstellar smuggler trying to build his reputation within the Galactic Underground. In your adventures, you'll encounter pirates wanting to steal your cargo and leave you for dead and Federation ships that will try to arrest you and confiscate your haul. Navigate between planets, hide in nebulas and asteroid fields, and trade at outposts and space stations for new abilities on your way through the star system.
+
+===
 
 ## Features
 
@@ -24,10 +28,12 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 3. Planet
 4. Space Station/Outpost/Base whatevs
 #### Extra
-5. Space cubemap
-6. Asteroid
-7. Enemy Ship variations
-8. Planet Variations
+1. Space cubemap
+2. Asteroid
+3. Enemy Ship variations
+4. Planet Variations
+
+---
 
 ### Player
 #### Core
@@ -49,8 +55,10 @@ You are an interstellar smuggler trying to build his reputation within the Galac
   - Trigger volume around asteroid fields and nebulas
   - Trigger volume in planets' shadow
 #### Extra
-6. Ability System
-7. Trading System
+1. Ability System
+2. Trading System
+
+---
 
 ### Enemies
 #### Core
@@ -65,10 +73,12 @@ You are an interstellar smuggler trying to build his reputation within the Galac
   - Move to shooting distance if within sight range
   - Move to last known location if not within sight range
 #### Extra
-5. Patrol area
-6. Bribing
-7. Abilities
-8. Patrol between planets
+1. Patrol area
+2. Bribing
+3. Abilities
+4. Patrol between planets
+
+---
 
 ### Environment
 #### Core
@@ -82,8 +92,10 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 3. Asteroid fields
   - Have trigger volume for stealth
 #### Extra
-4. Nebulas
-5. Moons
+1. Nebulas
+2. Moons
+
+---
 
 ### UI
 #### Core
@@ -92,9 +104,11 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 3. Destination Pointer
 4. Movement Grid
 #### Extra
-5. Ability List
-6. Stealth/Spotted Indications
-7. Trading UI
+1. Ability List
+2. Stealth/Spotted Indications
+3. Trading UI
+
+---
 
 ### Sound
 #### Core
@@ -104,7 +118,7 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 4. Damage FX
 5. Turn End
 #### Extra
-6. Ship Movement FX
-7. Ability FX
-8. Nebula Static/Interference
-9. Enemy Comms
+1. Ship Movement FX
+2. Ability FX
+3. Nebula Static/Interference
+4. Enemy Comms
