@@ -22,11 +22,13 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 ## Features
 
 ### Art
+
 #### Core
 1. Player Ship
 2. Enemy Ship
 3. Planet
 4. Space Station/Outpost/Base whatevs
+
 #### Extra
 1. Space cubemap
 2. Asteroid
@@ -36,6 +38,7 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 ---
 
 ### Player
+
 #### Core
 1. Grid Movement
   - (Prototype) WASD
@@ -54,6 +57,7 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 5. Stealth System
   - Trigger volume around asteroid fields and nebulas
   - Trigger volume in planets' shadow
+
 #### Extra
 1. Ability System
 2. Trading System
@@ -61,6 +65,7 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 ---
 
 ### Enemies
+
 #### Core
 1. Line of Sight
   - Raycast to player when within certain distance
@@ -72,6 +77,7 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 3. Pursue Player
   - Move to shooting distance if within sight range
   - Move to last known location if not within sight range
+
 #### Extra
 1. Patrol area
 2. Bribing
@@ -81,6 +87,7 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 ---
 
 ### Environment
+
 #### Core
 1. Sun
   - Has a null object for each planet, asteroid field, and nebula that rotates for orbits
@@ -91,6 +98,7 @@ You are an interstellar smuggler trying to build his reputation within the Galac
   - (Optional) Trigger volume in planet's shadow
 3. Asteroid fields
   - Have trigger volume for stealth
+
 #### Extra
 1. Nebulas
 2. Moons
@@ -98,11 +106,13 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 ---
 
 ### UI
+
 #### Core
 1. Health Indicator
 2. Cargo Indicator
 3. Destination Pointer
 4. Movement Grid
+
 #### Extra
 1. Ability List
 2. Stealth/Spotted Indications
@@ -111,12 +121,14 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 ---
 
 ### Sound
+
 #### Core
 1. Ambient Music
 2. Battle Music
 3. Win/Lose Clip
 4. Damage FX
 5. Turn End
+
 #### Extra
 1. Ship Movement FX
 2. Ability FX
