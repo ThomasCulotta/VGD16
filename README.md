@@ -1,7 +1,7 @@
 # VGD16 - Solar Smuggler
 
 ### Team: Space Fence
-- **Project Lead & Programming**
+- **Project Lead**
   - Thomas Culotta
 - **Level Design**
   - Derin Acar
