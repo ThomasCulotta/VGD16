@@ -41,22 +41,22 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 
 #### Core
 1. Grid Movement
-  - (Prototype) WASD
-  - Move to click
-  - (Optional) Navigate around obstacles
+  - [ ] Prototype WASD
+  - [ ] Move to click
+  - [ ] Optional Navigate around obstacles
 2. Cargo System
-  - Decrease/Increase loot within limits
-  - Decrease/Increase speed accordingly
+  - [ ] Decrease/Increase loot within limits
+  - [ ] Decrease/Increase speed accordingly
 3. Damage System
-  - Decrease/Increase within limits
-  - (Optional) Low health lowers cargo capacity
+  - [ ] Decrease/Increase within limits
+  - [ ] Optional Low health lowers cargo capacity
 4. Win Condition
-  - Trigger at destination planet
-  - Loads win scene
-  - Calculates score
+  - [ ] Trigger at destination planet
+  - [ ] Loads win scene
+  - [ ] Calculates score
 5. Stealth System
-  - Trigger volume around asteroid fields and nebulas
-  - Trigger volume in planets' shadow
+  - [ ] Trigger volume around asteroid fields and nebulas
+  - [ ] Trigger volume in planets' shadow
 
 #### Extra
 1. Ability System
@@ -68,15 +68,15 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 
 #### Core
 1. Line of Sight
-  - Raycast to player when within certain distance
-  - Change to battle state on raycast hit
+  - [ ] Raycast to player when within certain distance
+  - [ ] Change to battle state on raycast hit
 2. Shoot at Player
-  - Probability to hit fixed ammount
-  - Show projectiles from enemy to player
-  - Damage variation
+  - [ ] Probability to hit fixed ammount
+  - [ ] Show projectiles from enemy to player
+  - [ ] Damage variation
 3. Pursue Player
-  - Move to shooting distance if within sight range
-  - Move to last known location if not within sight range
+  - [ ] Move to shooting distance if within sight range
+  - [ ] Move to last known location if not within sight range
 
 #### Extra
 1. Patrol area
@@ -90,14 +90,14 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 
 #### Core
 1. Sun
-  - Has a null object for each planet, asteroid field, and nebula that rotates for orbits
+  - [ ] Has a null object for each planet, asteroid field, and nebula that rotates for orbits
 2. Planets
-  - Attached to sun null
-  - Also rotate
-  - Inside a box collider
-  - (Optional) Trigger volume in planet's shadow
+  - [ ] Attached to sun null
+  - [ ] Also rotate
+  - [ ] Inside a box collider
+  - [ ] Optional Trigger volume in planet's shadow
 3. Asteroid fields
-  - Have trigger volume for stealth
+  - [ ] Have trigger volume for stealth
 
 #### Extra
 1. Nebulas
