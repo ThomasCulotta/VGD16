@@ -40,12 +40,15 @@ public class EnemyLoS : MonoBehaviour
 		// Thomas: Added this small debug line so we'll see exactly what the ray is doing when we test this out.
 		Debug.DrawLine(transform.position, player.transform.position, Color.cyan, 0.5f);
 
-		/*
-		 * We can't use a destination Vector3 in Physics.Raycast(). It takes an origin and a direction vector. 
-		 * We'll need to calculate the direction the player is in based on the start and end positions.
-		 * I did this on a different project, not hard to find the equation online.
-		 */
-		if(Physics.Raycast(transform.position, player.transform.position, out hit, MAX_DIST))
+	    /*
+         *Patrick:
+         *Fancy math that calculates the direction vector
+         */
+        heading = player.transform.position - transform.position;
+        distance = heading.magnitude;
+        direction = heading / distance;
+		
+		if(Physics.Raycast(transform.position, direction, out hit, MAX_DIST))
         {
             Debug.Log("Hit True\n");
             if (hit.collider.tag.Equals("Player"))
