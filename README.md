@@ -6,7 +6,7 @@
 - **Level Design**
   - Derin Acar
   - Tyler Bellue
-- **Sound Design**
+- **General Programming and Sound Design**
   - Patrick Blanchard
 - **UI**
   - Brian Chiang
