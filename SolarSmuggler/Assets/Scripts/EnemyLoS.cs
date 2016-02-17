@@ -40,7 +40,7 @@ public class EnemyLoS : MonoBehaviour
 		if(Physics.Raycast(transform.position, player.transform.position, out hit, MAX_DIST))
         {
             Debug.Log("Hit True\n");
-            if (hit.collider.tag.Equals("player"))
+            if (hit.collider.tag.Equals("Player"))
             {
                 Debug.Log("Spotted\n");
 				//Enemy reaction script goes here. 
