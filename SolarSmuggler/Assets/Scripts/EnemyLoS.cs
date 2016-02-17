@@ -44,11 +44,9 @@ public class EnemyLoS : MonoBehaviour
          *Patrick:
          *Fancy math that calculates the direction vector
          */
-        heading = player.transform.position - transform.position;
-        distance = heading.magnitude;
-        direction = heading / distance;
+		Vector3 heading = player.transform.position - transform.position;
 		
-		if(Physics.Raycast(transform.position, direction, out hit, MAX_DIST))
+		if(Physics.Raycast(transform.position, heading, out hit, MAX_DIST))
         {
             Debug.Log("Hit True\n");
             if (hit.collider.tag.Equals("Player"))
