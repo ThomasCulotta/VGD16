@@ -52,7 +52,9 @@ public class EnemyLoS : MonoBehaviour
             if (hit.collider.tag.Equals("Player"))
             {
                 Debug.Log("Spotted\n");
-				//Enemy reaction script goes here. 
+                //Enemy reaction script goes here.
+                player.GetComponent<PlayerController>().decreaseHealth();
+                Debug.Log(player.GetComponent<PlayerController>().curr_Health + "\n");
             }
         }
 	}

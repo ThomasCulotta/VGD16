@@ -4,7 +4,7 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
     public float max_Health = 100f;
-    public float curr_Health = 0f;
+    public float curr_Health = 100f;
     public GameObject healthBar;
 
 	void Start()
@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
 
         // Initialize player stats...
         curr_Health = max_Health; //set player to maximum health
-        InvokeRepeating("decreaseHealth", 1f, 1f); // just for testing purposes, this decreases health by 2 every second
+        //InvokeRepeating("decreaseHealth", 1f, 1f); just for testing purposes, this decreases health by 2 every second
 	}
 
 	void Update()
@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
 		transform.position = new Vector3(Mathf.Floor(transform.position.x), 0f, Mathf.Floor(transform.position.z));
 	}
 
-    void decreaseHealth()
+    public void decreaseHealth()
     {
         curr_Health -= 2f; // whatever happens to player we decrease health
 
