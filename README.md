@@ -110,7 +110,9 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 
 #### Core
 1. Health Indicator
+  - [x] HP triggers
 2. Cargo Indicator
+  - [x] Cargo triggers
 3. Destination Pointer
 4. Movement Grid
 
@@ -135,3 +137,4 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 2. Ability FX
 3. Nebula Static/Interference
 4. Enemy Comms
+5. Anime
