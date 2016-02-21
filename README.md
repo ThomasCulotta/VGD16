@@ -7,7 +7,7 @@
   - Derin Acar
   - Tyler Bellue
 - **General Programming and Sound Design**
-  - Patrick fgt Blanchard
+  - Patrick Blanchard
 - **UI**
   - Brian Chiang
   - Steven Truong
@@ -91,11 +91,11 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 
 #### Core
 1. Sun
-  - [ ] Has a null object for each planet, asteroid field, and nebula that rotates for orbits
+  - [x] Has a null object for each planet, asteroid field, and nebula that rotates for orbits
 2. Planets
-  - [ ] Attached to sun null
-  - [ ] Also rotate
-  - [ ] Inside a box collider
+  - [x] Attached to sun null
+  - [x] Also rotate
+  - [x] Inside a sphere collider
   - [ ] Optional Trigger volume in planet's shadow
 3. Asteroid fields
   - [ ] Have trigger volume for stealth
@@ -137,4 +137,3 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 2. Ability FX
 3. Nebula Static/Interference
 4. Enemy Comms
-5. Anime
