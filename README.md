@@ -25,9 +25,10 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 
 #### Core
 1. Player Ship
-2. Enemy Ship
-3. Planet
-4. Space Station/Outpost/Base whatevs
+2. Planet
+3. Sun
+4. Enemy Ship
+5. Space Station/Outpost/Base whatevs
 
 #### Extra
 1. Space cubemap
