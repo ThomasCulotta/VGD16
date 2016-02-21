@@ -42,7 +42,7 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 
 #### Core
 1. Grid Movement
-  - [ ] Prototype WASD
+  - [x] Prototype WASD
   - [ ] Move to click
   - [ ] Optional Navigate around obstacles
 2. Cargo System
