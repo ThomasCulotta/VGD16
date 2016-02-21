@@ -7,7 +7,7 @@
   - Derin Acar
   - Tyler Bellue
 - **General Programming and Sound Design**
-  - Patrick Blanchard
+  - Patrick fgt Blanchard
 - **UI**
   - Brian Chiang
   - Steven Truong
