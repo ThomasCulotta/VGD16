@@ -3,21 +3,19 @@ using System.Collections;
 
 public class Orbit : MonoBehaviour
 {
-	GameObject primary; //primary is an object that another object is orbitting around
+	public float rotationSpeed = 1.0f; //how fast the satellite orbits the primary
 
-	public Transform center;
-	public Vector3 axis = new Vector3(0,180,0); //sets the axis for the orbit, 180 in the y sets it to orbit on the y axis around the primary
-	public float radius = 100.0f; //the radius of the orbit, this overrides the position of the satellite. Position is relative to the primary
-	public float rotationSpeed = 80.0f; //how fast the satellite orbits the primary
-
-	void Start ()
+	void Start()
 	{
-		primary = GameObject.FindGameObjectWithTag ("Sun");
-		center = primary.transform; //sets the position of the primary, in this case the sun
+        /*
+         * Took out gameobject reference to reduce mem/calcs. Script can be attached 
+         * to the null which rotates around it's own axis.
+         */
 	}
-	void Update ()
+
+	void Update()
 	{
-		transform.RotateAround (center.position, axis, rotationSpeed * Time.deltaTime); //orbits the satellite around the primary
+        transform.Rotate(new Vector3(0f, rotationSpeed, 0f)); //orbits the satellite around the primary
 	}
 
 
