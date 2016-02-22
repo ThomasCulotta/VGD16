@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
     public float max_Health = 100f;
     public float curr_Health = 100f;
     public float max_Cargo = 100f; //If we ever decide for cargo size
-    public float curr_Cargo = 0f;
+    public float curr_Cargo = 100f;
     public Slider cargoBar;
     public GameObject healthBar;
     public Text cargoText;

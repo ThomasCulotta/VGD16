@@ -10,23 +10,26 @@ using System.Collections;
  */
 public class EnemyLoS : MonoBehaviour 
 {
-    private const float MAX_DIST = 50;
+    private const float MAX_DIST = 50f;
+    private const float MAX_FIRE_DIST = 25f;
     private Vector3 playerPos;
     private GameObject player;
     private RaycastHit hit;
+    private Component playerControllerScript;
     
 
 	void Start () 
 	{
         player = GameObject.FindGameObjectWithTag("Player");
-
-		/* Thomas: This will store the player's position when the enemy spawns, 
+        
+        
+        /* Thomas: This will store the player's position when the enemy spawns, 
 		 * but it only does so once so it will never update from that position. 
 		 * If Update() uses player.transform.position, the enemy will always 
 		 * have the latest position.
 		 */
         //playerPos = player.transform.position;
-	}
+    }
 	
 	
 	void Update () 
@@ -45,7 +48,6 @@ public class EnemyLoS : MonoBehaviour
          *Fancy math that calculates the direction vector
          */
 		Vector3 heading = player.transform.position - transform.position;
-		
 		if(Physics.Raycast(transform.position, heading, out hit, MAX_DIST))
         {
             Debug.Log("Hit True\n");
@@ -53,9 +55,25 @@ public class EnemyLoS : MonoBehaviour
             {
                 Debug.Log("Spotted\n");
                 //Enemy reaction script goes here.
-                player.GetComponent<PlayerController>().decreaseHealth();
-                Debug.Log(player.GetComponent<PlayerController>().curr_Health + "\n");
+                ShootAtPlayer();
             }
         }
 	}
+
+    void ShootAtPlayer()
+    {
+        Vector3 heading  = player.transform.position - transform.position;
+        if (MAX_FIRE_DIST >= heading.magnitude)
+        {
+            //Debug.Log(heading.magnitude);
+            int shotHit = Random.Range(0, 2);
+            if(shotHit == 1)
+            {
+                player.GetComponent<PlayerController>().decreaseHealth();
+                Debug.Log("Player has been hit, health is " + player.GetComponent<PlayerController>().curr_Health + "\n");
+            } else {
+                Debug.Log("Enemy has missed player, health is " + player.GetComponent<PlayerController>().curr_Health + "\n");
+            }
+        }
+    }
 }

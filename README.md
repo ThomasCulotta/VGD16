@@ -69,10 +69,10 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 
 #### Core
 1. Line of Sight
-  - [ ] Raycast to player when within certain distance
-  - [ ] Change to battle state on raycast hit
+  - [x] Raycast to player when within certain distance
+  - [x] Change to battle state on raycast hit
 2. Shoot at Player
-  - [ ] Probability to hit fixed ammount
+  - [x] Probability to hit fixed ammount
   - [ ] Show projectiles from enemy to player
   - [ ] Damage variation
 3. Pursue Player
