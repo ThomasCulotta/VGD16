@@ -4,13 +4,17 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
-    public float max_Health = 100f;
-    public float curr_Health = 100f;
-    public float max_Cargo = 100f; //If we ever decide for cargo size
-    public float curr_Cargo = 100f;
-    public Slider cargoBar;
-    public GameObject healthBar;
-    public Text cargoText;
+	private float max_Health  = 100f;
+	public  float curr_Health = 100f;
+    private float max_Cargo   = 100f; //If we ever decide for cargo size
+    private float curr_Cargo  = 100f;
+
+	private bool EnvironmentStart = true;
+	private bool PlayerStart      = true;
+
+	public Slider cargoBar;
+	public GameObject healthBar;
+	public Text cargoText;
 
 	void Start()
 	{
@@ -21,20 +25,65 @@ public class PlayerController : MonoBehaviour
         curr_Health = max_Health; //set player to maximum health
         curr_Cargo = max_Cargo; //set cargo to maximum capacity
         //InvokeRepeating("decreaseHealth", 1f, 1f); just for testing purposes, this decreases health by 2 every second
-        SetCargoBar(curr_Cargo);
+        //SetCargoBar(curr_Cargo);
 	}
 
 	void Update()
 	{
-		// WASD grid movement
-		if (Input.GetKeyDown(KeyCode.W)) MovePlayer("z", transform.position.z,  1f);
-		if (Input.GetKeyDown(KeyCode.A)) MovePlayer("x", transform.position.x, -1f);
-		if (Input.GetKeyDown(KeyCode.S)) MovePlayer("z", transform.position.z, -1f);
-		if (Input.GetKeyDown(KeyCode.D)) MovePlayer("x", transform.position.x,  1f);
+		Debug.Log(GameMaster.CurrentState);
+		switch (GameMaster.CurrentState)
+		{
+			case (GameMaster.GameState.GAME_START):
+			{
+				// TODO: Some level initialization
+				
+				GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
+			}break;
 
-        //if (Input.GetKeyDown(KeyCode.M)) DecreaseCargo();For testing
-        //if (Input.GetKeyDown(KeyCode.I)) IncreaseCargo();For testing
-        SetCargoText();//Setting cargo amount text
+			case (GameMaster.GameState.PLAYER_TURN):
+			{
+				if (PlayerStart)
+				{
+					// TODO: Start turn with some kind of indicator
+					PlayerStart      = false;
+					EnvironmentStart = true;
+				}
+				// WASD grid movement
+				if (Input.GetKeyDown(KeyCode.W)) MovePlayer("z", transform.position.z,  1f);
+				if (Input.GetKeyDown(KeyCode.A)) MovePlayer("x", transform.position.x, -1f);
+				if (Input.GetKeyDown(KeyCode.S)) MovePlayer("z", transform.position.z, -1f);
+				if (Input.GetKeyDown(KeyCode.D)) MovePlayer("x", transform.position.x,  1f);
+
+				// NOTE: We may want to have an automated end turn after player uses up their AP (or whatever).
+				if (Input.GetKeyDown(KeyCode.Escape)) GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
+
+		        //if (Input.GetKeyDown(KeyCode.M)) DecreaseCargo();For testing
+		        //if (Input.GetKeyDown(KeyCode.I)) IncreaseCargo();For testing
+		        //SetCargoText();//Setting cargo amount text
+			}break;
+
+			case (GameMaster.GameState.ENVIRONMENT_TURN):
+			{
+				if (EnvironmentStart)
+				{
+					// TODO: Start turn with some kind of indicator
+					EnvironmentStart = false;
+					PlayerStart      = true;
+				}
+
+				// TODO: Timer to end ENVIRONMENT_TURN
+			}break;
+			
+			case (GameMaster.GameState.GAME_LOSS):
+			{
+				// TODO: Some game statistics, then main menu or lose scene etc.
+			}break;
+			
+			case (GameMaster.GameState.GAME_WIN):
+			{
+				// TODO: Some game statistics, then main menu or win scene etc.
+			}break;
+		}
     }
 
 	void MovePlayer(string axis, float position, float ammount)
