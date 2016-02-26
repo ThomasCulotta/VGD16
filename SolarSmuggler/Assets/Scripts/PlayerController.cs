@@ -4,10 +4,29 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
-	private float max_Health  = 100f;
-	public  float curr_Health = 100f;
-    private float max_Cargo   = 100f; //If we ever decide for cargo size
-    private float curr_Cargo  = 100f;
+	public struct GridSpace
+	{
+		// Simple x,y coordinates for movement (on x,z plane)
+		public Vector2  coordinates;
+		// Determines if this space will hide the player
+		public bool hidden;
+	};
+
+	private float max_Health   = 100f;
+	public  float curr_Health  = 100f;
+    private float max_Cargo    = 100f; //If we ever decide for cargo size
+	private float curr_Cargo   = 100f;
+	private const int MAX_MOVE = 10;
+
+	// Used to show visited spaces during player BFS and also to determine planet/enemy collision spaces during enemy/environment turns
+	public static bool[,] AvailGrid = new bool[MAX_MOVE, MAX_MOVE];
+	// Used to show spaces that will hide the player (determined during environment turn)
+	private bool[,] HiddenGrid = new bool[MAX_MOVE, MAX_MOVE];
+
+	// List of spaces the player can move to and whether or not that space will hide the player
+	private ArrayList PlayerGrid;
+
+	private Queue BFSQueue = new Queue();
 
 	private bool EnvironmentStart = true;
 	private bool PlayerStart      = true;
@@ -45,6 +64,10 @@ public class PlayerController : MonoBehaviour
 				if (PlayerStart)
 				{
 					// TODO: Start turn with some kind of indicator
+					// TODO: BFS that determines available player movement
+					PlayerGrid = new ArrayList();
+					GridBFS(transform.position);
+					
 					PlayerStart      = false;
 					EnvironmentStart = true;
 				}
@@ -85,6 +108,54 @@ public class PlayerController : MonoBehaviour
 			}break;
 		}
     }
+
+	/*
+	 * NOTE: BFS starts at player position and searches radially 
+	 */
+	void GridBFS(Vector2 pos)
+	{
+		// Mark current position as visited but don't add to PlayerGrid
+		Vector2 posOffset = OffsetPos(pos);
+		AvailGrid[(int)posOffset.x, (int)posOffset.y] = false;
+		BFSQueue.Enqueue(pos);
+
+		while (BFSQueue.Count != 0)
+		{
+			Debug.Log("Checking space: " + pos);
+			Vector2 cur = (Vector2)BFSQueue.Dequeue();
+			// Check the eight spaces around cur
+			CheckAndAddAvailBFS(cur.x + 1, cur.y - 1);
+			CheckAndAddAvailBFS(cur.x + 1, cur.y);
+			CheckAndAddAvailBFS(cur.x + 1, cur.y + 1);
+			CheckAndAddAvailBFS(cur.x,     cur.y - 1);
+			CheckAndAddAvailBFS(cur.x,     cur.y + 1);
+			CheckAndAddAvailBFS(cur.x - 1, cur.y - 1);
+			CheckAndAddAvailBFS(cur.x - 1, cur.y);
+			CheckAndAddAvailBFS(cur.x - 1, cur.y + 1);
+		}
+	}
+
+	void CheckAndAddAvailBFS(float x, float y)
+	{
+		Vector2 pos = new Vector2(x, y);
+		// Adds to queue if visited/obstructed and if it's in MAX_MOVE range of player
+		Vector2 posOffset = OffsetPos(pos);
+		if (AvailGrid[(int)posOffset.x, (int)posOffset.y] && (Vector2.Distance(transform.position, pos) < MAX_MOVE))
+		{
+			AvailGrid[(int)posOffset.x, (int)posOffset.y] = false;
+			BFSQueue.Enqueue(pos);
+			GridSpace newSpace;
+			newSpace.coordinates = pos;
+			newSpace.hidden = HiddenGrid[(int)posOffset.x, (int)posOffset.y];
+			PlayerGrid.Add(newSpace);
+		}
+	}
+
+	// Translates from world space to 2D array space of size [MAX_MOVE, MAX_MOVE] and centered around the player
+	Vector2 OffsetPos(Vector2 pos)
+	{
+		return new Vector2(pos.x - transform.position.x + MAX_MOVE, pos.y - transform.position.z + MAX_MOVE);
+	}
 
 	void MovePlayer(string axis, float position, float ammount)
 	{
