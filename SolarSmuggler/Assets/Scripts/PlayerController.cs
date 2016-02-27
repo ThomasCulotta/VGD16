@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
 	private const int MAX_MOVE = 10;
 
 	// Used to show visited spaces during player BFS and also to determine planet/enemy collision spaces during enemy/environment turns
-	public static bool[,] AvailGrid = new bool[MAX_MOVE, MAX_MOVE];
+	public static bool[,] BlockedGrid = new bool[MAX_MOVE, MAX_MOVE];
 	// Used to show spaces that will hide the player (determined during environment turn)
 	private bool[,] HiddenGrid = new bool[MAX_MOVE, MAX_MOVE];
 
@@ -116,13 +116,13 @@ public class PlayerController : MonoBehaviour
 	{
 		// Mark current position as visited but don't add to PlayerGrid
 		Vector2 posOffset = OffsetPos(pos);
-		AvailGrid[(int)posOffset.x, (int)posOffset.y] = false;
+		BlockedGrid[(int)posOffset.x, (int)posOffset.y] = true;
 		BFSQueue.Enqueue(pos);
 
 		while (BFSQueue.Count != 0)
 		{
-			Debug.Log("Checking space: " + pos);
 			Vector2 cur = (Vector2)BFSQueue.Dequeue();
+			Debug.Log("Checking space: " + cur);
 			// Check the eight spaces around cur
 			CheckAndAddAvailBFS(cur.x + 1, cur.y - 1);
 			CheckAndAddAvailBFS(cur.x + 1, cur.y);
@@ -140,21 +140,23 @@ public class PlayerController : MonoBehaviour
 		Vector2 pos = new Vector2(x, y);
 		// Adds to queue if visited/obstructed and if it's in MAX_MOVE range of player
 		Vector2 posOffset = OffsetPos(pos);
-		if (AvailGrid[(int)posOffset.x, (int)posOffset.y] && (Vector2.Distance(transform.position, pos) < MAX_MOVE))
-		{
-			AvailGrid[(int)posOffset.x, (int)posOffset.y] = false;
-			BFSQueue.Enqueue(pos);
-			GridSpace newSpace;
-			newSpace.coordinates = pos;
-			newSpace.hidden = HiddenGrid[(int)posOffset.x, (int)posOffset.y];
-			PlayerGrid.Add(newSpace);
-		}
+		if (posOffset.x >= 0 && posOffset.x < 10 && 
+		    posOffset.y >= 0 && posOffset.y < 10 && 
+		    !BlockedGrid[(int)posOffset.x, (int)posOffset.y])
+			{
+				BlockedGrid[(int)posOffset.x, (int)posOffset.y] = true;
+				BFSQueue.Enqueue(pos);
+				GridSpace newSpace;
+				newSpace.coordinates = pos;
+				newSpace.hidden = HiddenGrid[(int)posOffset.x, (int)posOffset.y];
+				PlayerGrid.Add(newSpace);
+			}
 	}
 
 	// Translates from world space to 2D array space of size [MAX_MOVE, MAX_MOVE] and centered around the player
 	Vector2 OffsetPos(Vector2 pos)
 	{
-		return new Vector2(pos.x - transform.position.x + MAX_MOVE, pos.y - transform.position.z + MAX_MOVE);
+		return new Vector2(pos.x - transform.position.x + MAX_MOVE/2, pos.y - transform.position.z + MAX_MOVE/2);
 	}
 
 	void MovePlayer(string axis, float position, float ammount)
