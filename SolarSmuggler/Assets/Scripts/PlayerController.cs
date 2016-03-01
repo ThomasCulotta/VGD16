@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,9 +15,11 @@ public class PlayerController : MonoBehaviour
 
     private float max_Health = 100f;
     public  float curr_Health = 100f;
-    private float max_Cargo = 100f;
+    private int max_Cargo = 100;
     //If we ever decide for cargo size
-    private float curr_Cargo = 100f;
+    private int curr_Cargo = 100;
+    // Used for determining what happens to cargo
+    private int cargoResult = 0;
     private const int MAX_MOVE = 10;
 
 
@@ -94,8 +97,6 @@ public class PlayerController : MonoBehaviour
                 // NOTE: We may want to have an automated end turn after player uses up their AP (or whatever).
                 if (Input.GetKeyDown(KeyCode.Escape)) GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
 
-                //if (Input.GetKeyDown(KeyCode.M)) DecreaseCargo();For testing
-                //if (Input.GetKeyDown(KeyCode.I)) IncreaseCargo();For testing
                 //SetCargoText();//Setting cargo amount text
             }
             break;
@@ -216,24 +217,64 @@ public class PlayerController : MonoBehaviour
         cargoBar.value = cargo;
     }
 
-    public void DecreaseCargo()
+    public void AdjustCargo()
     {
-        if (curr_Cargo != 0)
+        System.Random rand = new System.Random();
+        int randVal;
+
+        switch (cargoResult)
         {
-            curr_Cargo--;
-            float calc_Cargo = curr_Cargo / max_Cargo;
-            SetCargoBar(calc_Cargo);
+            case 1: // Good negotiation, pirates are happy
+                randVal = rand.Next(1, 5)*6;
+                CargoSub(randVal);
+                break;
+            case 2: // Decent negotiation, pirates are alright with you
+                randVal = rand.Next(2, 6) * 7;
+                CargoSub(randVal);
+                break;
+            case 3: // Bad negotiation, pirates hate you
+                randVal = rand.Next(3, 8) * 8;
+                CargoSub(randVal);
+                break;
+            case 4: // You've run into the space police and were caught, but let go; cargo forfeited
+                curr_Cargo = 0;
+                break;
+            case 5: // Run into space police or pirates and tried to run but got shot so lost some cargo
+                randVal = rand.Next(2,5)*10;
+                CargoSub(randVal);
+                break;
+            case 6: // Attempted recovery of cargo after being shot
+                randVal = rand.Next(2, 5) * 5;
+                CargoAdd(randVal);
+                break;
+            case 7: // Found random cargo near asteroid or something and went to loot it
+                randVal = rand.Next(3, 6) * 6;
+                CargoAdd(randVal);
+                break;
+            //Do I need a default case?
         }
     }
 
-    public void IncreaseCargo()
+    void CargoSub(int randVal)
     {
-        if (curr_Cargo == max_Cargo)
-        {
-            curr_Cargo++;
-            float calc_Cargo = curr_Cargo / max_Cargo;
-            SetCargoBar(calc_Cargo);
-        }
+        int min_limit = 0;
+        int cargo_calc = curr_Cargo - randVal;
+
+        if (cargo_calc >= min_limit)
+            curr_Cargo = cargo_calc;
+        else
+            curr_Cargo = min_limit;
+    }
+
+    void CargoAdd(int randVal)
+    {
+        int max_limit = 100;
+        int cargo_calc = curr_Cargo + randVal;
+
+        if (cargo_calc <= max_limit)
+            curr_Cargo = cargo_calc;
+        else
+            curr_Cargo = max_limit;
     }
 
     void SetCargoText()

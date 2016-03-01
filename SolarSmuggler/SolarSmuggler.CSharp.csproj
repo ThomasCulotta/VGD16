@@ -73,6 +73,8 @@
     <Compile Include="Assets\Scripts\MoonOrbit.cs" />
     <Compile Include="Assets\Scripts\Orbit.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\Test_Camera_Follow.cs" />
+    <Compile Include="Assets\Scripts\Test_Movement.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Plugins\Pixelplacement\iTween\ReadMe!\ReadMe!.txt" />
