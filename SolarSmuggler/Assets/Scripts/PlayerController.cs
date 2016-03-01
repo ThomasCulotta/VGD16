@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,9 +15,9 @@ public class PlayerController : MonoBehaviour
 
     private float max_Health = 100f;
     public  float curr_Health = 100f;
-    private float max_Cargo = 100f;
+    private int max_Cargo = 100;
     //If we ever decide for cargo size
-    private float curr_Cargo = 100f;
+    private int curr_Cargo = 100;
     // Used for determining what happens to cargo
     private int cargoResult = 0;
     private const int MAX_MOVE = 10;
@@ -218,7 +219,7 @@ public class PlayerController : MonoBehaviour
 
     public void AdjustCargo()
     {
-        Random rand = new Random();
+        System.Random rand = new System.Random();
         int randVal;
 
         switch (cargoResult)
@@ -270,7 +271,7 @@ public class PlayerController : MonoBehaviour
         int max_limit = 100;
         int cargo_calc = curr_Cargo + randVal;
 
-        if (cargo_calc <= maxlimit)
+        if (cargo_calc <= max_limit)
             curr_Cargo = cargo_calc;
         else
             curr_Cargo = max_limit;
