@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour
     private const int MAX_MOVE = 10;
 
 
+    public GameObject gridPlane;
     // Used to track visited/obstructed spaces during player BFS
     public static bool[,] BlockedGrid;
     // List of spaces the player can move to and whether or not that space will hide the player
@@ -185,9 +186,8 @@ public class PlayerController : MonoBehaviour
                         }
                     }
                     // Everything is good: make space available for the player, and add it to the queue to be checked
-                    GameObject debugCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    debugCube.transform.position = new Vector3(pos.x, -0.45f, pos.y);
-                    iTween.MoveBy(debugCube, iTween.Hash("y", 0.45f, "time", 0.1f));
+                    GameObject curPlane = (GameObject)GameObject.Instantiate(gridPlane, new Vector3(pos.x, -0.45f, pos.y), Quaternion.identity);
+                    iTween.MoveBy(curPlane, iTween.Hash("y", 0.45f, "time", 0.1f));
                     GridSpace newSpace = new GridSpace {coordinates = new Vector3(pos.x, 0f, pos.y), 
                                                         hidden = hiddenSpace, 
                                                         distance = dist + 1};
@@ -195,7 +195,6 @@ public class PlayerController : MonoBehaviour
                     if (dist + 1 <= 10)
                         BFSQueue.Enqueue(newSpace);
                 }
-                else Debug.Log("Triggered");
             }
             else if (PlayerGrid[(int)posOffset.x, (int)posOffset.y].distance > (dist + 1))
             {
