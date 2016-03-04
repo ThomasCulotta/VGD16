@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
 
 
     public GameObject gridPlane;
+    public static Vector3 nextPosition;
     // Used to track visited/obstructed spaces during player BFS
     public static bool[,] BlockedGrid;
     // List of spaces the player can move to and whether or not that space will hide the player
@@ -43,6 +44,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        nextPosition = transform.position;
         // Force player to grid
         transform.position = new Vector3(Mathf.Floor(transform.position.x), 0f, Mathf.Floor(transform.position.z));
 
@@ -55,7 +57,6 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(GameMaster.CurrentState);
         switch (GameMaster.CurrentState)
         {
             case (GameMaster.GameState.GAME_START):
@@ -84,6 +85,13 @@ public class PlayerController : MonoBehaviour
                     
                     PlayerStart = false;
                     EnvironmentStart = true;
+                }
+                else if (nextPosition != transform.position)
+                {
+                    /*
+                     * TODO: search and pathfind
+                     */
+                    Debug.Log("nextPosition");
                 }
                 // WASD grid movement
                 if (Input.GetKeyDown(KeyCode.W)) MovePlayer("z", transform.position.z, 1f);
@@ -186,8 +194,7 @@ public class PlayerController : MonoBehaviour
                         }
                     }
                     // Everything is good: make space available for the player, and add it to the queue to be checked
-                    GameObject curPlane = (GameObject)GameObject.Instantiate(gridPlane, new Vector3(pos.x, -0.45f, pos.y), Quaternion.identity);
-                    iTween.MoveBy(curPlane, iTween.Hash("y", 0.45f, "time", 0.1f));
+                    GameObject curPlane = (GameObject)GameObject.Instantiate(gridPlane, new Vector3(pos.x, -0.3f, pos.y), Quaternion.identity);
                     GridSpace newSpace = new GridSpace {coordinates = new Vector3(pos.x, 0f, pos.y), 
                                                         hidden = hiddenSpace, 
                                                         distance = dist + 1};

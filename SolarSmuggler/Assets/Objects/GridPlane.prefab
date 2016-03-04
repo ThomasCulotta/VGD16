@@ -11,6 +11,8 @@ GameObject:
   - 33: {fileID: 3304128}
   - 64: {fileID: 6479070}
   - 23: {fileID: 2331138}
+  - 114: {fileID: 11457062}
+  - 65: {fileID: 6514674}
   m_Layer: 0
   m_Name: GridPlane
   m_TagString: Untagged
@@ -25,7 +27,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 197374}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.9580674, y: -1.8633423, z: -0.9092388}
+  m_LocalPosition: {x: -6.131883, y: -3.7989912, z: -3.1256363}
   m_LocalScale: {x: 0.1, y: 1, z: 0.1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -71,10 +73,34 @@ MeshCollider:
   m_GameObject: {fileID: 197374}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Convex: 0
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!65 &6514674
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 197374}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 10, y: 1, z: 10}
+  m_Center: {x: 0, y: -0.5, z: 0}
+--- !u!114 &11457062
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 197374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e46d280adc58447868e2cf6ad2a93635, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentlyMoving: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
