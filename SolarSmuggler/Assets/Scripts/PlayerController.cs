@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
         public Vector3 coordinates;
         // Determines if this space will hide the player
         public bool hidden;
+
+        public float distance;
     };
 
     private float max_Health = 100f;
@@ -26,7 +28,7 @@ public class PlayerController : MonoBehaviour
     // Used to track visited/obstructed spaces during player BFS
     public static bool[,] BlockedGrid;
     // List of spaces the player can move to and whether or not that space will hide the player
-    private ArrayList PlayerGrid;
+    private GridSpace[,] PlayerGrid;
     private Queue BFSQueue;
     private float BFSDelay;
 
@@ -75,13 +77,7 @@ public class PlayerController : MonoBehaviour
                      *       In a coroutine to free current process and allow variable 
                      *       speed in populating the grid.
                      */
-                    PlayerGrid  = new ArrayList();
-                    BlockedGrid = new bool[MAX_MOVE*2, MAX_MOVE*2];
-                    BFSQueue    = new Queue();
-                    BFSDelay    = 0.016f;
-                    // Set player position to blocked immediately
-                    BlockedGrid[MAX_MOVE, MAX_MOVE] = true;
-                    BFSQueue.Enqueue((Vector2)transform.position);
+
 
                     StartCoroutine("GridBFS");
                     
@@ -130,63 +126,80 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator GridBFS()
     {
+        PlayerGrid  = new GridSpace[MAX_MOVE*2 + 1, MAX_MOVE*2 + 1];
+        BlockedGrid = new bool[MAX_MOVE*2 + 1, MAX_MOVE*2 + 1];
+        BFSQueue    = new Queue();
+        BFSDelay    = 0.001f;
+        // Set player position to blocked immediately
+        BlockedGrid[MAX_MOVE, MAX_MOVE] = true;
+        GridSpace playerSpace = new GridSpace {coordinates = transform.position};
+        BFSQueue.Enqueue(playerSpace);
         bool toggleBool = true;
         while (BFSQueue.Count != 0)
         {
-            /*
-             * TODO: Trying to eliminate variability of grid population speed 
-             * when queue is large. Still WIP.
-             */
-            float curDelay = BFSDelay / BFSQueue.Count;
+            float curDelay = BFSDelay * (5.0f / BFSQueue.Count);
             if (toggleBool) yield return new WaitForSeconds(curDelay);
             toggleBool = !toggleBool;
 
-            Vector2 cur = (Vector2)BFSQueue.Dequeue();
+            GridSpace cur = (GridSpace)BFSQueue.Dequeue();
             // Check the cardinal spaces around cur
-            CheckAndAddAvailBFS(cur.x, cur.y + 1);
-            CheckAndAddAvailBFS(cur.x, cur.y - 1);
-            CheckAndAddAvailBFS(cur.x + 1, cur.y);
-            CheckAndAddAvailBFS(cur.x - 1, cur.y);
+            CheckAndAddAvailBFS(cur.coordinates.x,     cur.coordinates.z + 1, cur.distance);
+            CheckAndAddAvailBFS(cur.coordinates.x,     cur.coordinates.z - 1, cur.distance);
+            CheckAndAddAvailBFS(cur.coordinates.x + 1, cur.coordinates.z,     cur.distance);
+            CheckAndAddAvailBFS(cur.coordinates.x - 1, cur.coordinates.z,     cur.distance);
+            // Check the diagonal spaces around cur
+            CheckAndAddAvailBFS(cur.coordinates.x + 1, cur.coordinates.z + 1, cur.distance + 0.4f);
+            CheckAndAddAvailBFS(cur.coordinates.x - 1, cur.coordinates.z - 1, cur.distance + 0.4f);
+            CheckAndAddAvailBFS(cur.coordinates.x + 1, cur.coordinates.z - 1, cur.distance + 0.4f);
+            CheckAndAddAvailBFS(cur.coordinates.x - 1, cur.coordinates.z + 1, cur.distance + 0.4f);
         }
     }
 
     // Adds to queue if not visited/obstructed and if it's in MAX_MOVE range of player
-    void CheckAndAddAvailBFS(float x, float y)
+    void CheckAndAddAvailBFS(float x, float y, float dist)
     {
         // Create world space and array space vectors
         Vector2 pos = new Vector2(x, y);
         Vector2 posOffset = new Vector2(x - transform.position.x + MAX_MOVE, y - transform.position.z + MAX_MOVE);
-        if (posOffset.x >= 0 && posOffset.x < MAX_MOVE*2 &&     // In x grid range
-            posOffset.y >= 0 && posOffset.y < MAX_MOVE*2 &&     // In y grid range
-            !BlockedGrid[(int)posOffset.x, (int)posOffset.y])   // Check for not visited
+        if (dist < MAX_MOVE)
         {
-            BlockedGrid[(int)posOffset.x, (int)posOffset.y] = true;
-            // Check for collision
-            if (!Physics.CheckBox(pos, new Vector3(0.45f, 0f, 0.45f), Quaternion.identity))
+            if (!BlockedGrid[(int)posOffset.x, (int)posOffset.y])   // Check for not visited
             {
-                bool hiddenSpace = false;
-                // Check for stealth trigger
-                Collider[] triggerArray = Physics.OverlapBox(pos, new Vector3(0.5f, 0f, 0.5f), Quaternion.identity);
-                if (triggerArray.Length < 0)
+                BlockedGrid[(int)posOffset.x, (int)posOffset.y] = true;
+                // Check for collision
+                if (!Physics.CheckBox(new Vector3(pos.x, 0f, pos.y), new Vector3(0.499f, 1f, 0.499f), Quaternion.identity))
                 {
-                    /* 
-                     * NOTE: Loop will help catch unnecessary triggers.
-                     *       Won't really be necessary in "release" build.
-                     */
-                    for (int i = 0; i < triggerArray.Length; i++)
+                    bool hiddenSpace = false;
+                    // Check for stealth trigger
+                    Collider[] triggerArray = Physics.OverlapBox(pos, new Vector3(0.4f, 0f, 0.4f), Quaternion.identity);
+                    if (triggerArray.Length < 0)
                     {
-                        if (triggerArray[i].CompareTag("Stealth")) hiddenSpace = true;
-                        if (i > 1) Debug.Log("Collider " + i + "is:" + triggerArray[i].name);
+                        /* 
+                         * NOTE: Loop will help catch unnecessary triggers.
+                         *       Won't really be necessary in "release" build.
+                         */
+                        for (int i = 0; i < triggerArray.Length; i++)
+                        {
+                            if (triggerArray[i].CompareTag("Stealth")) hiddenSpace = true;
+                            else return;
+                        }
                     }
+                    // Everything is good: make space available for the player, and add it to the queue to be checked
+                    GameObject debugCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    debugCube.transform.position = new Vector3(pos.x, -0.45f, pos.y);
+                    iTween.MoveBy(debugCube, iTween.Hash("y", 0.45f, "time", 0.1f));
+                    GridSpace newSpace = new GridSpace {coordinates = new Vector3(pos.x, 0f, pos.y), 
+                                                        hidden = hiddenSpace, 
+                                                        distance = dist + 1};
+                    PlayerGrid[(int)posOffset.x, (int)posOffset.y] = newSpace;
+                    if (dist + 1 <= 10)
+                        BFSQueue.Enqueue(newSpace);
                 }
-                // Everything is good: make space available for the player, and add it to the queue to be checked
-                GameObject debugCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                debugCube.transform.position = new Vector3(pos.x, 0f, pos.y);
-                BFSQueue.Enqueue(pos);
-                GridSpace newSpace;
-                newSpace.coordinates = new Vector3(pos.x, 0f, pos.y);
-                newSpace.hidden = hiddenSpace;
-                PlayerGrid.Add(newSpace);
+                else Debug.Log("Triggered");
+            }
+            else if (PlayerGrid[(int)posOffset.x, (int)posOffset.y].distance > (dist + 1))
+            {
+                PlayerGrid[(int)posOffset.x, (int)posOffset.y].distance = dist + 1;
             }
         }
     }
