@@ -1,16 +1,18 @@
 # VGD16 - Solar Smuggler
 
 ### Team: Space Fence
-- **Project Lead**
-  - Thomas Culotta
-- **Level Design**
-  - Derin Acar
-  - Tyler Bellue
-- **General Programming and Sound Design**
-  - Patrick Blanchard
-- **UI**
-  - Brian Chiang
-  - Steven Truong
+- **Thomas Culotta**
+  - list
+- **Derin Acar**
+  - list
+- **Tyler Bellue**
+  - list
+- **Patrick Blanchard**
+  - list
+- **Brian Chiang**
+  - list
+- **Steven Truong**
+  - list
 
 ===
 
