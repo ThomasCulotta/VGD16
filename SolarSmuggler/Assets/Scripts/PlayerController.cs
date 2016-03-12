@@ -27,13 +27,16 @@ public class PlayerController : MonoBehaviour
 
     public GameObject gridPlane;
     public static Vector3 nextPosition;
-    public static Vector3 curPosition;
+    private Vector3 curPosition;
     // Used to track visited/obstructed spaces during player BFS
     public static bool[,] BlockedGrid;
     // List of spaces the player can move to and whether or not that space will hide the player
     private GridSpace[,] PlayerGrid;
     private Queue BFSQueue;
     private float BFSDelay;
+
+    private bool lastRight;
+    private bool lastUp;
 
     private ArrayList moveList;
 
@@ -89,10 +92,11 @@ public class PlayerController : MonoBehaviour
                 else if (nextPosition != curPosition)
                 {
                     /*
-                     * NOTE: Pathfinds backwards from selected GridSpace to player
-                     *       iTweens player to each gridspace
-                     */
+                        * NOTE: Pathfinds backwards from selected GridSpace to player
+                        *       iTweens player to each gridspace
+                        */
                     curPosition = nextPosition;
+                    Debug.Log(curPosition);
                     moveList = new ArrayList();
                     Pathfind(nextPosition);
                     MovePlayer();
@@ -213,7 +217,7 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 posOffset = new Vector2(curSpace.x - transform.position.x + MAX_MOVE, curSpace.z - transform.position.z + MAX_MOVE);
         moveList.Add(PlayerGrid[(int)posOffset.x, (int)posOffset.y]);
-
+        Debug.Log(PlayerGrid[(int)posOffset.x, (int)posOffset.y].coordinates);
         if (PlayerGrid[(int)posOffset.x, (int)posOffset.y].distance > 1.4f)
         {
             // Check cardinal spaces first
@@ -237,13 +241,41 @@ public class PlayerController : MonoBehaviour
         // Translate to next GridSpace
         if (moveList.Count > 0)
         {
-            // Pop last gridspace in list
-            GridSpace curSpace = (GridSpace)moveList[moveList.Count - 1];
-            moveList.RemoveAt(moveList.Count - 1);
+            bool curRight = false;
+            bool curUp    = false;
+            int spaceCount = 0;
+            float curDur  = 0f;
 
+            // Set initial space to player pos
+            GridSpace curSpace = new GridSpace();
+            curSpace.coordinates = transform.position;
+            // Check if next space is in same direction if there are still spaces to check
+            do
+            {
+                GridSpace tempSpace = (GridSpace)moveList[moveList.Count - 1];
+                bool tempRight = tempSpace.coordinates.x > curSpace.coordinates.x;
+                bool tempUp = tempSpace.coordinates.z > curSpace.coordinates.x;
+                // Pop last gridspace in list if it's in the same line as prev spaces or if it's the first pass
+                if (spaceCount == 0 || 
+                   (tempRight == curRight && tempUp == curUp))
+                {
+                    curSpace = tempSpace;
+                    moveList.RemoveAt(moveList.Count - 1);
+                    curRight = tempRight;
+                    curUp = tempUp;
+                    curDur += 0.5f;
+
+                    spaceCount++;
+                }
+                // Break if temp space isn't in line with previous spaces
+                else break;
+            }
+            while (moveList.Count > 0);
+            
+            // Move player to the furthest in-line space
             iTween.MoveTo(gameObject, iTween.Hash("x", curSpace.coordinates.x, 
                                                   "z", curSpace.coordinates.z, 
-                                                  "time", 0.5f, 
+                                                  "time", curDur, 
                                                   "oncomplete", "MovePlayer", 
                                                   "oncompletetarget", gameObject));
         }

@@ -30,7 +30,7 @@ public class GridSpace : MonoBehaviour
 
     void OnMouseDown()
     {
-        PlayerController.nextPosition = new Vector3(transform.position.x, 0f, transform.position.y);
+        PlayerController.nextPosition = new Vector3(transform.position.x, 0f, transform.position.z);
     }
 
     void OnMouseEnter()
