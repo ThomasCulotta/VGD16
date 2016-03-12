@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
         public Vector3 coordinates;
         // Determines if this space will hide the player
         public bool hidden;
-
+        // Distance from the player
         public float distance;
     };
 
@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
 
     public GameObject gridPlane;
     public static Vector3 nextPosition;
+    public static Vector3 curPosition;
     // Used to track visited/obstructed spaces during player BFS
     public static bool[,] BlockedGrid;
     // List of spaces the player can move to and whether or not that space will hide the player
@@ -34,6 +35,7 @@ public class PlayerController : MonoBehaviour
     private Queue BFSQueue;
     private float BFSDelay;
 
+    private ArrayList moveList;
 
     private bool EnvironmentStart = true;
     private bool PlayerStart = true;
@@ -44,7 +46,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        nextPosition = transform.position;
+        nextPosition = curPosition = transform.position;
         // Force player to grid
         transform.position = new Vector3(Mathf.Floor(transform.position.x), 0f, Mathf.Floor(transform.position.z));
 
@@ -74,30 +76,27 @@ public class PlayerController : MonoBehaviour
                     // TODO: Start turn with some kind of indicator/turn number/etc.
 
                     /* NOTE: BFS that determines available player movement.
-                     *       Starts with fresh arrays at the beginning of each turn.
+                     *       Clears arrays at the beginning of each turn.
                      *
                      *       In a coroutine to free current process and allow variable 
                      *       speed in populating the grid.
                      */
-
-
-                    StartCoroutine("GridBFS");
-                    
                     PlayerStart = false;
                     EnvironmentStart = true;
+                    
+                    StartCoroutine("GridBFS");
                 }
-                else if (nextPosition != transform.position)
+                else if (nextPosition != curPosition)
                 {
                     /*
-                     * TODO: search and pathfind
+                     * NOTE: Pathfinds backwards from selected GridSpace to player
+                     *       iTweens player to each gridspace
                      */
-                    Debug.Log("nextPosition");
+                    curPosition = nextPosition;
+                    moveList = new ArrayList();
+                    Pathfind(nextPosition);
+                    MovePlayer();
                 }
-                // WASD grid movement
-                if (Input.GetKeyDown(KeyCode.W)) MovePlayer("z", transform.position.z, 1f);
-                if (Input.GetKeyDown(KeyCode.A)) MovePlayer("x", transform.position.x, -1f);
-                if (Input.GetKeyDown(KeyCode.S)) MovePlayer("z", transform.position.z, -1f);
-                if (Input.GetKeyDown(KeyCode.D)) MovePlayer("x", transform.position.x, 1f);
 
                 // NOTE: We may want to have an automated end turn after player uses up their AP (or whatever).
                 if (Input.GetKeyDown(KeyCode.Escape)) GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
@@ -194,7 +193,7 @@ public class PlayerController : MonoBehaviour
                         }
                     }
                     // Everything is good: make space available for the player, and add it to the queue to be checked
-                    GameObject curPlane = (GameObject)GameObject.Instantiate(gridPlane, new Vector3(pos.x, -0.3f, pos.y), Quaternion.identity);
+                    GameObject.Instantiate(gridPlane, new Vector3(pos.x, -0.3f, pos.y), Quaternion.identity);
                     GridSpace newSpace = new GridSpace {coordinates = new Vector3(pos.x, 0f, pos.y), 
                                                         hidden = hiddenSpace, 
                                                         distance = dist + 1};
@@ -210,10 +209,46 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void MovePlayer(string axis, float position, float ammount)
+    void Pathfind(Vector3 curSpace)
     {
-        iTween.MoveTo(gameObject, iTween.Hash(axis, position + ammount, "time", 0.5f));
-        transform.position = new Vector3(Mathf.Floor(transform.position.x), 0f, Mathf.Floor(transform.position.z));
+        Vector2 posOffset = new Vector2(curSpace.x - transform.position.x + MAX_MOVE, curSpace.z - transform.position.z + MAX_MOVE);
+        moveList.Add(PlayerGrid[(int)posOffset.x, (int)posOffset.y]);
+
+        if (PlayerGrid[(int)posOffset.x, (int)posOffset.y].distance > 1.4f)
+        {
+            // Check cardinal spaces first
+            GridSpace closestSpace = PlayerGrid[(int)posOffset.x, (int)posOffset.y + 1];
+
+            if (PlayerGrid[(int)posOffset.x,     (int)posOffset.y - 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x,     (int)posOffset.y - 1];
+            if (PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y].distance     <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y];
+            if (PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y].distance     <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y];
+            // Check diagonals
+            if (PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y + 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y + 1];
+            if (PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y - 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y - 1];
+            if (PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y + 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y + 1];
+            if (PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y - 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y - 1];
+
+            Pathfind(closestSpace.coordinates);
+        }
+    }
+
+    void MovePlayer()
+    {
+        // Translate to next GridSpace
+        if (moveList.Count > 0)
+        {
+            // Pop last gridspace in list
+            GridSpace curSpace = (GridSpace)moveList[moveList.Count - 1];
+            moveList.RemoveAt(moveList.Count - 1);
+
+            iTween.MoveTo(gameObject, iTween.Hash("x", curSpace.coordinates.x, 
+                                                  "z", curSpace.coordinates.z, 
+                                                  "time", 0.5f, 
+                                                  "oncomplete", "MovePlayer", 
+                                                  "oncompletetarget", gameObject));
+        }
+        // Snap player to grid
+        else transform.position = new Vector3(curPosition.x, 0f, curPosition.z);
     }
 
     public void decreaseHealth()
