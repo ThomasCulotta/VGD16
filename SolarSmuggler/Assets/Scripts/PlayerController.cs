@@ -254,7 +254,7 @@ public class PlayerController : MonoBehaviour
             {
                 GridSpace tempSpace = (GridSpace)moveList[moveList.Count - 1];
                 bool tempRight = tempSpace.coordinates.x > curSpace.coordinates.x;
-                bool tempUp = tempSpace.coordinates.z > curSpace.coordinates.x;
+                bool tempUp = tempSpace.coordinates.z > curSpace.coordinates.z;
                 // Pop last gridspace in list if it's in the same line as prev spaces or if it's the first pass
                 if (spaceCount == 0 || 
                    (tempRight == curRight && tempUp == curUp))
