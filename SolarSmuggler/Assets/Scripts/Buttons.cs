@@ -18,11 +18,11 @@ public class Buttons : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler 
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        text.color = Color.blue;
+        text.color = Color.cyan;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        text.color = Color.black; 
+        text.color = Color.white; 
     }
 }
