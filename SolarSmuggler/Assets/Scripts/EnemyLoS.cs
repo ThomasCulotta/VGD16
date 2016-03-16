@@ -12,7 +12,7 @@ public class EnemyLoS : MonoBehaviour
 {
     //Debug Variables
     private const bool DEBUG = false;
-    public GameObject debugPlane;
+    
 
     //Constant Variables
     private const int   MAX_MOVE = 10;
@@ -26,6 +26,7 @@ public class EnemyLoS : MonoBehaviour
     private Queue      BFSQueue;
     private ArrayList  moveList;
     private Vector3    curPos;
+    private Vector3    playerPos;
 
     public struct GridNode
     {
@@ -36,7 +37,7 @@ public class EnemyLoS : MonoBehaviour
         //Shows Node visited
         public bool visited;
         //Distance from Player
-        public int dist;
+        public float dist;
         //Grid X
         public int x;
         //Grid Y
@@ -51,7 +52,6 @@ public class EnemyLoS : MonoBehaviour
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-        curPos = transform.position;
     }
 
 
@@ -59,6 +59,9 @@ public class EnemyLoS : MonoBehaviour
     {
         if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
         {
+            //Reset Game Board
+            playerPos = player.transform.position;
+            curPos = transform.position;
             EnemySearchPlane = new GridNode[(int)MAX_SPOT, (int)MAX_SPOT];
             StartCoroutine("initESP");    
            
@@ -69,20 +72,21 @@ public class EnemyLoS : MonoBehaviour
             Vector3 heading = player.transform.position - transform.position;
             if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
             {
+                //Movement
                 moveList = new ArrayList();
                 PathFinding(curPos);
-                if(moveList.Count > 0)
-                    lastPos = (GridNode)moveList[moveList.Count - 1];
                 moveEnemy();
-                curPos = lastPos.coords;
 
+                //Combat
                 if (hit.collider.tag.Equals("Player"))
                 {
                     ShootAtPlayer();
                 }
             }
 
+            //Change the Game State to PLAYER_TURN
             GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
+            Debug.Log("PLAYER_TURN -from enemyLOS");
         }
     }
 
@@ -93,12 +97,12 @@ public class EnemyLoS : MonoBehaviour
     IEnumerator initESP()
     {
         //the Enemy GridNode is primed
-        EnemySearchPlane[MAX_MOVE, MAX_MOVE].coords = new Vector3(transform.position.x, 0f, transform.position.z);
-        EnemySearchPlane[MAX_MOVE, MAX_MOVE].visited = true;
+        EnemySearchPlane[MAX_MOVE, MAX_MOVE].coords    = new Vector3(transform.position.x, 0f, transform.position.z);
+        EnemySearchPlane[MAX_MOVE, MAX_MOVE].visited   = true;
         EnemySearchPlane[MAX_MOVE, MAX_MOVE].hasPlayer = false;
-        EnemySearchPlane[MAX_MOVE, MAX_MOVE].dist = 0;
-        EnemySearchPlane[MAX_MOVE, MAX_MOVE].x = MAX_MOVE;
-        EnemySearchPlane[MAX_MOVE, MAX_MOVE].y = MAX_MOVE;
+        EnemySearchPlane[MAX_MOVE, MAX_MOVE].dist      = Vector3.Distance(transform.position, playerPos);
+        EnemySearchPlane[MAX_MOVE, MAX_MOVE].x         = MAX_MOVE;
+        EnemySearchPlane[MAX_MOVE, MAX_MOVE].y         = MAX_MOVE;
 
         //Init the Queue to begin the Flood Fill
         BFSQueue = new Queue();
@@ -116,7 +120,6 @@ public class EnemyLoS : MonoBehaviour
         {
             //Get current node out of Queue
             GridNode cur = (GridNode)BFSQueue.Dequeue();
-            int nextDist = cur.dist + 1;
 
             //Player Node found
             if (EnemySearchPlane[cur.x, cur.y].hasPlayer)
@@ -130,15 +133,15 @@ public class EnemyLoS : MonoBehaviour
             int yM1 = cur.y - 1;
 
             //Checking Boundaries and if visited
-            if (yP1 < MAX_SPOT && !EnemySearchPlane[cur.x, yP1].visited) visit(cur.x, yP1, nextDist); //North
-            if (yM1 > 0        && !EnemySearchPlane[cur.x, yM1].visited) visit(cur.x, yM1, nextDist); //South
-            if (xP1 < MAX_SPOT && !EnemySearchPlane[xP1, cur.y].visited) visit(xP1, cur.y, nextDist); //East
-            if (xM1 > 0        && !EnemySearchPlane[xM1, cur.y].visited) visit(xM1, cur.y, nextDist); //West
+            if (yP1 < MAX_SPOT && !EnemySearchPlane[cur.x, yP1].visited) visit(cur.x, yP1); //North
+            if (yM1 > -1       && !EnemySearchPlane[cur.x, yM1].visited) visit(cur.x, yM1); //South
+            if (xP1 < MAX_SPOT && !EnemySearchPlane[xP1, cur.y].visited) visit(xP1, cur.y); //East
+            if (xM1 > -1       && !EnemySearchPlane[xM1, cur.y].visited) visit(xM1, cur.y); //West
 
-            if (xP1 < MAX_SPOT && yP1 < MAX_SPOT && !EnemySearchPlane[xP1, yP1].visited) visit(xP1, yP1, nextDist); //NorthEast
-            if (xM1 > 0        && yM1 > 0        && !EnemySearchPlane[xM1, yM1].visited) visit(xM1, yM1, nextDist); //SouthWest
-            if (xP1 < MAX_SPOT && yM1 > 0        && !EnemySearchPlane[xP1, yM1].visited) visit(xP1, yM1, nextDist); //SouthEast
-            if (xM1 > 0        && yP1 < MAX_SPOT && !EnemySearchPlane[xM1, yP1].visited) visit(xM1, yP1, nextDist); //NorthWest
+            if (xP1 < MAX_SPOT && yP1 < MAX_SPOT && !EnemySearchPlane[xP1, yP1].visited) visit(xP1, yP1); //NorthEast
+            if (xM1 > -1       && yM1 > -1       && !EnemySearchPlane[xM1, yM1].visited) visit(xM1, yM1); //SouthWest
+            if (xP1 < MAX_SPOT && yM1 > -1       && !EnemySearchPlane[xP1, yM1].visited) visit(xP1, yM1); //SouthEast
+            if (xM1 > -1       && yP1 < MAX_SPOT && !EnemySearchPlane[xM1, yP1].visited) visit(xM1, yP1); //NorthWest
 
             //Debug
             if(DEBUG)
@@ -146,7 +149,7 @@ public class EnemyLoS : MonoBehaviour
         }
     }
 
-    void visit(int x, int y, int dist)
+    void visit(int x, int y)
     {
         //Gamespace coordinates conversion
         float xCoord = x + transform.position.x - MAX_MOVE;
@@ -156,7 +159,7 @@ public class EnemyLoS : MonoBehaviour
         EnemySearchPlane[x, y].coords    = new Vector3(xCoord, 0f, yCoord);
         EnemySearchPlane[x, y].visited   = true;
         EnemySearchPlane[x, y].hasPlayer = false;
-        EnemySearchPlane[x, y].dist      = dist;
+        EnemySearchPlane[x, y].dist      = Vector3.Distance(EnemySearchPlane[x, y].coords, playerPos);
         EnemySearchPlane[x, y].x         = x;
         EnemySearchPlane[x, y].y         = y;
 
@@ -169,12 +172,6 @@ public class EnemyLoS : MonoBehaviour
 
         //Enque so neighbors can be checked.
         BFSQueue.Enqueue(EnemySearchPlane[x, y]);
-
-        //Visual Debugging
-        if (DEBUG == true)
-        {
-            Instantiate(debugPlane, new Vector3(xCoord, 0.3f, yCoord), Quaternion.identity);
-        }
     }
 
 
@@ -184,20 +181,15 @@ public class EnemyLoS : MonoBehaviour
      */
     void PathFinding(Vector3 curP)
     {
-        
         GridNode closestSpace;
         Vector2 posOffset = new Vector2(curP.x - transform.position.x + MAX_MOVE, curP.z - transform.position.z + MAX_MOVE);
+        int curX = (int)posOffset.x;
+        int curY = (int)posOffset.y;
+        Debug.Log(curP.x + " - " + transform.position.x + " + " + MAX_MOVE + " = " + posOffset.x + "; " + curP.z + " - " + transform.position.z + " + " + MAX_MOVE + " = " + posOffset.y);
+        moveList.Add(EnemySearchPlane[curX, curY]);
 
-        Debug.Log("Grid: " + posOffset.x + ", " + posOffset.y + " Vector: " + curP.x + ", " + curP.z);
-        
-
-        moveList.Add(EnemySearchPlane[(int)posOffset.x, (int)posOffset.y]);
-
-        if(Vector3.Distance(EnemySearchPlane[(int)posOffset.x, (int)posOffset.y].coords, playerNode.coords) > 1.4f)
+        if(EnemySearchPlane[curX, curY].dist > 1f)
         {
-            int curX = (int)posOffset.x;
-            int curY = (int)posOffset.y;
-
             int xP1 = curX + 1;
             int xM1 = curX - 1;
             int yP1 = curY + 1;
@@ -208,24 +200,18 @@ public class EnemyLoS : MonoBehaviour
             if (xM1 < 0) xM1 = xM1++;
             if (yM1 < 0) yM1 = yM1++;
 
-            //Debug.Log(curX + " " + curY + " " + xP1 + " " + xM1 + " " + yP1 + " " + yM1);
-
-            closestSpace.coords = new Vector3(10000f, 10000f, 10000f);
-            closestSpace.x = curX;
-            closestSpace.y = curY;
+            closestSpace = EnemySearchPlane[curX, curY];
            
-            if (Vector3.Distance(EnemySearchPlane[curX, yP1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords) && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[curX, yP1]; //North
-            if (Vector3.Distance(EnemySearchPlane[curX, yM1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords) && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[curX, yM1]; //South
-            if (Vector3.Distance(EnemySearchPlane[xP1, curY].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords) && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[xP1, curY]; //East
-            if (Vector3.Distance(EnemySearchPlane[xM1, curY].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords) && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[xM1, curY]; //West
+            if (EnemySearchPlane[curX, yP1].dist < closestSpace.dist && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[curX, yP1]; //North
+            if (EnemySearchPlane[curX, yM1].dist < closestSpace.dist && EnemySearchPlane[curX, yM1].visited) closestSpace = EnemySearchPlane[curX, yM1]; //South
+            if (EnemySearchPlane[xP1, curY].dist < closestSpace.dist && EnemySearchPlane[xP1, curY].visited) closestSpace = EnemySearchPlane[xP1, curY]; //East
+            if (EnemySearchPlane[xM1, curY].dist < closestSpace.dist && EnemySearchPlane[xM1, curY].visited) closestSpace = EnemySearchPlane[xM1, curY]; //West
             
-            if (Vector3.Distance(EnemySearchPlane[xP1, yP1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords) && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[xP1, yP1]; //NorthEast
-            if (Vector3.Distance(EnemySearchPlane[xP1, yM1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords) && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[xP1, yM1]; //SouthEast
-            if (Vector3.Distance(EnemySearchPlane[xM1, yP1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords) && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[xM1, yP1]; //NorthWest
-            if (Vector3.Distance(EnemySearchPlane[xM1, yM1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords) && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[xM1, yM1]; //SouthWest
+            if (EnemySearchPlane[xP1, yP1].dist < closestSpace.dist && EnemySearchPlane[xP1, yP1].visited) closestSpace = EnemySearchPlane[xP1, yP1]; //NorthEast
+            if (EnemySearchPlane[xP1, yM1].dist < closestSpace.dist && EnemySearchPlane[xP1, yM1].visited) closestSpace = EnemySearchPlane[xP1, yM1]; //SouthEast
+            if (EnemySearchPlane[xM1, yP1].dist < closestSpace.dist && EnemySearchPlane[xM1, yP1].visited) closestSpace = EnemySearchPlane[xM1, yP1]; //NorthWest
+            if (EnemySearchPlane[xM1, yM1].dist < closestSpace.dist && EnemySearchPlane[xM1, yM1].visited) closestSpace = EnemySearchPlane[xM1, yM1]; //SouthWest
 
-
-            //Debug.Log("Passed: " + closestSpace.coords + ", " + closestSpace.x + ", " + closestSpace.y);
             PathFinding(closestSpace.coords);
         }
     }
@@ -262,24 +248,17 @@ public class EnemyLoS : MonoBehaviour
                     curRight = tempRight;
                     curUp = tempUp;
                     curDur += 0.5f;
-
                     spaceCount++;
                 }
                 else break;
 
-
             } while (i < moveList.Count);
-
+            Debug.Log(curNode.coords.x + ", " + curNode.coords.z);
             iTween.MoveTo(gameObject, iTween.Hash("x", curNode.coords.x,
                                                   "z", curNode.coords.z,
                                                   "time", curDur,
                                                   "oncomplete", "moveEnemy",
                                                   "oncompletetarget", gameObject));
-        }
-
-        else {
-           
-            transform.position = new Vector3(lastPos.coords.x, 0f, lastPos.coords.z);
         }
     }
 
