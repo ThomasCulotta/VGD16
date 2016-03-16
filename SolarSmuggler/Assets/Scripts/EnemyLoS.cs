@@ -11,26 +11,25 @@ using System.Collections;
 public class EnemyLoS : MonoBehaviour
 {
     //Debug Variables
-    private const bool DEBUG = true;
+    private const bool DEBUG = false;
     public GameObject debugPlane;
 
     //Constant Variables
-    private const int MAX_MOVE = 10;
+    private const int   MAX_MOVE = 10;
     private const float MAX_SPOT = (MAX_MOVE * 2 + 1);
     private const float MAX_FIRE_DIST = 1f;
 
     //Utility Variables
     private GameObject player;
     private RaycastHit hit;
-    private Component playerControllerScript;
-    private Queue BFSQueue;
-    private ArrayList moveList;
-    private bool init;
-    private Vector3 curPos;
+    private Component  playerControllerScript;
+    private Queue      BFSQueue;
+    private ArrayList  moveList;
+    private Vector3    curPos;
 
     public struct GridNode
     {
-        //Node Posistion
+        //Node Position
         public Vector3 coords;
         //Shows state of Node
         public bool hasPlayer;
@@ -52,9 +51,7 @@ public class EnemyLoS : MonoBehaviour
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-        EnemySearchPlane = new GridNode[(int)MAX_SPOT, (int)MAX_SPOT];
-        curPos =  transform.position;
-        init = true;
+        curPos = transform.position;
     }
 
 
@@ -62,31 +59,24 @@ public class EnemyLoS : MonoBehaviour
     {
         if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
         {
-            if (init)
-            {
-                init = false;
-                StartCoroutine("initESP");
-            }
+            EnemySearchPlane = new GridNode[(int)MAX_SPOT, (int)MAX_SPOT];
+            StartCoroutine("initESP");    
            
-                Debug.Log(curPos);
+            // Thomas: Added this small debug line so we'll see exactly what the ray is doing when we test this out.
+            Debug.DrawLine(transform.position, player.transform.position, Color.cyan, 0.5f);
+
+            //Checks if player is obstructed by obstacle 
+            Vector3 heading = player.transform.position - transform.position;
+            if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
+            {
                 moveList = new ArrayList();
                 PathFinding(curPos);
                 lastPos = (GridNode)moveList[moveList.Count - 1];
                 moveEnemy();
-            
+                curPos = lastPos.coords;
 
-            // Thomas: Added this small debug line so we'll see exactly what the ray is doing when we test this out.
-            Debug.DrawLine(transform.position, player.transform.position, Color.cyan, 0.5f);
-
-            //Fancy math that calculates the direction vector 
-            Vector3 heading = player.transform.position - transform.position;
-            if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
-            {
-                //Debug.Log("Hit True\n");
                 if (hit.collider.tag.Equals("Player"))
                 {
-                    //Debug.Log("Spotted\n");
-                    //Enemy reaction script goes here.
                     ShootAtPlayer();
                 }
             }
@@ -130,7 +120,7 @@ public class EnemyLoS : MonoBehaviour
             //Player Node found, exit function.
             if (EnemySearchPlane[cur.x, cur.y].hasPlayer)
             {
-                Debug.Log("Found Player at " + cur.x + "," + cur.y + " He is " + cur.dist + " away.");
+                Debug.Log("Found Player at " + playerNode.x + "," + playerNode.y + " He is " + playerNode.dist + " away.");
                 return;
             }
 
@@ -198,7 +188,6 @@ public class EnemyLoS : MonoBehaviour
         Debug.Log("Path " + curPos);
         Vector2 posOffset = new Vector2(curPos.x - transform.position.x + MAX_MOVE, curPos.z - transform.position.z + MAX_MOVE);
         moveList.Add(EnemySearchPlane[(int)posOffset.x, (int)posOffset.y]);
-        //Debug.Log( playerNode.dist - EnemySearchPlane[(int)posOffset.x, (int)posOffset.y].dist);
         if(Vector3.Distance(EnemySearchPlane[(int)posOffset.x, (int)posOffset.y].coords, playerNode.coords) > 1.4)
         {
             int curX = (int)posOffset.x;
@@ -248,7 +237,6 @@ public class EnemyLoS : MonoBehaviour
             {
 
                 GridNode tempNode = (GridNode)moveList[i];
-                Debug.Log(tempNode.coords);
                 i++;
                 bool tempRight = tempNode.coords.x > curNode.coords.x;
                 bool tempUp = tempNode.coords.z > curNode.coords.z;
