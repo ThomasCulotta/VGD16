@@ -8,72 +8,82 @@ using System.Collections;
  * 			    of the Player by the Enemy. MAX_SPOT controls
  * 			    the distance of the Enemy's Line of Sight. 
  */
-public class EnemyLoS : MonoBehaviour 
+public class EnemyLoS : MonoBehaviour
 {
-    private const int MAX_MOVE = 10;
-    private const float MAX_SPOT = (MAX_MOVE*2 + 1);
+    //Debug Variables
+    private const bool DEBUG = false;
+    public GameObject debugPlane;
+
+    //Constant Variables
+    private const int   MAX_MOVE = 10;
+    private const float MAX_SPOT = (MAX_MOVE * 2 + 1);
     private const float MAX_FIRE_DIST = 1f;
-    private Vector3 playerPos;
+
+    //Utility Variables
     private GameObject player;
     private RaycastHit hit;
-    private Component playerControllerScript;
-    private Queue BFSQueue;
-    private bool init;
+    private Component  playerControllerScript;
+    private Queue      BFSQueue;
+    private ArrayList  moveList;
+    private Vector3    curPos;
 
     public struct GridNode
     {
-        //Node Posistion
+        //Node Position
         public Vector3 coords;
         //Shows state of Node
         public bool hasPlayer;
         //Shows Node visited
         public bool visited;
-        //Distance from Enemy
+        //Distance from Player
         public int dist;
         //Grid X
         public int x;
         //Grid Y
         public int y;
     }
-    
+
+    //Grid Variables
     private GridNode[,] EnemySearchPlane;
     private GridNode playerNode;
+    GridNode lastPos;
 
-	void Start () 
-	{
+    void Start()
+    {
         player = GameObject.FindGameObjectWithTag("Player");
-        EnemySearchPlane = new GridNode[(int)MAX_SPOT, (int)MAX_SPOT];
-        init = true;
+        curPos = transform.position;
     }
-	
-	
-	void Update () 
-	{
-		/*
-		 * Thomas: The logic is perfect, but I'm still going to mention an alternative, either 
-		 * because it might make a small performance difference or because I might just be a 
-		 * pretentious douche. We might want to change it later to only raycast while the 
-		 * player or enemy is moving instead of continuously, but it probably won't matter too much.
-		 */
 
-		// Thomas: Added this small debug line so we'll see exactly what the ray is doing when we test this out.
-		Debug.DrawLine(transform.position, player.transform.position, Color.cyan, 0.5f);
 
-        //Fancy math that calculates the direction vector 
-        Vector3 heading = player.transform.position - transform.position;
-        if(Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
+    void Update()
+    {
+        if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
         {
-            //Debug.Log("Hit True\n");
-            if (hit.collider.tag.Equals("Player"))
+            EnemySearchPlane = new GridNode[(int)MAX_SPOT, (int)MAX_SPOT];
+            StartCoroutine("initESP");    
+           
+            // Thomas: Added this small debug line so we'll see exactly what the ray is doing when we test this out.
+            Debug.DrawLine(transform.position, player.transform.position, Color.cyan, 0.5f);
+
+            //Checks if player is obstructed by obstacle 
+            Vector3 heading = player.transform.position - transform.position;
+            if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
             {
-                //Debug.Log("Spotted\n");
-                //Enemy reaction script goes here.
-                ShootAtPlayer();
+                moveList = new ArrayList();
+                PathFinding(curPos);
+                lastPos = (GridNode)moveList[moveList.Count - 1];
+                moveEnemy();
+                curPos = lastPos.coords;
+
+                if (hit.collider.tag.Equals("Player"))
+                {
+                    ShootAtPlayer();
+                }
             }
+
+            GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
         }
-      
-       StartCoroutine("initESP");
-	}
+    }
 
     /*
      *Patrick: This will setup the Enemy Search Plane at the start 
@@ -82,12 +92,12 @@ public class EnemyLoS : MonoBehaviour
     IEnumerator initESP()
     {
         //the Enemy GridNode is primed
-        EnemySearchPlane[MAX_MOVE, MAX_MOVE].coords    = new Vector3(transform.position.x, 0f, transform.position.z);
-        EnemySearchPlane[MAX_MOVE, MAX_MOVE].visited   = true;
+        EnemySearchPlane[MAX_MOVE, MAX_MOVE].coords = new Vector3(transform.position.x, 0f, transform.position.z);
+        EnemySearchPlane[MAX_MOVE, MAX_MOVE].visited = true;
         EnemySearchPlane[MAX_MOVE, MAX_MOVE].hasPlayer = false;
-        EnemySearchPlane[MAX_MOVE, MAX_MOVE].dist      = 0;
-        EnemySearchPlane[MAX_MOVE, MAX_MOVE].x         = MAX_MOVE;
-        EnemySearchPlane[MAX_MOVE, MAX_MOVE].y         = MAX_MOVE;
+        EnemySearchPlane[MAX_MOVE, MAX_MOVE].dist = 0;
+        EnemySearchPlane[MAX_MOVE, MAX_MOVE].x = MAX_MOVE;
+        EnemySearchPlane[MAX_MOVE, MAX_MOVE].y = MAX_MOVE;
 
         //Init the Queue to begin the Flood Fill
         BFSQueue = new Queue();
@@ -100,7 +110,7 @@ public class EnemyLoS : MonoBehaviour
     //Flood Fill to obtain the Player Node.
     void initFill()
     {
-        
+
         while (BFSQueue.Count != 0)
         {
             //Get current node out of Queue
@@ -110,7 +120,7 @@ public class EnemyLoS : MonoBehaviour
             //Player Node found, exit function.
             if (EnemySearchPlane[cur.x, cur.y].hasPlayer)
             {
-                Debug.Log("Found Player at " + cur.x + "," + cur.y + " He is " + cur.dist + " away.");
+                Debug.Log("Found Player at " + playerNode.x + "," + playerNode.y + " He is " + playerNode.dist + " away.");
                 return;
             }
 
@@ -132,8 +142,9 @@ public class EnemyLoS : MonoBehaviour
             if (xM1 > 0        && yP1 < MAX_SPOT && !EnemySearchPlane[xM1, yP1].visited) visit(xM1, yP1, nextDist); //NorthWest
 
             //Debug
-            Debug.Log("["+cur.x+"," +cur.y+"]" + " Coords: " + cur.coords +  "; Visited: " + cur.visited + "; hasPlayer: " + cur.hasPlayer + "; Distance: " + cur.dist);
-        } 
+            if(DEBUG)
+                Debug.Log("[" + cur.x + "," + cur.y + "]" + " Coords: " + cur.coords + "; Visited: " + cur.visited + "; hasPlayer: " + cur.hasPlayer + "; Distance: " + cur.dist);
+        }
     }
 
     void visit(int x, int y, int dist)
@@ -143,13 +154,13 @@ public class EnemyLoS : MonoBehaviour
         float yCoord = y + transform.position.y - MAX_MOVE;
 
         //init GridNode
-        EnemySearchPlane[x, y].coords    = new Vector3( xCoord, 0f, yCoord);
-        EnemySearchPlane[x, y].visited   = true;
+        EnemySearchPlane[x, y].coords = new Vector3(xCoord, 0f, yCoord);
+        EnemySearchPlane[x, y].visited = true;
         EnemySearchPlane[x, y].hasPlayer = false;
-        EnemySearchPlane[x, y].dist      = dist;
-        EnemySearchPlane[x, y].x         = x;
-        EnemySearchPlane[x, y].y         = y;
-        
+        EnemySearchPlane[x, y].dist = dist;
+        EnemySearchPlane[x, y].x = x;
+        EnemySearchPlane[x, y].y = y;
+
         //Player Found, info is loaded into a new Grid Node struct for easy access
         if (EnemySearchPlane[x, y].coords == player.transform.position)
         {
@@ -161,8 +172,100 @@ public class EnemyLoS : MonoBehaviour
         BFSQueue.Enqueue(EnemySearchPlane[x, y]);
 
         //Visual Debugging
-        GameObject debugCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        debugCube.transform.position = new Vector3(xCoord, 0f, yCoord);
+        if (DEBUG == true)
+        {
+            Instantiate(debugPlane, new Vector3(xCoord, 0.3f, yCoord), Quaternion.identity);
+        }
+    }
+
+
+    /*
+     *Forms a path of GridNode objects 
+     *for the player to move on.
+     */
+    void PathFinding(Vector3 curPos)
+    {
+        Debug.Log("Path " + curPos);
+        Vector2 posOffset = new Vector2(curPos.x - transform.position.x + MAX_MOVE, curPos.z - transform.position.z + MAX_MOVE);
+        moveList.Add(EnemySearchPlane[(int)posOffset.x, (int)posOffset.y]);
+        if(Vector3.Distance(EnemySearchPlane[(int)posOffset.x, (int)posOffset.y].coords, playerNode.coords) > 1.4)
+        {
+            int curX = (int)posOffset.x;
+            int curY = (int)posOffset.y;
+
+            int xP1 = curX + 1;
+            int xM1 = curX - 1;
+            int yP1 = curY + 1;
+            int yM1 = curY - 1;
+
+            //Start looking North
+            GridNode closestSpace = EnemySearchPlane[curX, yP1];
+
+            if (Vector3.Distance(EnemySearchPlane[curX, yM1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[curX, yM1]; //South
+            if (Vector3.Distance(EnemySearchPlane[xP1, curY].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[xP1, curY]; //East
+            if (Vector3.Distance(EnemySearchPlane[xM1, curY].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[xM1, curY]; //West
+
+            if (Vector3.Distance(EnemySearchPlane[xP1, yP1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[xP1, yP1]; //NorthEast
+            if (Vector3.Distance(EnemySearchPlane[xP1, yM1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[xP1, yM1]; //SouthEast
+            if (Vector3.Distance(EnemySearchPlane[xM1, yP1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[xM1, yP1]; //NorthWest
+            if (Vector3.Distance(EnemySearchPlane[xM1, yM1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[xM1, yM1]; //SouthWest
+
+            PathFinding(closestSpace.coords);
+
+        }
+    }
+
+    /*
+     *This function is a slight modification of
+     *the movePlayer function in player Controller
+     *that enables the Enemy to move across the grid.
+     */
+    void moveEnemy()
+    {
+        if (moveList.Count > 0)
+        {
+
+            bool curRight = false;
+            bool curUp = false;
+            int spaceCount = 0;
+            float curDur = 0f;
+            int i = 0;
+            GridNode curNode = new GridNode();
+            curNode.coords = transform.position;
+
+            do
+            {
+
+                GridNode tempNode = (GridNode)moveList[i];
+                i++;
+                bool tempRight = tempNode.coords.x > curNode.coords.x;
+                bool tempUp = tempNode.coords.z > curNode.coords.z;
+                if (spaceCount == 0 || (tempRight == curRight && tempUp == curUp))
+                {
+                    curNode = tempNode;
+                    moveList.RemoveAt(0);
+                    curRight = tempRight;
+                    curUp = tempUp;
+                    curDur += 0.5f;
+
+                    spaceCount++;
+                }
+                else break;
+
+
+            } while (i < moveList.Count);
+
+            iTween.MoveTo(gameObject, iTween.Hash("x", curNode.coords.x,
+                                                  "z", curNode.coords.z,
+                                                  "time", curDur,
+                                                  "oncomplete", "moveEnemy",
+                                                  "oncompletetarget", gameObject));
+        }
+
+        else {
+           
+            transform.position = new Vector3(lastPos.coords.x, 0f, lastPos.coords.z);
+        }
     }
 
     void ShootAtPlayer()

@@ -173,11 +173,14 @@ public class PlayerController : MonoBehaviour
         // Create world space and array space vectors
         Vector2 pos = new Vector2(x, y);
         Vector2 posOffset = new Vector2(x - transform.position.x + MAX_MOVE, y - transform.position.z + MAX_MOVE);
+<<<<<<< HEAD
 
         if (posOffset.x > MAX_MOVE * 2 ||
             posOffset.y > MAX_MOVE * 2)
             return;
 
+=======
+>>>>>>> 8631837670645d4ea1cb30af21e819680914f6d8
         if (dist < MAX_MOVE)
         {
             if (!BlockedGrid[(int)posOffset.x, (int)posOffset.y])   // Check for not visited
@@ -223,6 +226,7 @@ public class PlayerController : MonoBehaviour
         Vector2 posOffset = new Vector2(curSpace.x - transform.position.x + MAX_MOVE, curSpace.z - transform.position.z + MAX_MOVE);
         moveList.Add(PlayerGrid[(int)posOffset.x, (int)posOffset.y]);
         Debug.Log(PlayerGrid[(int)posOffset.x, (int)posOffset.y].coordinates);
+<<<<<<< HEAD
 
         int hiY = (int)posOffset.y + 1;
         int meY = (int)posOffset.y;
@@ -252,6 +256,21 @@ public class PlayerController : MonoBehaviour
             if (PlayerGrid[hiX, loY].distance <= closestSpace.distance) closestSpace = PlayerGrid[hiX, loY];
             if (PlayerGrid[loX, hiY].distance <= closestSpace.distance) closestSpace = PlayerGrid[loX, hiY];
             if (PlayerGrid[loX, loY].distance <= closestSpace.distance) closestSpace = PlayerGrid[loX, loY];
+=======
+        if (PlayerGrid[(int)posOffset.x, (int)posOffset.y].distance > 1.4f)
+        {
+            // Check cardinal spaces first
+            GridSpace closestSpace = PlayerGrid[(int)posOffset.x, (int)posOffset.y + 1];
+
+            if (PlayerGrid[(int)posOffset.x,     (int)posOffset.y - 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x,     (int)posOffset.y - 1];
+            if (PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y].distance     <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y];
+            if (PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y].distance     <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y];
+            // Check diagonals
+            if (PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y + 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y + 1];
+            if (PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y - 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y - 1];
+            if (PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y + 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y + 1];
+            if (PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y - 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y - 1];
+>>>>>>> 8631837670645d4ea1cb30af21e819680914f6d8
 
             Pathfind(closestSpace.coordinates);
         }
