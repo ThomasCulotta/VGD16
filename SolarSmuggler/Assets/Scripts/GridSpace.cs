@@ -26,6 +26,9 @@ public class GridSpace : MonoBehaviour
         }
         else
             currentlyMoving = false;
+
+        if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
+            Destroy(gameObject);
 	}
 
     void OnMouseDown()

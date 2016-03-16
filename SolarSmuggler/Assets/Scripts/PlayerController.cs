@@ -40,8 +40,9 @@ public class PlayerController : MonoBehaviour
 
     private ArrayList moveList;
 
-    private bool EnvironmentStart = true;
-    private bool PlayerStart = true;
+    private bool environmentStart = true;
+    private bool playerStart = true;
+    private bool playerEnd = false;
 
     public Slider cargoBar;
     public GameObject healthBar;
@@ -74,7 +75,7 @@ public class PlayerController : MonoBehaviour
 
             case (GameMaster.GameState.PLAYER_TURN):
                 {
-                    if (PlayerStart)
+                    if (playerStart)
                     {
                         // TODO: Start turn with some kind of indicator/turn number/etc.
 
@@ -84,39 +85,41 @@ public class PlayerController : MonoBehaviour
                          *       In a coroutine to free current process and allow variable 
                          *       speed in populating the grid.
                          */
-                        PlayerStart = false;
-                        EnvironmentStart = true;
-
+                        playerStart = false;
+                        environmentStart = true;
                         StartCoroutine("GridBFS");
                     }
                     else if (nextPosition != curPosition)
                     {
                         /*
-                            * NOTE: Pathfinds backwards from selected GridSpace to player
-                            *       iTweens player to each gridspace
-                            */
+                         * NOTE: Pathfinds backwards from selected GridSpace to player
+                         *       iTweens player to each gridspace
+                         */
                         curPosition = nextPosition;
-                        Debug.Log(curPosition);
                         moveList = new ArrayList();
                         Pathfind(nextPosition);
                         MovePlayer();
                     }
-
                     // NOTE: We may want to have an automated end turn after player uses up their AP (or whatever).
-                    if (Input.GetKeyDown(KeyCode.Escape)) GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
+                    if (playerEnd)
+                    {
+                        playerEnd = false;
+                        playerStart = true;
+                        GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
+                    }
 
                     //SetCargoText();//Setting cargo amount text
                 }
                 break;
-
             case (GameMaster.GameState.ENVIRONMENT_TURN):
                 {
-                    if (EnvironmentStart)
+                    if (environmentStart)
                     {
                         // TODO: Start turn with some kind of indicator maybe
-                        EnvironmentStart = false;
-                        PlayerStart = true;
+                        environmentStart = false;
                     }
+                    else
+                        GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
 
                     // TODO: Timer to end ENVIRONMENT_TURN
                 }
@@ -133,6 +136,15 @@ public class PlayerController : MonoBehaviour
                     // TODO: Some game statistics, then main menu or win scene etc.
                 }
                 break;
+        }
+    }
+
+    void LateUpdate()
+    {
+        Debug.Log(GameMaster.CurrentState);
+        if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
+        {
+            GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
         }
     }
 
@@ -225,7 +237,6 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 posOffset = new Vector2(curSpace.x - transform.position.x + MAX_MOVE, curSpace.z - transform.position.z + MAX_MOVE);
         moveList.Add(PlayerGrid[(int)posOffset.x, (int)posOffset.y]);
-        Debug.Log(PlayerGrid[(int)posOffset.x, (int)posOffset.y].coordinates);
 
         int hiY = (int)posOffset.y + 1;
         int meY = (int)posOffset.y;
@@ -304,7 +315,11 @@ public class PlayerController : MonoBehaviour
                                                   "oncompletetarget", gameObject));
         }
         // Snap player to grid
-        else transform.position = new Vector3(curPosition.x, 0f, curPosition.z);
+        else
+        {
+            transform.position = new Vector3(curPosition.x, 0f, curPosition.z);
+            playerEnd = true;
+        }
     }
 
     public void decreaseHealth()
