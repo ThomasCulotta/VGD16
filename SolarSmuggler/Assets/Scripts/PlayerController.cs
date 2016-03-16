@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
     };
 
     private float max_Health = 100f;
-    public  float curr_Health = 100f;
+    public float curr_Health = 100f;
     private int max_Cargo = 100;
     //If we ever decide for cargo size
     private int curr_Cargo = 100;
@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
     public GameObject gridPlane;
     public static Vector3 nextPosition;
     private Vector3 curPosition;
-    // Used to track visited/obstructed spaces during player BFF
+    // Used to track visited/obstructed spaces during player BFS
     public static bool[,] BlockedGrid;
     // List of spaces the player can move to and whether or not that space will hide the player
     private GridSpace[,] PlayerGrid;
@@ -65,86 +65,86 @@ public class PlayerController : MonoBehaviour
         switch (GameMaster.CurrentState)
         {
             case (GameMaster.GameState.GAME_START):
-            {
-                // TODO: Some level initialization
-                
-                GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
-            }
-            break;
+                {
+                    // TODO: Some level initialization
+
+                    GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
+                }
+                break;
 
             case (GameMaster.GameState.PLAYER_TURN):
-            {
-                if (PlayerStart)
                 {
-                    // TODO: Start turn with some kind of indicator/turn number/etc.
+                    if (PlayerStart)
+                    {
+                        // TODO: Start turn with some kind of indicator/turn number/etc.
 
-                    /* NOTE: BFS that determines available player movement.
-                     *       Clears arrays at the beginning of each turn.
-                     *
-                     *       In a coroutine to free current process and allow variable 
-                     *       speed in populating the grid.
-                     */
-                    PlayerStart = false;
-                    EnvironmentStart = true;
-                    
-                    StartCoroutine("GridBFS");
+                        /* NOTE: BFS that determines available player movement.
+                         *       Clears arrays at the beginning of each turn.
+                         *
+                         *       In a coroutine to free current process and allow variable 
+                         *       speed in populating the grid.
+                         */
+                        PlayerStart = false;
+                        EnvironmentStart = true;
+
+                        StartCoroutine("GridBFS");
+                    }
+                    else if (nextPosition != curPosition)
+                    {
+                        /*
+                            * NOTE: Pathfinds backwards from selected GridSpace to player
+                            *       iTweens player to each gridspace
+                            */
+                        curPosition = nextPosition;
+                        Debug.Log(curPosition);
+                        moveList = new ArrayList();
+                        Pathfind(nextPosition);
+                        MovePlayer();
+                    }
+
+                    // NOTE: We may want to have an automated end turn after player uses up their AP (or whatever).
+                    if (Input.GetKeyDown(KeyCode.Escape)) GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
+
+                    //SetCargoText();//Setting cargo amount text
                 }
-                else if (nextPosition != curPosition)
-                {
-                    /*
-                        * NOTE: Pathfinds backwards from selected GridSpace to player
-                        *       iTweens player to each gridspace
-                        */
-                    curPosition = nextPosition;
-                    Debug.Log(curPosition);
-                    moveList = new ArrayList();
-                    Pathfind(nextPosition);
-                    MovePlayer();
-                }
-
-                // NOTE: We may want to have an automated end turn after player uses up their AP (or whatever).
-                if (Input.GetKeyDown(KeyCode.Escape)) GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
-
-                //SetCargoText();//Setting cargo amount text
-            }
-            break;
+                break;
 
             case (GameMaster.GameState.ENVIRONMENT_TURN):
-            {
-                if (EnvironmentStart)
                 {
-                    // TODO: Start turn with some kind of indicator maybe
-                    EnvironmentStart = false;
-                    PlayerStart = true;
-                }
+                    if (EnvironmentStart)
+                    {
+                        // TODO: Start turn with some kind of indicator maybe
+                        EnvironmentStart = false;
+                        PlayerStart = true;
+                    }
 
-                // TODO: Timer to end ENVIRONMENT_TURN
-            }
-            break;
-			
+                    // TODO: Timer to end ENVIRONMENT_TURN
+                }
+                break;
+
             case (GameMaster.GameState.GAME_LOSS):
-            {
-                // TODO: Some game statistics, then main menu or lose scene etc.
-            }
-            break;
-            
+                {
+                    // TODO: Some game statistics, then main menu or lose scene etc.
+                }
+                break;
+
             case (GameMaster.GameState.GAME_WIN):
-            {
-                // TODO: Some game statistics, then main menu or win scene etc.
-            }
-            break;
+                {
+                    // TODO: Some game statistics, then main menu or win scene etc.
+                }
+                break;
         }
     }
 
     IEnumerator GridBFS()
     {
-        PlayerGrid  = new GridSpace[MAX_MOVE*2 + 1, MAX_MOVE*2 + 1];
-        BlockedGrid = new bool[MAX_MOVE*2 + 1, MAX_MOVE*2 + 1];
-        BFSQueue    = new Queue();
-        BFSDelay    = 0.001f;
+        PlayerGrid = new GridSpace[MAX_MOVE * 2 + 1, MAX_MOVE * 2 + 1];
+        BlockedGrid = new bool[MAX_MOVE * 2 + 1, MAX_MOVE * 2 + 1];
+        BFSQueue = new Queue();
+        BFSDelay = 0.001f;
         // Set player position to blocked immediately
         BlockedGrid[MAX_MOVE, MAX_MOVE] = true;
-        GridSpace playerSpace = new GridSpace {coordinates = transform.position};
+        GridSpace playerSpace = new GridSpace { coordinates = transform.position };
         BFSQueue.Enqueue(playerSpace);
         bool toggleBool = true;
         while (BFSQueue.Count != 0)
@@ -155,10 +155,10 @@ public class PlayerController : MonoBehaviour
 
             GridSpace cur = (GridSpace)BFSQueue.Dequeue();
             // Check the cardinal spaces around cur
-            CheckAndAddAvailBFS(cur.coordinates.x,     cur.coordinates.z + 1, cur.distance);
-            CheckAndAddAvailBFS(cur.coordinates.x,     cur.coordinates.z - 1, cur.distance);
-            CheckAndAddAvailBFS(cur.coordinates.x + 1, cur.coordinates.z,     cur.distance);
-            CheckAndAddAvailBFS(cur.coordinates.x - 1, cur.coordinates.z,     cur.distance);
+            CheckAndAddAvailBFS(cur.coordinates.x, cur.coordinates.z + 1, cur.distance);
+            CheckAndAddAvailBFS(cur.coordinates.x, cur.coordinates.z - 1, cur.distance);
+            CheckAndAddAvailBFS(cur.coordinates.x + 1, cur.coordinates.z, cur.distance);
+            CheckAndAddAvailBFS(cur.coordinates.x - 1, cur.coordinates.z, cur.distance);
             // Check the diagonal spaces around cur
             CheckAndAddAvailBFS(cur.coordinates.x + 1, cur.coordinates.z + 1, cur.distance + 0.4f);
             CheckAndAddAvailBFS(cur.coordinates.x - 1, cur.coordinates.z - 1, cur.distance + 0.4f);
@@ -173,14 +173,11 @@ public class PlayerController : MonoBehaviour
         // Create world space and array space vectors
         Vector2 pos = new Vector2(x, y);
         Vector2 posOffset = new Vector2(x - transform.position.x + MAX_MOVE, y - transform.position.z + MAX_MOVE);
-<<<<<<< HEAD
 
         if (posOffset.x > MAX_MOVE * 2 ||
             posOffset.y > MAX_MOVE * 2)
             return;
 
-=======
->>>>>>> 8631837670645d4ea1cb30af21e819680914f6d8
         if (dist < MAX_MOVE)
         {
             if (!BlockedGrid[(int)posOffset.x, (int)posOffset.y])   // Check for not visited
@@ -206,9 +203,12 @@ public class PlayerController : MonoBehaviour
                     }
                     // Everything is good: make space available for the player, and add it to the queue to be checked
                     GameObject.Instantiate(gridPlane, new Vector3(pos.x, -0.3f, pos.y), Quaternion.identity);
-                    GridSpace newSpace = new GridSpace {coordinates = new Vector3(pos.x, 0f, pos.y), 
-                                                        hidden = hiddenSpace, 
-                                                        distance = dist + 1};
+                    GridSpace newSpace = new GridSpace
+                    {
+                        coordinates = new Vector3(pos.x, 0f, pos.y),
+                        hidden = hiddenSpace,
+                        distance = dist + 1
+                    };
                     PlayerGrid[(int)posOffset.x, (int)posOffset.y] = newSpace;
                     if (dist + 1 <= 10)
                         BFSQueue.Enqueue(newSpace);
@@ -226,7 +226,6 @@ public class PlayerController : MonoBehaviour
         Vector2 posOffset = new Vector2(curSpace.x - transform.position.x + MAX_MOVE, curSpace.z - transform.position.z + MAX_MOVE);
         moveList.Add(PlayerGrid[(int)posOffset.x, (int)posOffset.y]);
         Debug.Log(PlayerGrid[(int)posOffset.x, (int)posOffset.y].coordinates);
-<<<<<<< HEAD
 
         int hiY = (int)posOffset.y + 1;
         int meY = (int)posOffset.y;
@@ -246,7 +245,7 @@ public class PlayerController : MonoBehaviour
         {
             // Check cardinal spaces first
             GridSpace closestSpace = PlayerGrid[meX, loY];
-            
+
             if (PlayerGrid[meX, hiY].distance <= closestSpace.distance) closestSpace = PlayerGrid[meX, hiY];
             if (PlayerGrid[hiX, meY].distance <= closestSpace.distance) closestSpace = PlayerGrid[hiX, meY];
             if (PlayerGrid[loX, meY].distance <= closestSpace.distance) closestSpace = PlayerGrid[loX, meY];
@@ -256,21 +255,6 @@ public class PlayerController : MonoBehaviour
             if (PlayerGrid[hiX, loY].distance <= closestSpace.distance) closestSpace = PlayerGrid[hiX, loY];
             if (PlayerGrid[loX, hiY].distance <= closestSpace.distance) closestSpace = PlayerGrid[loX, hiY];
             if (PlayerGrid[loX, loY].distance <= closestSpace.distance) closestSpace = PlayerGrid[loX, loY];
-=======
-        if (PlayerGrid[(int)posOffset.x, (int)posOffset.y].distance > 1.4f)
-        {
-            // Check cardinal spaces first
-            GridSpace closestSpace = PlayerGrid[(int)posOffset.x, (int)posOffset.y + 1];
-
-            if (PlayerGrid[(int)posOffset.x,     (int)posOffset.y - 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x,     (int)posOffset.y - 1];
-            if (PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y].distance     <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y];
-            if (PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y].distance     <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y];
-            // Check diagonals
-            if (PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y + 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y + 1];
-            if (PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y - 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y - 1];
-            if (PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y + 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y + 1];
-            if (PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y - 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y - 1];
->>>>>>> 8631837670645d4ea1cb30af21e819680914f6d8
 
             Pathfind(closestSpace.coordinates);
         }
@@ -282,9 +266,9 @@ public class PlayerController : MonoBehaviour
         if (moveList.Count > 0)
         {
             bool curRight = false;
-            bool curUp    = false;
+            bool curUp = false;
             int spaceCount = 0;
-            float curDur  = 0f;
+            float curDur = 0f;
 
             // Set initial space to player pos
             GridSpace curSpace = new GridSpace();
@@ -296,7 +280,7 @@ public class PlayerController : MonoBehaviour
                 bool tempRight = tempSpace.coordinates.x > curSpace.coordinates.x;
                 bool tempUp = tempSpace.coordinates.z > curSpace.coordinates.z;
                 // Pop last gridspace in list if it's in the same line as prev spaces or if it's the first pass
-                if (spaceCount == 0 || 
+                if (spaceCount == 0 ||
                    (tempRight == curRight && tempUp == curUp))
                 {
                     curSpace = tempSpace;
@@ -311,12 +295,12 @@ public class PlayerController : MonoBehaviour
                 else break;
             }
             while (moveList.Count > 0);
-            
+
             // Move player to the furthest in-line space
-            iTween.MoveTo(gameObject, iTween.Hash("x", curSpace.coordinates.x, 
-                                                  "z", curSpace.coordinates.z, 
-                                                  "time", curDur, 
-                                                  "oncomplete", "MovePlayer", 
+            iTween.MoveTo(gameObject, iTween.Hash("x", curSpace.coordinates.x,
+                                                  "z", curSpace.coordinates.z,
+                                                  "time", curDur,
+                                                  "oncomplete", "MovePlayer",
                                                   "oncompletetarget", gameObject));
         }
         // Snap player to grid
@@ -351,7 +335,7 @@ public class PlayerController : MonoBehaviour
         switch (cargoResult)
         {
             case 1: // Good negotiation, pirates are happy
-                randVal = rand.Next(1, 5)*6;
+                randVal = rand.Next(1, 5) * 6;
                 CargoSub(randVal);
                 break;
             case 2: // Decent negotiation, pirates are alright with you
@@ -366,7 +350,7 @@ public class PlayerController : MonoBehaviour
                 curr_Cargo = 0;
                 break;
             case 5: // Run into space police or pirates and tried to run but got shot so lost some cargo
-                randVal = rand.Next(2,5)*10;
+                randVal = rand.Next(2, 5) * 10;
                 CargoSub(randVal);
                 break;
             case 6: // Attempted recovery of cargo after being shot
@@ -377,7 +361,7 @@ public class PlayerController : MonoBehaviour
                 randVal = rand.Next(3, 6) * 6;
                 CargoAdd(randVal);
                 break;
-            //Do I need a default case?
+                //Do I need a default case?
         }
     }
 
