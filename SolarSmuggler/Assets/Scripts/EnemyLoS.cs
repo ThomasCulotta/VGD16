@@ -183,13 +183,13 @@ public class EnemyLoS : MonoBehaviour
      *Forms a path of GridNode objects 
      *for the player to move on.
      */
-    void PathFinding(Vector3 curPos)
+    void PathFinding(Vector3 curP)
     {
         GridNode closestSpace;
-        Debug.Log("Path " + curPos);
-        Vector2 posOffset = new Vector2(curPos.x - transform.position.x + MAX_MOVE, curPos.z - transform.position.z + MAX_MOVE);
+        Debug.Log("Path " + curP);
+        Vector2 posOffset = new Vector2(curP.x - transform.position.x + MAX_MOVE, curP.z - transform.position.z + MAX_MOVE);
         moveList.Add(EnemySearchPlane[(int)posOffset.x, (int)posOffset.y]);
-        if(Vector3.Distance(EnemySearchPlane[(int)posOffset.x, (int)posOffset.y].coords, playerNode.coords) > 1.4)
+        if(Vector3.Distance(EnemySearchPlane[(int)posOffset.x, (int)posOffset.y].coords, playerNode.coords) > 1.6f)
         {
             int curX = (int)posOffset.x;
             int curY = (int)posOffset.y;
@@ -204,9 +204,7 @@ public class EnemyLoS : MonoBehaviour
             if (xM1 < 0) xM1 = 0;
             if (yM1 < 0) yM1 = 0;
 
-
             closestSpace = EnemySearchPlane[curX, curY];
-
            
             if (Vector3.Distance(EnemySearchPlane[curX, yP1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[curX, yP1]; //North
             if (Vector3.Distance(EnemySearchPlane[curX, yM1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[curX, yM1]; //South
