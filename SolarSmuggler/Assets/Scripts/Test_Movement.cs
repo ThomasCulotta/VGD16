@@ -10,6 +10,6 @@ public class Test_Movement : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        transform.Translate(Input.GetAxis("Horizontal") * Time.deltaTime * 4, 0f, Input.GetAxis("Vertical") * Time.deltaTime * 4);
+        transform.Translate(Input.GetAxis("Horizontal") * Time.deltaTime * 10, 0f, Input.GetAxis("Vertical") * Time.deltaTime * 10);
     }
 }
