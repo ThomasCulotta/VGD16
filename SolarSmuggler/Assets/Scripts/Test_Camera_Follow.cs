@@ -93,9 +93,6 @@ public class Test_Camera_Follow : MonoBehaviour {
 
     void FixedUpdate()
     {
-        //moveToTarget
-        //lookAtTarget
-        //orbit
         if (target)
         {
             moveToTarget();
@@ -147,7 +144,7 @@ public class Test_Camera_Follow : MonoBehaviour {
     void zoomInTarget()
     {
         //modifying the distance from target to be closer/further away from target
-        position.newDistance += position.zoomStep * zoomInput;
+        position.newDistance += position.zoomStep * zoomInput * 25;
 
         position.distanceFromTarget = Mathf.Lerp(position.distanceFromTarget, position.newDistance, position.zoomSmooth * Time.deltaTime);
 

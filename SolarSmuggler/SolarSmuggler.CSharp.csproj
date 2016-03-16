@@ -68,8 +68,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Buttons.cs" />
+    <Compile Include="Assets\Scripts\Compass.cs" />
+    <Compile Include="Assets\Scripts\EnemyIndicator.cs" />
     <Compile Include="Assets\Scripts\EnemyLoS.cs" />
     <Compile Include="Assets\Scripts\GameMaster.cs" />
+    <Compile Include="Assets\Scripts\GridSpace.cs" />
+    <Compile Include="Assets\Scripts\MenuController.cs" />
     <Compile Include="Assets\Scripts\MoonOrbit.cs" />
     <Compile Include="Assets\Scripts\Orbit.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />

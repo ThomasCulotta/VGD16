@@ -13,7 +13,7 @@ public static class GameMaster {
 		GAME_WIN, // Only entered when Player enters destination trigger volume.
 
 		GAME_STATE_COUNT
-	};
+	}
 
 	public static GameState CurrentState = GameState.GAME_START;
 }
