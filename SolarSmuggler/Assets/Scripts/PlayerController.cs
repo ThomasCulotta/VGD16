@@ -173,6 +173,11 @@ public class PlayerController : MonoBehaviour
         // Create world space and array space vectors
         Vector2 pos = new Vector2(x, y);
         Vector2 posOffset = new Vector2(x - transform.position.x + MAX_MOVE, y - transform.position.z + MAX_MOVE);
+
+        if (posOffset.x > MAX_MOVE * 2 ||
+            posOffset.y > MAX_MOVE * 2)
+            return;
+
         if (dist < MAX_MOVE)
         {
             if (!BlockedGrid[(int)posOffset.x, (int)posOffset.y])   // Check for not visited
@@ -218,19 +223,35 @@ public class PlayerController : MonoBehaviour
         Vector2 posOffset = new Vector2(curSpace.x - transform.position.x + MAX_MOVE, curSpace.z - transform.position.z + MAX_MOVE);
         moveList.Add(PlayerGrid[(int)posOffset.x, (int)posOffset.y]);
         Debug.Log(PlayerGrid[(int)posOffset.x, (int)posOffset.y].coordinates);
+
+        int hiY = (int)posOffset.y + 1;
+        int meY = (int)posOffset.y;
+        int loY = (int)posOffset.y - 1;
+
+        int hiX = (int)posOffset.x + 1;
+        int meX = (int)posOffset.x;
+        int loX = (int)posOffset.x - 1;
+
+        // Clamp to bounds. Yeah, this leads to duplicate checks.
+        if (hiY > MAX_MOVE * 2) hiY--;
+        if (hiX > MAX_MOVE * 2) hiX--;
+        if (loY < 0) loY++;
+        if (loX < 0) loX++;
+
         if (PlayerGrid[(int)posOffset.x, (int)posOffset.y].distance > 1.4f)
         {
             // Check cardinal spaces first
-            GridSpace closestSpace = PlayerGrid[(int)posOffset.x, (int)posOffset.y + 1];
+            GridSpace closestSpace = PlayerGrid[meX, loY];
+            
+            if (PlayerGrid[meX, hiY].distance <= closestSpace.distance) closestSpace = PlayerGrid[meX, hiY];
+            if (PlayerGrid[hiX, meY].distance <= closestSpace.distance) closestSpace = PlayerGrid[hiX, meY];
+            if (PlayerGrid[loX, meY].distance <= closestSpace.distance) closestSpace = PlayerGrid[loX, meY];
 
-            if (PlayerGrid[(int)posOffset.x,     (int)posOffset.y - 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x,     (int)posOffset.y - 1];
-            if (PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y].distance     <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y];
-            if (PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y].distance     <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y];
             // Check diagonals
-            if (PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y + 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y + 1];
-            if (PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y - 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x + 1, (int)posOffset.y - 1];
-            if (PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y + 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y + 1];
-            if (PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y - 1].distance <= closestSpace.distance) closestSpace = PlayerGrid[(int)posOffset.x - 1, (int)posOffset.y - 1];
+            if (PlayerGrid[hiX, hiY].distance <= closestSpace.distance) closestSpace = PlayerGrid[hiX, hiY];
+            if (PlayerGrid[hiX, loY].distance <= closestSpace.distance) closestSpace = PlayerGrid[hiX, loY];
+            if (PlayerGrid[loX, hiY].distance <= closestSpace.distance) closestSpace = PlayerGrid[loX, hiY];
+            if (PlayerGrid[loX, loY].distance <= closestSpace.distance) closestSpace = PlayerGrid[loX, loY];
 
             Pathfind(closestSpace.coordinates);
         }
@@ -254,7 +275,7 @@ public class PlayerController : MonoBehaviour
             {
                 GridSpace tempSpace = (GridSpace)moveList[moveList.Count - 1];
                 bool tempRight = tempSpace.coordinates.x > curSpace.coordinates.x;
-                bool tempUp = tempSpace.coordinates.z > curSpace.coordinates.x;
+                bool tempUp = tempSpace.coordinates.z > curSpace.coordinates.z;
                 // Pop last gridspace in list if it's in the same line as prev spaces or if it's the first pass
                 if (spaceCount == 0 || 
                    (tempRight == curRight && tempUp == curUp))
