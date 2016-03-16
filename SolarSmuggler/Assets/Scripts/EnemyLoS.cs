@@ -12,11 +12,6 @@ public class EnemyLoS : MonoBehaviour
 {
     //Debug Variables
     private const bool DEBUG = false;
-<<<<<<< Updated upstream
-    
-=======
-    public GameObject debugPlane;
->>>>>>> Stashed changes
 
     //Constant Variables
     private const int   MAX_MOVE = 10;
@@ -30,10 +25,7 @@ public class EnemyLoS : MonoBehaviour
     private Queue      BFSQueue;
     private ArrayList  moveList;
     private Vector3    curPos;
-<<<<<<< Updated upstream
     private Vector3    playerPos;
-=======
->>>>>>> Stashed changes
 
     public struct GridNode
     {
@@ -59,10 +51,6 @@ public class EnemyLoS : MonoBehaviour
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-<<<<<<< Updated upstream
-=======
-        curPos = transform.position;
->>>>>>> Stashed changes
     }
 
 
@@ -70,12 +58,9 @@ public class EnemyLoS : MonoBehaviour
     {
         if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
         {
-<<<<<<< Updated upstream
             //Reset Game Board
             playerPos = player.transform.position;
             curPos = transform.position;
-=======
->>>>>>> Stashed changes
             EnemySearchPlane = new GridNode[(int)MAX_SPOT, (int)MAX_SPOT];
             StartCoroutine("initESP");    
            
@@ -86,21 +71,12 @@ public class EnemyLoS : MonoBehaviour
             Vector3 heading = player.transform.position - transform.position;
             if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
             {
-<<<<<<< Updated upstream
                 //Movement
                 moveList = new ArrayList();
                 PathFinding(curPos);
                 moveEnemy();
 
                 //Combat
-=======
-                moveList = new ArrayList();
-                PathFinding(curPos);
-                lastPos = (GridNode)moveList[moveList.Count - 1];
-                moveEnemy();
-                curPos = lastPos.coords;
-
->>>>>>> Stashed changes
                 if (hit.collider.tag.Equals("Player"))
                 {
                     ShootAtPlayer();
@@ -204,7 +180,6 @@ public class EnemyLoS : MonoBehaviour
      */
     void PathFinding(Vector3 curP)
     {
-<<<<<<< Updated upstream
         GridNode closestSpace;
         Vector2 posOffset = new Vector2(curP.x - transform.position.x + MAX_MOVE, curP.z - transform.position.z + MAX_MOVE);
         int curX = (int)posOffset.x;
@@ -213,12 +188,6 @@ public class EnemyLoS : MonoBehaviour
         moveList.Add(EnemySearchPlane[curX, curY]);
 
         if(EnemySearchPlane[curX, curY].dist > 1f)
-=======
-        Debug.Log("Path " + curPos);
-        Vector2 posOffset = new Vector2(curPos.x - transform.position.x + MAX_MOVE, curPos.z - transform.position.z + MAX_MOVE);
-        moveList.Add(EnemySearchPlane[(int)posOffset.x, (int)posOffset.y]);
-        if(Vector3.Distance(EnemySearchPlane[(int)posOffset.x, (int)posOffset.y].coords, playerNode.coords) > 1.4)
->>>>>>> Stashed changes
         {
             int xP1 = curX + 1;
             int xM1 = curX - 1;
