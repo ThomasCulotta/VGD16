@@ -33,6 +33,12 @@ public class MenuController : MonoBehaviour {
         credit.SetActive(true);
     }
 
+	public void ExitCredit()
+	{
+		main.SetActive(true);
+		credit.SetActive(false);
+	}
+
     public void StartLevel()
     {
         SceneManager.LoadScene("Thomas");

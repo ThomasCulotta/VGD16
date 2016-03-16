@@ -25,4 +25,9 @@ public class Buttons : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler 
     {
         text.color = Color.white; 
     }
+
+	public void ColorChange()
+	{
+		text.color = Color.white;
+	}
 }
