@@ -71,7 +71,8 @@ public class EnemyLoS : MonoBehaviour
             {
                 moveList = new ArrayList();
                 PathFinding(curPos);
-                lastPos = (GridNode)moveList[moveList.Count - 1];
+                if(moveList.Count > 0)
+                    lastPos = (GridNode)moveList[moveList.Count - 1];
                 moveEnemy();
                 curPos = lastPos.coords;
 
@@ -117,12 +118,10 @@ public class EnemyLoS : MonoBehaviour
             GridNode cur = (GridNode)BFSQueue.Dequeue();
             int nextDist = cur.dist + 1;
 
-            //Player Node found, exit function.
+            //Player Node found
             if (EnemySearchPlane[cur.x, cur.y].hasPlayer)
-            {
                 Debug.Log("Found Player at " + playerNode.x + "," + playerNode.y + " He is " + playerNode.dist + " away.");
-                return;
-            }
+            
 
             //Saving Computations
             int xP1 = cur.x + 1;
@@ -154,12 +153,12 @@ public class EnemyLoS : MonoBehaviour
         float yCoord = y + transform.position.y - MAX_MOVE;
 
         //init GridNode
-        EnemySearchPlane[x, y].coords = new Vector3(xCoord, 0f, yCoord);
-        EnemySearchPlane[x, y].visited = true;
+        EnemySearchPlane[x, y].coords    = new Vector3(xCoord, 0f, yCoord);
+        EnemySearchPlane[x, y].visited   = true;
         EnemySearchPlane[x, y].hasPlayer = false;
-        EnemySearchPlane[x, y].dist = dist;
-        EnemySearchPlane[x, y].x = x;
-        EnemySearchPlane[x, y].y = y;
+        EnemySearchPlane[x, y].dist      = dist;
+        EnemySearchPlane[x, y].x         = x;
+        EnemySearchPlane[x, y].y         = y;
 
         //Player Found, info is loaded into a new Grid Node struct for easy access
         if (EnemySearchPlane[x, y].coords == player.transform.position)
@@ -185,11 +184,16 @@ public class EnemyLoS : MonoBehaviour
      */
     void PathFinding(Vector3 curP)
     {
+        
         GridNode closestSpace;
-        Debug.Log("Path " + curP);
         Vector2 posOffset = new Vector2(curP.x - transform.position.x + MAX_MOVE, curP.z - transform.position.z + MAX_MOVE);
+
+        Debug.Log("Grid: " + posOffset.x + ", " + posOffset.y + " Vector: " + curP.x + ", " + curP.z);
+        
+
         moveList.Add(EnemySearchPlane[(int)posOffset.x, (int)posOffset.y]);
-        if(Vector3.Distance(EnemySearchPlane[(int)posOffset.x, (int)posOffset.y].coords, playerNode.coords) > 1.6f)
+
+        if(Vector3.Distance(EnemySearchPlane[(int)posOffset.x, (int)posOffset.y].coords, playerNode.coords) > 1.4f)
         {
             int curX = (int)posOffset.x;
             int curY = (int)posOffset.y;
@@ -199,25 +203,30 @@ public class EnemyLoS : MonoBehaviour
             int yP1 = curY + 1;
             int yM1 = curY - 1;
 
-            if (yP1 >= MAX_SPOT) yP1 = (int)MAX_SPOT - 1;
-            if (xP1 >= MAX_SPOT) xP1 = (int)MAX_SPOT - 1;
-            if (xM1 < 0) xM1 = 0;
-            if (yM1 < 0) yM1 = 0;
+            if (yP1 > MAX_SPOT-1) yP1 = yP1--;
+            if (xP1 > MAX_SPOT-1) xP1 = xP1--;
+            if (xM1 < 0) xM1 = xM1++;
+            if (yM1 < 0) yM1 = yM1++;
 
-            closestSpace = EnemySearchPlane[curX, curY];
+            //Debug.Log(curX + " " + curY + " " + xP1 + " " + xM1 + " " + yP1 + " " + yM1);
+
+            closestSpace.coords = new Vector3(10000f, 10000f, 10000f);
+            closestSpace.x = curX;
+            closestSpace.y = curY;
            
-            if (Vector3.Distance(EnemySearchPlane[curX, yP1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[curX, yP1]; //North
-            if (Vector3.Distance(EnemySearchPlane[curX, yM1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[curX, yM1]; //South
-            if (Vector3.Distance(EnemySearchPlane[xP1, curY].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[xP1, curY]; //East
-            if (Vector3.Distance(EnemySearchPlane[xM1, curY].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[xM1, curY]; //West
+            if (Vector3.Distance(EnemySearchPlane[curX, yP1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords) && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[curX, yP1]; //North
+            if (Vector3.Distance(EnemySearchPlane[curX, yM1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords) && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[curX, yM1]; //South
+            if (Vector3.Distance(EnemySearchPlane[xP1, curY].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords) && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[xP1, curY]; //East
+            if (Vector3.Distance(EnemySearchPlane[xM1, curY].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords) && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[xM1, curY]; //West
             
-            if (Vector3.Distance(EnemySearchPlane[xP1, yP1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[xP1, yP1]; //NorthEast
-            if (Vector3.Distance(EnemySearchPlane[xP1, yM1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[xP1, yM1]; //SouthEast
-            if (Vector3.Distance(EnemySearchPlane[xM1, yP1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[xM1, yP1]; //NorthWest
-            if (Vector3.Distance(EnemySearchPlane[xM1, yM1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords)) closestSpace = EnemySearchPlane[xM1, yM1]; //SouthWest
+            if (Vector3.Distance(EnemySearchPlane[xP1, yP1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords) && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[xP1, yP1]; //NorthEast
+            if (Vector3.Distance(EnemySearchPlane[xP1, yM1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords) && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[xP1, yM1]; //SouthEast
+            if (Vector3.Distance(EnemySearchPlane[xM1, yP1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords) && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[xM1, yP1]; //NorthWest
+            if (Vector3.Distance(EnemySearchPlane[xM1, yM1].coords, playerNode.coords) < Vector3.Distance(closestSpace.coords, playerNode.coords) && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[xM1, yM1]; //SouthWest
 
+
+            //Debug.Log("Passed: " + closestSpace.coords + ", " + closestSpace.x + ", " + closestSpace.y);
             PathFinding(closestSpace.coords);
-
         }
     }
 
