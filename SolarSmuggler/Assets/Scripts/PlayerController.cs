@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
     public GameObject gridPlane;
     public static Vector3 nextPosition;
     private Vector3 curPosition;
-    // Used to track visited/obstructed spaces during player BFS
+    // Used to track visited/obstructed spaces during player BFF
     public static bool[,] BlockedGrid;
     // List of spaces the player can move to and whether or not that space will hide the player
     private GridSpace[,] PlayerGrid;
