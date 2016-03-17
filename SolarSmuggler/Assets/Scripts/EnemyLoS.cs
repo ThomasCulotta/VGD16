@@ -19,7 +19,7 @@ public class EnemyLoS : MonoBehaviour
     private const bool DEBUG = false;
 
     //Constant Variables
-    private const int   MAX_MOVE = 10;
+    private const int   MAX_MOVE = 7;
     private const float MAX_SPOT = (MAX_MOVE * 2 + 1);
     private const float MAX_FIRE_DIST = 1f;
 
@@ -202,7 +202,6 @@ public class EnemyLoS : MonoBehaviour
      *Forms a path of GridNode objects 
      *for the player to move on.
      */
-    //void PathFinding(Vector3 curP)
     void PathFinding(int curX, int curY)
     {
         GridNode closestSpace;
@@ -254,10 +253,6 @@ public class EnemyLoS : MonoBehaviour
     {
         if (moveList.Count > 0)
         {
-
-            //int curRight = 0;
-            //int curUp = 0;
-            //int spaceCount = 0;
             float curDur = 0f;
 
             GridNode curNode = new GridNode();
@@ -266,19 +261,9 @@ public class EnemyLoS : MonoBehaviour
             do
             {
                 GridNode tempNode = (GridNode)moveList[0];
-                //int tempRight = (int)(tempNode.coords.x - curNode.coords.x);
-                //int tempUp = (int)(tempNode.coords.z - curNode.coords.z);
-
-                //if (spaceCount == 0 || (tempRight == curRight && tempUp == curUp))
-                //{
-                    curNode = tempNode;
-                    moveList.RemoveAt(0);
-                    //curRight = tempRight;
-                    //curUp = tempUp;
-                    curDur += 0.5f;
-                    //spaceCount++;
-                //}
-                //else break;
+                curNode = tempNode;
+                moveList.RemoveAt(0);
+                curDur += 0.5f;
 
             } while (0 < moveList.Count);
             iTween.MoveTo(gameObject, iTween.Hash("x", curNode.coords.x,
