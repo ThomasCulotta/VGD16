@@ -95,7 +95,7 @@ public class EnemyLoS : MonoBehaviour
                 {
                     init = true;
                     Debug.Log("PLAYER_TURN -from enemyLOS");
-                    GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
+                    GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
                 }
             }
         }
