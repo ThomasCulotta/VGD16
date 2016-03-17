@@ -27,6 +27,7 @@ public class EnemyLoS : MonoBehaviour
     private Vector3    curPos;
     private Vector3    playerPos;
     private bool       init;
+    private bool       playerFound;
 
     public struct GridNode
     {
@@ -52,6 +53,7 @@ public class EnemyLoS : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         init = true;
+        playerFound = false;
     }
 
 
@@ -63,6 +65,7 @@ public class EnemyLoS : MonoBehaviour
             if (init)
             {
                 init = false;
+                playerFound = false;
                 playerNode = new GridNode();
                 playerPos = player.transform.position;
                 curPos = transform.position;
@@ -75,8 +78,11 @@ public class EnemyLoS : MonoBehaviour
 
                 //Movement
                 moveList = new ArrayList();
-                PathFinding(MAX_MOVE, MAX_MOVE);
-                moveEnemy();
+                if (playerFound)
+                {
+                    PathFinding(MAX_MOVE, MAX_MOVE);
+                    moveEnemy();
+                }
 
 
                 //Checks if player is obstructed by obstacle 
@@ -174,6 +180,7 @@ public class EnemyLoS : MonoBehaviour
         {
             EnemySearchPlane[x, y].hasPlayer = true;
             playerNode = EnemySearchPlane[x, y];
+            playerFound = true;
             Debug.Log("Found Player at " + playerNode.x + "," + playerNode.y + " He is " + EnemySearchPlane[MAX_MOVE, MAX_MOVE].dist + " away.");
         }
 
@@ -219,6 +226,10 @@ public class EnemyLoS : MonoBehaviour
             if (EnemySearchPlane[xM1, yP1].dist < closestSpace.dist && EnemySearchPlane[xM1, yP1].visited) closestSpace = EnemySearchPlane[xM1, yP1]; //NorthWest
             if (EnemySearchPlane[xM1, yM1].dist < closestSpace.dist && EnemySearchPlane[xM1, yM1].visited) closestSpace = EnemySearchPlane[xM1, yM1]; //SouthWest
 
+            //Return if playerNode is selected
+            if (closestSpace.x == playerNode.x && closestSpace.y == playerNode.y)
+                return;
+
             //Add closestSpace to list, recur.
             moveList.Add(closestSpace);
             PathFinding(closestSpace.x, closestSpace.y);
@@ -235,28 +246,30 @@ public class EnemyLoS : MonoBehaviour
         if (moveList.Count > 0)
         {
 
-            bool curRight = false;
-            bool curUp = false;
-            int spaceCount = 0;
+            //int curRight = 0;
+            //int curUp = 0;
+            //int spaceCount = 0;
             float curDur = 0f;
+
             GridNode curNode = new GridNode();
             curNode.coords = transform.position;
 
             do
             {
                 GridNode tempNode = (GridNode)moveList[0];
-                bool tempRight = tempNode.coords.x > curNode.coords.x;
-                bool tempUp = tempNode.coords.z > curNode.coords.z;
-                if (spaceCount == 0 || (tempRight == curRight && tempUp == curUp))
-                {
+                //int tempRight = (int)(tempNode.coords.x - curNode.coords.x);
+                //int tempUp = (int)(tempNode.coords.z - curNode.coords.z);
+
+                //if (spaceCount == 0 || (tempRight == curRight && tempUp == curUp))
+                //{
                     curNode = tempNode;
                     moveList.RemoveAt(0);
-                    curRight = tempRight;
-                    curUp = tempUp;
+                    //curRight = tempRight;
+                    //curUp = tempUp;
                     curDur += 0.5f;
-                    spaceCount++;
-                }
-                else break;
+                    //spaceCount++;
+                //}
+                //else break;
 
             } while (0 < moveList.Count);
             iTween.MoveTo(gameObject, iTween.Hash("x", curNode.coords.x,
