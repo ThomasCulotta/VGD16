@@ -139,15 +139,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void LateUpdate()
-    {
-        Debug.Log(GameMaster.CurrentState);
-        if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
-        {
-            GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
-        }
-    }
-
     IEnumerator GridBFS()
     {
         PlayerGrid = new GridSpace[MAX_MOVE * 2 + 1, MAX_MOVE * 2 + 1];
@@ -182,8 +173,7 @@ public class PlayerController : MonoBehaviour
     // Adds to queue if not visited/obstructed and if it's in MAX_MOVE range of player
     void CheckAndAddAvailBFS(float x, float y, float dist)
     {
-        // Create world space and array space vectors
-        Vector2 pos = new Vector2(x, y);
+        // Create array space vector
         Vector2 posOffset = new Vector2(x - transform.position.x + MAX_MOVE, y - transform.position.z + MAX_MOVE);
 
         if (posOffset.x > MAX_MOVE * 2 ||
@@ -196,11 +186,11 @@ public class PlayerController : MonoBehaviour
             {
                 BlockedGrid[(int)posOffset.x, (int)posOffset.y] = true;
                 // Check for collision
-                if (!Physics.CheckBox(new Vector3(pos.x, 0f, pos.y), new Vector3(0.499f, 1f, 0.499f), Quaternion.identity))
+                if (!Physics.CheckBox(new Vector3(x, 0f, y), new Vector3(0.499f, 1f, 0.499f), Quaternion.identity))
                 {
                     bool hiddenSpace = false;
                     // Check for stealth trigger
-                    Collider[] triggerArray = Physics.OverlapBox(pos, new Vector3(0.4f, 0f, 0.4f), Quaternion.identity);
+                    Collider[] triggerArray = Physics.OverlapBox(new Vector2(x, y), new Vector3(0.4f, 0f, 0.4f), Quaternion.identity);
                     if (triggerArray.Length < 0)
                     {
                         /* 
@@ -214,10 +204,10 @@ public class PlayerController : MonoBehaviour
                         }
                     }
                     // Everything is good: make space available for the player, and add it to the queue to be checked
-                    GameObject.Instantiate(gridPlane, new Vector3(pos.x, -0.3f, pos.y), Quaternion.identity);
+                    GameObject.Instantiate(gridPlane, new Vector3(x, -0.3f, y), Quaternion.identity);
                     GridSpace newSpace = new GridSpace
                     {
-                        coordinates = new Vector3(pos.x, 0f, pos.y),
+                        coordinates = new Vector3(x, 0f, y),
                         hidden = hiddenSpace,
                         distance = dist + 1
                     };
