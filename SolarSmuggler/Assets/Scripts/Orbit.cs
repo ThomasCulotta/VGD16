@@ -4,7 +4,7 @@ using System.Collections;
 public class Orbit : MonoBehaviour
 {
 	public float rotationSpeed = 1.0f; //how fast the satellite orbits the primary
-	int timer = 10; //the amount of time the environment phase lasts
+	float timer = 10; //the amount of time the environment phase lasts
 
 	void Start()
 	{
