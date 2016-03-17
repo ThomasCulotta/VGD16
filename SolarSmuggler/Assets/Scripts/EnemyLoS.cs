@@ -74,14 +74,17 @@ public class EnemyLoS : MonoBehaviour
                 Debug.DrawLine(transform.position, player.transform.position, Color.cyan, 0.5f);
 
                 //Checks if player is obstructed by obstacle 
+                moveList = new ArrayList();
+                PathFinding(MAX_MOVE, MAX_MOVE);
+                moveEnemy();
+
                 Vector3 heading = player.transform.position - transform.position;
                 if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
                 {
                     //Movement
-                    moveList = new ArrayList();
+                    
                     //PathFinding(curPos);
-                    PathFinding(MAX_MOVE, MAX_MOVE);
-                    moveEnemy();
+                    
 
                     //Combat
                     if (hit.collider.tag.Equals("Player"))
@@ -194,7 +197,6 @@ public class EnemyLoS : MonoBehaviour
         //int curX = (int)posOffset.x;
         //int curY = (int)posOffset.y;
         //Debug.Log(curP.x + " - " + transform.position.x + " + " + MAX_MOVE + " = " + posOffset.x + "; " + curP.z + " - " + transform.position.z + " + " + MAX_MOVE + " = " + posOffset.y);
-        moveList.Add(EnemySearchPlane[curX, curY]);
 
         if(EnemySearchPlane[curX, curY].dist > 1.4f)
         {
@@ -221,6 +223,7 @@ public class EnemyLoS : MonoBehaviour
             if (EnemySearchPlane[xM1, yM1].dist < closestSpace.dist && EnemySearchPlane[xM1, yM1].visited) closestSpace = EnemySearchPlane[xM1, yM1]; //SouthWest
 
             //PathFinding(closestSpace.coords);
+            moveList.Add(closestSpace);
             PathFinding(closestSpace.x, closestSpace.y);
         }
     }
@@ -239,15 +242,12 @@ public class EnemyLoS : MonoBehaviour
             bool curUp = false;
             int spaceCount = 0;
             float curDur = 0f;
-            int i = 0;
             GridNode curNode = new GridNode();
             curNode.coords = transform.position;
 
             do
             {
-
-                GridNode tempNode = (GridNode)moveList[i];
-                i++;
+                GridNode tempNode = (GridNode)moveList[0];
                 bool tempRight = tempNode.coords.x > curNode.coords.x;
                 bool tempUp = tempNode.coords.z > curNode.coords.z;
                 if (spaceCount == 0 || (tempRight == curRight && tempUp == curUp))
@@ -261,7 +261,7 @@ public class EnemyLoS : MonoBehaviour
                 }
                 else break;
 
-            } while (i < moveList.Count);
+            } while (0 < moveList.Count);
             Debug.Log(curNode.coords.x + ", " + curNode.coords.z);
             iTween.MoveTo(gameObject, iTween.Hash("x", curNode.coords.x,
                                                   "z", curNode.coords.z,
