@@ -73,19 +73,16 @@ public class EnemyLoS : MonoBehaviour
                 // Thomas: Added this small debug line so we'll see exactly what the ray is doing when we test this out.
                 Debug.DrawLine(transform.position, player.transform.position, Color.cyan, 0.5f);
 
-                //Checks if player is obstructed by obstacle 
+                //Movement
                 moveList = new ArrayList();
                 PathFinding(MAX_MOVE, MAX_MOVE);
                 moveEnemy();
 
+
+                //Checks if player is obstructed by obstacle 
                 Vector3 heading = player.transform.position - transform.position;
                 if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
                 {
-                    //Movement
-                    
-                    //PathFinding(curPos);
-                    
-
                     //Combat
                     if (hit.collider.tag.Equals("Player"))
                     {
@@ -96,9 +93,9 @@ public class EnemyLoS : MonoBehaviour
                 //Change the Game State to PLAYER_TURN
                 if (moveList.Count == 0)
                 {
-                    GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
                     init = true;
                     Debug.Log("PLAYER_TURN -from enemyLOS");
+                    GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
                 }
             }
         }
@@ -193,36 +190,36 @@ public class EnemyLoS : MonoBehaviour
     void PathFinding(int curX, int curY)
     {
         GridNode closestSpace;
-        //Vector2 posOffset = new Vector2(curP.x - transform.position.x + MAX_MOVE, curP.z - transform.position.z + MAX_MOVE);
-        //int curX = (int)posOffset.x;
-        //int curY = (int)posOffset.y;
-        //Debug.Log(curP.x + " - " + transform.position.x + " + " + MAX_MOVE + " = " + posOffset.x + "; " + curP.z + " - " + transform.position.z + " + " + MAX_MOVE + " = " + posOffset.y);
-
         if(EnemySearchPlane[curX, curY].dist > 1.4f)
         {
+            //Saving Computations
             int xP1 = curX + 1;
             int xM1 = curX - 1;
             int yP1 = curY + 1;
             int yM1 = curY - 1;
 
+            //Checking Bounds
             if (yP1 > MAX_SPOT-1) yP1--;
             if (xP1 > MAX_SPOT-1) xP1--;
             if (xM1 < 0) xM1++;
             if (yM1 < 0) yM1++;
 
+            //init closestSpace to current Node.
             closestSpace = EnemySearchPlane[curX, curY];
            
+            //Cardinals
             if (EnemySearchPlane[curX, yP1].dist < closestSpace.dist && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[curX, yP1]; //North
             if (EnemySearchPlane[curX, yM1].dist < closestSpace.dist && EnemySearchPlane[curX, yM1].visited) closestSpace = EnemySearchPlane[curX, yM1]; //South
             if (EnemySearchPlane[xP1, curY].dist < closestSpace.dist && EnemySearchPlane[xP1, curY].visited) closestSpace = EnemySearchPlane[xP1, curY]; //East
             if (EnemySearchPlane[xM1, curY].dist < closestSpace.dist && EnemySearchPlane[xM1, curY].visited) closestSpace = EnemySearchPlane[xM1, curY]; //West
             
+            //Diagonals
             if (EnemySearchPlane[xP1, yP1].dist < closestSpace.dist && EnemySearchPlane[xP1, yP1].visited) closestSpace = EnemySearchPlane[xP1, yP1]; //NorthEast
             if (EnemySearchPlane[xP1, yM1].dist < closestSpace.dist && EnemySearchPlane[xP1, yM1].visited) closestSpace = EnemySearchPlane[xP1, yM1]; //SouthEast
             if (EnemySearchPlane[xM1, yP1].dist < closestSpace.dist && EnemySearchPlane[xM1, yP1].visited) closestSpace = EnemySearchPlane[xM1, yP1]; //NorthWest
             if (EnemySearchPlane[xM1, yM1].dist < closestSpace.dist && EnemySearchPlane[xM1, yM1].visited) closestSpace = EnemySearchPlane[xM1, yM1]; //SouthWest
 
-            //PathFinding(closestSpace.coords);
+            //Add closestSpace to list, recur.
             moveList.Add(closestSpace);
             PathFinding(closestSpace.x, closestSpace.y);
         }
@@ -262,7 +259,6 @@ public class EnemyLoS : MonoBehaviour
                 else break;
 
             } while (0 < moveList.Count);
-            Debug.Log(curNode.coords.x + ", " + curNode.coords.z);
             iTween.MoveTo(gameObject, iTween.Hash("x", curNode.coords.x,
                                                   "z", curNode.coords.z,
                                                   "time", curDur,
