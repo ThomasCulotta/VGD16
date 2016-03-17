@@ -70894,6 +70894,26 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: fac213d622b59458689bdcd8934c0425, type: 3}
   m_IsPrefabParent: 0
+--- !u!1 &1980624327 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100002, guid: fac213d622b59458689bdcd8934c0425, type: 3}
+  m_PrefabInternal: {fileID: 1980624326}
+--- !u!114 &1980624328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1980624327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a1faf8893e2d43a2a6d8954091414fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  curr_Health: 100
+  gridPlane: {fileID: 197374, guid: 8fa79261a207341a098e5d60406a6fd0, type: 2}
+  cargoBar: {fileID: 0}
+  healthBar: {fileID: 0}
+  cargoText: {fileID: 0}
 --- !u!4 &1983286999 stripped
 Transform:
   m_PrefabParentObject: {fileID: 401356, guid: 676d23fe6b753bd4dacaa52c468ef4c9, type: 2}
@@ -73660,6 +73680,8 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 2065453775}
+  - 114: {fileID: 2065453777}
+  - 114: {fileID: 2065453776}
   m_Layer: 0
   m_Name: Enemy Pod
   m_TagString: Untagged
@@ -73682,6 +73704,89 @@ Transform:
   - {fileID: 717330246}
   m_Father: {fileID: 0}
   m_RootOrder: 6
+--- !u!114 &2065453776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2065453774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 733c32a25b2a00547abe37660bf19ef9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  icon: {fileID: 2800000, guid: 812e0fd140d8add43b0551ee51d5904d, type: 3}
+  iconSize: 50
+  gooey:
+    m_Name: 
+    m_Normal:
+      m_Background: {fileID: 0}
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Hover:
+      m_Background: {fileID: 0}
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Active:
+      m_Background: {fileID: 0}
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Focused:
+      m_Background: {fileID: 0}
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnNormal:
+      m_Background: {fileID: 0}
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnHover:
+      m_Background: {fileID: 0}
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnActive:
+      m_Background: {fileID: 0}
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnFocused:
+      m_Background: {fileID: 0}
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Margin:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Padding:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Overflow:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Font: {fileID: 0}
+    m_FontSize: 0
+    m_FontStyle: 0
+    m_Alignment: 0
+    m_WordWrap: 0
+    m_RichText: 1
+    m_TextClipping: 0
+    m_ImagePosition: 0
+    m_ContentOffset: {x: 0, y: 0}
+    m_FixedWidth: 0
+    m_FixedHeight: 0
+    m_StretchWidth: 1
+    m_StretchHeight: 0
+--- !u!114 &2065453777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2065453774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42ff1508e8be85e49bc38a0119fb3541, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &2065567516 stripped
 Transform:
   m_PrefabParentObject: {fileID: 441502, guid: 2c7a04382e84095488cfba7e59fea8ce, type: 2}
