@@ -266,8 +266,8 @@ public class PlayerController : MonoBehaviour
         // Translate to next GridSpace
         if (moveList.Count > 0)
         {
-            bool curRight = false;
-            bool curUp = false;
+            int curRight = 0;
+            int curUp = 0;
             int spaceCount = 0;
             float curDur = 0f;
 
@@ -278,8 +278,8 @@ public class PlayerController : MonoBehaviour
             do
             {
                 GridSpace tempSpace = (GridSpace)moveList[moveList.Count - 1];
-                bool tempRight = tempSpace.coordinates.x > curSpace.coordinates.x;
-                bool tempUp = tempSpace.coordinates.z > curSpace.coordinates.z;
+                int tempRight = (int)(tempSpace.coordinates.x - curSpace.coordinates.x);
+                int tempUp = (int)(tempSpace.coordinates.z - curSpace.coordinates.z);
                 // Pop last gridspace in list if it's in the same line as prev spaces or if it's the first pass
                 if (spaceCount == 0 ||
                    (tempRight == curRight && tempUp == curUp))
