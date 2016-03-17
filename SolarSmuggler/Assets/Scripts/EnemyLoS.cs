@@ -5,8 +5,13 @@ using System.Collections;
  * Author: Patrick Blanchard 
  * 
  * Description: This is a script to detect the presence 
- * 			    of the Player by the Enemy. MAX_SPOT controls
- * 			    the distance of the Enemy's Line of Sight. 
+ * 			    of the Player, move the enemy within firing
+ * 			    distance of the player, and to attack the
+ *              player.
+ *
+ * Use: 1) Attach this script to Enemy
+ *      2) Set Player tag to Player
+ *      3) Enemy must have a collider
  */
 public class EnemyLoS : MonoBehaviour
 {
@@ -48,6 +53,7 @@ public class EnemyLoS : MonoBehaviour
     //Grid Variables
     private GridNode[,] EnemySearchPlane;
     private GridNode playerNode;
+    private GridNode dest;
 
     void Start()
     {
@@ -81,6 +87,7 @@ public class EnemyLoS : MonoBehaviour
                 if (playerFound)
                 {
                     PathFinding(MAX_MOVE, MAX_MOVE);
+                    dest = (GridNode)moveList[moveList.Count - 1];
                     moveEnemy();
                 }
 
@@ -89,10 +96,12 @@ public class EnemyLoS : MonoBehaviour
                 Vector3 heading = player.transform.position - transform.position;
                 if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
                 {
+                    Debug.Log("Spotted");
                     //Combat
                     if (hit.collider.tag.Equals("Player"))
                     {
-                        ShootAtPlayer();
+                        Debug.Log("Player hit is confirmed");
+                        ShootAtPlayer(dest.coords);
                     }
                 }
 
@@ -280,13 +289,15 @@ public class EnemyLoS : MonoBehaviour
         }
     }
 
-    void ShootAtPlayer()
+    void ShootAtPlayer(Vector3 dest)
     {
-        Vector3 heading  = player.transform.position - transform.position;
-        if (MAX_FIRE_DIST >= heading.magnitude)
+        float dist = Vector3.Distance(dest, playerPos);
+        Debug.Log("MAX_FIRE_DIST=" + MAX_FIRE_DIST +" " + "dist=" + dist);
+        if (MAX_FIRE_DIST >= dist)
         {
+            Debug.Log("Shooting at Player");
             int shotHit = Random.Range(0, 2);
-            if(shotHit == 1)
+            if (shotHit == 1)
             {
                 player.GetComponent<PlayerController>().decreaseHealth();
                 Debug.Log("Player has been hit, health is " + player.GetComponent<PlayerController>().curr_Health + "\n");
@@ -294,5 +305,6 @@ public class EnemyLoS : MonoBehaviour
                 Debug.Log("Enemy has missed player, health is " + player.GetComponent<PlayerController>().curr_Health + "\n");
             }
         }
+        
     }
 }
