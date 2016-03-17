@@ -176,8 +176,8 @@ public class PlayerController : MonoBehaviour
         // Create array space vector
         Vector2 posOffset = new Vector2(x - transform.position.x + MAX_MOVE, y - transform.position.z + MAX_MOVE);
 
-        if (posOffset.x > MAX_MOVE * 2 ||
-            posOffset.y > MAX_MOVE * 2)
+        if (posOffset.x > MAX_MOVE * 2 || posOffset.x < 0 ||
+            posOffset.y > MAX_MOVE * 2 || posOffset.y < 0)
             return;
 
         if (dist < MAX_MOVE)
