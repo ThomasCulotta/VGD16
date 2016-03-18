@@ -196,13 +196,13 @@ public class PlayerController : MonoBehaviour
             {
                 BlockedGrid[(int)posOffset.x, (int)posOffset.y] = true;
                 // Check for collision
-                if (!Physics.CheckBox(new Vector3(x, 0f, y), new Vector3(0.499f, 1f, 0.499f), Quaternion.identity))
+                if (!Physics.CheckBox(new Vector3(x, 0f, y), new Vector3(0.499f, 10f, 0.499f), Quaternion.identity, 255, QueryTriggerInteraction.Ignore))
                 {
                     bool hiddenSpace = false;
                     bool destSpace = false;
                     // Check for stealth trigger
-                    Collider[] triggerArray = Physics.OverlapBox(new Vector2(x, y), new Vector3(0.4f, 0f, 0.4f), Quaternion.identity);
-                    if (triggerArray.Length < 0)
+                    Collider[] triggerArray = Physics.OverlapBox(new Vector3(x, 0f, y), new Vector3(0.499f, 10f, 0.499f), Quaternion.identity, 255, QueryTriggerInteraction.Collide);
+                    if (triggerArray.Length > 0)
                     {
                         /* 
                          * NOTE: Loop will help catch unnecessary triggers.
@@ -210,8 +210,12 @@ public class PlayerController : MonoBehaviour
                          */
                         for (int i = 0; i < triggerArray.Length; i++)
                         {
-                            if (triggerArray[i].CompareTag("Stealth")) hiddenSpace = true;
-                            else if (triggerArray[i].CompareTag("Destination")) destSpace = true;
+                            if (triggerArray[i].tag.Equals("Stealth")) hiddenSpace = true;
+                            else if (triggerArray[i].tag.Equals("Destination"))
+                            {
+                                destSpace = true;
+                                destList.Add(new Vector3(x, 0f, y));
+                            }
                             else return;
                         }
                     }
