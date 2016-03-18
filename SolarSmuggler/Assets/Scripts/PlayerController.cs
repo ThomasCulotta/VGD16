@@ -120,20 +120,6 @@ public class PlayerController : MonoBehaviour
                     //SetCargoText();//Setting cargo amount text
                 }
                 break;
-            case (GameMaster.GameState.ENVIRONMENT_TURN):
-                {
-                    if (environmentStart)
-                    {
-                        // TODO: Start turn with some kind of indicator maybe
-                        environmentStart = false;
-                    }
-                    else
-                        GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
-
-                    // TODO: Timer to end ENVIRONMENT_TURN
-                }
-                break;
-
             case (GameMaster.GameState.GAME_LOSS):
                 {
                     // TODO: Some game statistics, then main menu or lose scene etc.
