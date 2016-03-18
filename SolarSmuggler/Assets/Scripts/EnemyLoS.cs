@@ -21,7 +21,7 @@ public class EnemyLoS : MonoBehaviour
     //Constant Variables
     private const int   MAX_MOVE = 7;
     private const float MAX_SPOT = (MAX_MOVE * 2 + 1);
-    private const float MAX_FIRE_DIST = 1f;
+    private const float MAX_FIRE_DIST = 2f;
 
     //Utility Variables
     private GameObject player;
