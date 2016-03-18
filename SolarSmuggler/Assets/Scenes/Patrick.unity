@@ -151,36 +151,10 @@ MonoBehaviour:
   cargoBar: {fileID: 1481114321}
   healthBar: {fileID: 297591408}
   cargoText: {fileID: 831366808}
---- !u!114 &180007110
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 180007108}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73d7099f71945ed47b15a85d20a8b3cd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  position:
-    distanceFromTarget: -50
-    allowZoom: 1
-    zoomSmooth: 100
-    zoomStep: 2
-    maxZoom: -30
-    minZoom: -60
-    smoothFollow: 1
-    smooth: 0.05
-    newDistance: -50
-  orbit:
-    xRotation: -65
-    yRotation: -180
-    allowOribit: 1
-    yOrbitSmooth: 0.5
-  input:
-    MOUSE_ORBIT: MouseOrbit
-    ZOOM: Mouse ScrollWheel
+--- !u!4 &180007110 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 400002, guid: fac213d622b59458689bdcd8934c0425, type: 3}
+  m_PrefabInternal: {fileID: 180007107}
 --- !u!65 &180007111
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -265,6 +239,7 @@ GameObject:
   - 92: {fileID: 444991427}
   - 124: {fileID: 444991426}
   - 81: {fileID: 444991425}
+  - 114: {fileID: 444991430}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -339,6 +314,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+--- !u!114 &444991430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 444991424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73d7099f71945ed47b15a85d20a8b3cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 180007110}
+  position:
+    distanceFromTarget: -30
+    allowZoom: 1
+    zoomSmooth: 100
+    zoomStep: 2
+    maxZoom: -10
+    minZoom: -60
+    smoothFollow: 1
+    smooth: 0.05
+    newDistance: -50
+  orbit:
+    xRotation: -65
+    yRotation: -180
+    allowOribit: 1
+    yOrbitSmooth: 0.5
+  input:
+    MOUSE_ORBIT: MouseOrbit
+    ZOOM: Mouse ScrollWheel
 --- !u!1 &673850555
 GameObject:
   m_ObjectHideFlags: 0

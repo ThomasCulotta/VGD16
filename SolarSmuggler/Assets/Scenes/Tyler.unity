@@ -6407,11 +6407,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1980624329}
   position:
-    distanceFromTarget: -50
+    distanceFromTarget: -30
     allowZoom: 1
     zoomSmooth: 100
     zoomStep: 2
-    maxZoom: -30
+    maxZoom: -10
     minZoom: -60
     smoothFollow: 1
     smooth: 0.05
