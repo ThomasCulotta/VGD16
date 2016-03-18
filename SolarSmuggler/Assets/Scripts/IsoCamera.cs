@@ -67,7 +67,7 @@ public class IsoCamera : MonoBehaviour
         }
         
         // Rotation Y
-        if (Input.GetMouseButton(0) && !movingToPlayer)
+		if (Input.GetMouseButton(0) && !movingToPlayer)
         {
             //if mouse0 is pressed down
             deltaRotY = (curMousePos.x - prevMousePos.x);

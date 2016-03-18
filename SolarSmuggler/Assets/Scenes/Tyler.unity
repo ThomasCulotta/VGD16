@@ -25,7 +25,7 @@ RenderSettings:
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 0
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 811706412a2e0574da64ea0e0cf27997, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -1175,7 +1175,7 @@ GameObject:
   - 65: {fileID: 28709119}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1243,7 +1243,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!1001 &29092202
 Prefab:
   m_ObjectHideFlags: 0
@@ -3338,7 +3338,7 @@ GameObject:
   - 65: {fileID: 101699529}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3406,7 +3406,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!4 &102526769 stripped
 Transform:
   m_PrefabParentObject: {fileID: 462876, guid: 61e8ddf5cf02e7d4283ac0c52fc3571e, type: 2}
@@ -4151,7 +4151,7 @@ GameObject:
   - 65: {fileID: 114006631}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4219,7 +4219,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!4 &114231591 stripped
 Transform:
   m_PrefabParentObject: {fileID: 462876, guid: 61e8ddf5cf02e7d4283ac0c52fc3571e, type: 2}
@@ -15691,7 +15691,7 @@ GameObject:
   - 65: {fileID: 408292784}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -15759,7 +15759,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!1001 &409195972
 Prefab:
   m_ObjectHideFlags: 0
@@ -16968,7 +16968,7 @@ GameObject:
   - 65: {fileID: 462214594}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -17036,7 +17036,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!4 &462653966 stripped
 Transform:
   m_PrefabParentObject: {fileID: 401356, guid: 676d23fe6b753bd4dacaa52c468ef4c9, type: 2}
@@ -18909,7 +18909,7 @@ GameObject:
   - 65: {fileID: 506414346}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -18977,7 +18977,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!1001 &507711992
 Prefab:
   m_ObjectHideFlags: 0
@@ -23456,7 +23456,7 @@ GameObject:
   - 65: {fileID: 636419169}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -23524,7 +23524,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!4 &637456075 stripped
 Transform:
   m_PrefabParentObject: {fileID: 401356, guid: 676d23fe6b753bd4dacaa52c468ef4c9, type: 2}
@@ -30839,7 +30839,7 @@ GameObject:
   - 65: {fileID: 821081349}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -30907,7 +30907,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!4 &821345946 stripped
 Transform:
   m_PrefabParentObject: {fileID: 401356, guid: 676d23fe6b753bd4dacaa52c468ef4c9, type: 2}
@@ -37998,7 +37998,7 @@ GameObject:
   - 65: {fileID: 1033836896}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -38066,7 +38066,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!4 &1034554952 stripped
 Transform:
   m_PrefabParentObject: {fileID: 401356, guid: 676d23fe6b753bd4dacaa52c468ef4c9, type: 2}
@@ -40252,7 +40252,7 @@ GameObject:
   - 65: {fileID: 1094851457}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -40320,7 +40320,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!4 &1095049589 stripped
 Transform:
   m_PrefabParentObject: {fileID: 401356, guid: 676d23fe6b753bd4dacaa52c468ef4c9, type: 2}
@@ -40526,7 +40526,7 @@ GameObject:
   - 65: {fileID: 1103685697}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -40594,7 +40594,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!1 &1103737912 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 175024, guid: 9d75f28448e81564bbcfa84bb740b08a, type: 2}
@@ -41684,7 +41684,7 @@ GameObject:
   - 65: {fileID: 1123366244}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -41752,7 +41752,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 45, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!4 &1125514353 stripped
 Transform:
   m_PrefabParentObject: {fileID: 401356, guid: 676d23fe6b753bd4dacaa52c468ef4c9, type: 2}
@@ -42050,7 +42050,7 @@ GameObject:
   - 65: {fileID: 1134327883}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -42118,7 +42118,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!1001 &1135677652
 Prefab:
   m_ObjectHideFlags: 0
@@ -43449,7 +43449,7 @@ GameObject:
   - 65: {fileID: 1174418416}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -43517,7 +43517,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!1001 &1174525308
 Prefab:
   m_ObjectHideFlags: 0
@@ -46312,7 +46312,7 @@ GameObject:
   - 65: {fileID: 1260915157}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -46380,7 +46380,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!4 &1261369672 stripped
 Transform:
   m_PrefabParentObject: {fileID: 441502, guid: 2c7a04382e84095488cfba7e59fea8ce, type: 2}
@@ -46934,7 +46934,7 @@ GameObject:
   - 65: {fileID: 1291285021}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -47002,7 +47002,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 45, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!1001 &1292140216
 Prefab:
   m_ObjectHideFlags: 0
@@ -48833,7 +48833,7 @@ GameObject:
   - 65: {fileID: 1351476651}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -48901,7 +48901,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!4 &1352889637 stripped
 Transform:
   m_PrefabParentObject: {fileID: 462876, guid: 61e8ddf5cf02e7d4283ac0c52fc3571e, type: 2}
@@ -53743,7 +53743,7 @@ GameObject:
   - 65: {fileID: 1517156204}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -53811,7 +53811,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!1001 &1518293954
 Prefab:
   m_ObjectHideFlags: 0
@@ -54566,7 +54566,7 @@ GameObject:
   - 65: {fileID: 1540979456}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -54634,7 +54634,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!1001 &1541436847
 Prefab:
   m_ObjectHideFlags: 0
@@ -57315,7 +57315,7 @@ GameObject:
   - 65: {fileID: 1616496156}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -57383,7 +57383,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!1001 &1617390490
 Prefab:
   m_ObjectHideFlags: 0
@@ -60741,7 +60741,7 @@ GameObject:
   - 65: {fileID: 1699920484}
   m_Layer: 0
   m_Name: Asteroid Field Null (1)
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -60809,7 +60809,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!1001 &1701928378
 Prefab:
   m_ObjectHideFlags: 0
@@ -61632,7 +61632,7 @@ GameObject:
   - 65: {fileID: 1739909274}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -61700,7 +61700,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!1001 &1740149493
 Prefab:
   m_ObjectHideFlags: 0
@@ -62680,7 +62680,7 @@ GameObject:
   - 65: {fileID: 1765799943}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -62748,7 +62748,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!4 &1765818032 stripped
 Transform:
   m_PrefabParentObject: {fileID: 401356, guid: 676d23fe6b753bd4dacaa52c468ef4c9, type: 2}
@@ -63027,7 +63027,7 @@ GameObject:
   - 65: {fileID: 1777896258}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -63095,7 +63095,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!1001 &1778278828
 Prefab:
   m_ObjectHideFlags: 0
@@ -67333,7 +67333,7 @@ GameObject:
   - 65: {fileID: 1895528370}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -67401,7 +67401,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 45, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!1001 &1895610597
 Prefab:
   m_ObjectHideFlags: 0
@@ -68156,7 +68156,7 @@ GameObject:
   - 65: {fileID: 1916036906}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -68224,7 +68224,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!1001 &1917428710
 Prefab:
   m_ObjectHideFlags: 0
@@ -71417,7 +71417,7 @@ GameObject:
   - 65: {fileID: 2004879023}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -71485,7 +71485,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!1001 &2006281446
 Prefab:
   m_ObjectHideFlags: 0
@@ -71958,7 +71958,7 @@ GameObject:
   - 65: {fileID: 2018218599}
   m_Layer: 0
   m_Name: Asteroid Field Null
-  m_TagString: Asteroid Field
+  m_TagString: Stealth
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -72026,7 +72026,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 30, y: 25, z: 29}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -16, z: 0}
 --- !u!4 &2018359446 stripped
 Transform:
   m_PrefabParentObject: {fileID: 441502, guid: 2c7a04382e84095488cfba7e59fea8ce, type: 2}
