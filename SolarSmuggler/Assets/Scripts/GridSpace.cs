@@ -30,12 +30,7 @@ public class GridSpace : MonoBehaviour
         if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
             Destroy(gameObject);
 	}
-
-    void OnMouseDown()
-    {
-        PlayerController.nextPosition = new Vector3(transform.position.x, 0f, transform.position.z);
-    }
-
+    
     void OnMouseEnter()
     {
         selected = true;
@@ -51,6 +46,12 @@ public class GridSpace : MonoBehaviour
                                               "time", 0.5f, 
                                               "oncomplete", "DoneMoving", 
                                               "oncompletetarget", gameObject));
+    }
+
+    void OnMouseOver()
+    {
+        if (Input.GetMouseButtonDown(1))
+            PlayerController.nextPosition = new Vector3(transform.position.x, 0f, transform.position.z);
     }
 
     void OnMouseExit()

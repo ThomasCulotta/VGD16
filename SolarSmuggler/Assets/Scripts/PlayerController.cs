@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
 using System;
@@ -13,6 +14,8 @@ public class PlayerController : MonoBehaviour
         public bool hidden;
         // Distance from the player
         public float distance;
+        // This is the destination
+        public bool destination;
     };
 
     private float max_Health = 100f;
@@ -24,10 +27,10 @@ public class PlayerController : MonoBehaviour
     private int cargoResult = 0;
     private const int MAX_MOVE = 10;
 
-
     public GameObject gridPlane;
     public static Vector3 nextPosition;
     private Vector3 curPosition;
+    private ArrayList destList;
     // Used to track visited/obstructed spaces during player BFS
     public static bool[,] BlockedGrid;
     // List of spaces the player can move to and whether or not that space will hide the player
@@ -87,6 +90,7 @@ public class PlayerController : MonoBehaviour
                          */
                         playerStart = false;
                         environmentStart = true;
+                        destList = new ArrayList();
                         StartCoroutine("GridBFS");
                     }
                     else if (nextPosition != curPosition)
@@ -103,9 +107,14 @@ public class PlayerController : MonoBehaviour
                     // NOTE: We may want to have an automated end turn after player uses up their AP (or whatever).
                     if (playerEnd)
                     {
+                        for (int i = 0; i < destList.Count; i++)
+                            if (curPosition == (Vector3)destList[i])
+                                GameMaster.CurrentState = GameMaster.GameState.GAME_WIN;
+
                         playerEnd = false;
                         playerStart = true;
-                        GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
+                        if (GameMaster.CurrentState == GameMaster.GameState.PLAYER_TURN)
+                            GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
                     }
 
                     //SetCargoText();//Setting cargo amount text
@@ -134,6 +143,7 @@ public class PlayerController : MonoBehaviour
             case (GameMaster.GameState.GAME_WIN):
                 {
                     // TODO: Some game statistics, then main menu or win scene etc.
+                    SceneManager.LoadScene(0);
                 }
                 break;
         }
@@ -189,6 +199,7 @@ public class PlayerController : MonoBehaviour
                 if (!Physics.CheckBox(new Vector3(x, 0f, y), new Vector3(0.499f, 1f, 0.499f), Quaternion.identity))
                 {
                     bool hiddenSpace = false;
+                    bool destSpace = false;
                     // Check for stealth trigger
                     Collider[] triggerArray = Physics.OverlapBox(new Vector2(x, y), new Vector3(0.4f, 0f, 0.4f), Quaternion.identity);
                     if (triggerArray.Length < 0)
@@ -200,6 +211,7 @@ public class PlayerController : MonoBehaviour
                         for (int i = 0; i < triggerArray.Length; i++)
                         {
                             if (triggerArray[i].CompareTag("Stealth")) hiddenSpace = true;
+                            else if (triggerArray[i].CompareTag("Destination")) destSpace = true;
                             else return;
                         }
                     }
@@ -209,7 +221,8 @@ public class PlayerController : MonoBehaviour
                     {
                         coordinates = new Vector3(x, 0f, y),
                         hidden = hiddenSpace,
-                        distance = dist + 1
+                        distance = dist + 1,
+                        destination = destSpace
                     };
                     PlayerGrid[(int)posOffset.x, (int)posOffset.y] = newSpace;
                     if (dist + 1 <= 10)
@@ -301,6 +314,7 @@ public class PlayerController : MonoBehaviour
             iTween.MoveTo(gameObject, iTween.Hash("x", curSpace.coordinates.x,
                                                   "z", curSpace.coordinates.z,
                                                   "time", curDur,
+                                                  "easetype", "linear",
                                                   "oncomplete", "MovePlayer",
                                                   "oncompletetarget", gameObject));
         }
