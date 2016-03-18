@@ -11,11 +11,11 @@ public class Test_Camera_Follow : MonoBehaviour {
         //distance from our target
         //bools for zooming and smoothfollowing
         //min and max zoom settings
-        public float distanceFromTarget = -50;
+        public float distanceFromTarget = -30;
         public bool allowZoom           = true;
         public float zoomSmooth         = 100;
         public float zoomStep           = 2;
-        public float maxZoom            = -30;
+        public float maxZoom            = -10;
         public float minZoom            = -60;
         public bool smoothFollow        = true;
         public float smooth             = 0.05f;
