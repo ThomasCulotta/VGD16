@@ -1,15 +1,24 @@
-﻿using UnityEngine;
+﻿/*
+ * @Author: Patrick Blanchard
+ * @Description: This Script spawns in Game Objects using
+ *      a Blue Noise Procedural Generation.
+ *
+ *  @Use: Create an empty Game Object and add this script to it. 
+ *
+ */
+
+using UnityEngine;
 using System.Collections;
 
 public class SpawnSystem : MonoBehaviour {
-    float MIN_GAME_AREA_X = 0;
-    float MIN_GAME_AREA_Z = 0;
-    float MAX_GAME_AREA_X = 300;
-    float MAX_GAME_AREA_Z = 300;
+    //Spawn Area
+    public float START_GAME_AREA = 0;
+    public float MAX_GAME_AREA   = 300;
 
-    int MAX_CELLS = 5;
-    int PICKUP_COUNT = 100;
+    //This number can be tweaked to increase or decrease number of spawns
+    public int MAX_CELLS = 5;
 
+    //Enum is used for random Pickup Spawning
     enum Pickups
     {
         CUBE,
@@ -25,12 +34,14 @@ public class SpawnSystem : MonoBehaviour {
 	
 	void spawnPickups()
     {
-        float cellSize = MAX_GAME_AREA_X / MAX_CELLS;
+        float cellSize = MAX_GAME_AREA / MAX_CELLS;
 
+        //creating the cells
         for (int i = 0; i < MAX_CELLS;  i++) {
             float spawnMinX = cellSize * i;
             float spawnMaxX = cellSize * (i+1);
 
+            //creating space between cells
             spawnMinX += 5;
             spawnMaxX -= 5;
 
@@ -39,14 +50,16 @@ public class SpawnSystem : MonoBehaviour {
                 float spawnMinZ = cellSize * j;
                 float spawnMaxZ = cellSize * (j+ 1);
 
+                //creating space between cells
                 spawnMinZ += 5;
                 spawnMaxZ -= 5;
 
+                //Random Values to plug in
                 Pickups spawnType = (Pickups)Random.Range((int)Pickups.CUBE, (int)Pickups.COUNT);
-
                 int spawnPosX = (int)Random.Range(spawnMinX, spawnMaxX);
                 int spawnPosZ = (int)Random.Range(spawnMinZ, spawnMaxZ);
 
+                //Creating the GameObjects at random spots on the map;
                 switch (spawnType)
                 {
                     case (Pickups.CUBE):
