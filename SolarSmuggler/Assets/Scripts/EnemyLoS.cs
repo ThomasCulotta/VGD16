@@ -55,7 +55,7 @@ public class EnemyLoS : MonoBehaviour
     private GridNode playerNode;
     private GridNode dest;
 
-    void Start()
+    void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         init = true;
@@ -284,8 +284,13 @@ public class EnemyLoS : MonoBehaviour
             int shotHit = Random.Range(0, 2);
             if (shotHit == 1)
             {
+                Debug.Log("Player has been hit, health is " + (player.GetComponent<PlayerController>().curr_Health-2) + "\n");
+                Vector3[] linePos = { transform.position, playerPos };
+                LineRenderer laser = new LineRenderer();
+                laser.SetColors(Color.red, Color.red);
+                laser.SetPositions(linePos);
                 player.GetComponent<PlayerController>().decreaseHealth();
-                Debug.Log("Player has been hit, health is " + player.GetComponent<PlayerController>().curr_Health + "\n");
+               
             } else {
                 Debug.Log("Enemy has missed player, health is " + player.GetComponent<PlayerController>().curr_Health + "\n");
             }
