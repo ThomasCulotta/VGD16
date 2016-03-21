@@ -198,6 +198,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23ae33690922615499db72d4eb080f7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  START_GAME_AREA: 0
+  MAX_GAME_AREA: 300
+  MAX_PICKUP_CELLS: 5
+  MAX_PLANET_CELLS: 3
+  MAX_PLANETS: 3
+  pixWidth: 512
+  pixHeight: 512
+  xOrg: 0
+  yOrg: 0
+  scale: 25
 --- !u!4 &206420264
 Transform:
   m_ObjectHideFlags: 0
@@ -974,9 +984,10 @@ GameObject:
   - 33: {fileID: 1835420643}
   - 135: {fileID: 1835420642}
   - 23: {fileID: 1835420641}
+  - 114: {fileID: 1835420645}
   m_Layer: 0
   m_Name: Planet
-  m_TagString: Untagged
+  m_TagString: Planet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1038,6 +1049,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
+--- !u!114 &1835420645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1835420640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e536ad757663554cadbd638ed57e9d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationSpeed: 1
 --- !u!1 &1862923012
 GameObject:
   m_ObjectHideFlags: 0
