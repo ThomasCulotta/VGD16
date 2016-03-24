@@ -5,9 +5,11 @@ public class GridSpace : MonoBehaviour
 {
     public bool currentlyMoving;
     private bool selected;
+    private int curMove;
     
 	void Start ()
     {
+        curMove = PlayerController.playerMoveCount;
         currentlyMoving = true;
         iTween.MoveTo(gameObject, iTween.Hash("y", 0f, 
                                               "time", 0.1f, 
@@ -27,7 +29,7 @@ public class GridSpace : MonoBehaviour
         else
             currentlyMoving = false;
 
-        if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
+        if (curMove != PlayerController.playerMoveCount)
             Destroy(gameObject);
 	}
     

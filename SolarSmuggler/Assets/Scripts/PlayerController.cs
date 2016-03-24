@@ -8,47 +8,80 @@ public class PlayerController : MonoBehaviour
 {
     public struct GridSpace
     {
-        // Simple x,y coordinates for movement (on x,z plane)
         public Vector3 coordinates;
-        // Determines if this space will hide the player
         public bool hidden;
-        // Distance from the player
         public float distance;
-        // This is the destination
         public bool destination;
-    };
+    }
 
-    private float max_Health = 100f;
-    public float curr_Health = 100f;
-    private int max_Cargo = 100;
-    //If we ever decide for cargo size
-    private int curr_Cargo = 100;
+    public enum Ability
+    {
+        EMP,
+        EMP_BLAST,
+
+        ABILITY_COUNT
+    }
+
+    ///////////////
+    // Ship stats
+    ///////////////
+    private float max_Health  = 100f;
+    public  float curr_Health = 100f;
+
+    // If we ever decide for cargo size
+    private int max_Cargo  = 100;
+    private int curr_Cargo = 0;
+
     // Used for determining what happens to cargo
     private int cargoResult = 0;
-    private const int MAX_MOVE = 10;
+    
+    ///////////////
+    // Player turn
+    ///////////////
+    public  static int playerMoveCount = 0;
+    private bool environmentStart = true;
+    private bool playerStart      = true;
+    
+    private bool selectingEnemy = false;
+    private bool hyperJumping   = false;
+    private bool holdMoves      = false;
 
-    public GameObject gridPlane;
-    public static Vector3 nextPosition;
-    private Vector3 curPosition;
-    private ArrayList destList;
-    // Used to track visited/obstructed spaces during player BFS
-    public static bool[,] BlockedGrid;
-    // List of spaces the player can move to and whether or not that space will hide the player
-    private GridSpace[,] PlayerGrid;
+    ///////////////
+    // Movement
+    ///////////////
     private Queue BFSQueue;
     private float BFSDelay;
+
+    public  static Vector3 nextPosition;
+    private Vector3 curPosition;
+
+    public  static bool[,] BlockedGrid;
+    private GridSpace[,]   PlayerGrid;
+
+    public  GameObject gridPlane;
+    private const int  MAX_MOVE = 10;
+
+    private ArrayList moveList;
+    private ArrayList destList;
+    private bool destReached = false;
 
     private bool lastRight;
     private bool lastUp;
 
-    private ArrayList moveList;
+    ///////////////
+    // Enemy select
+    ///////////////
+    private ArrayList  selectableEnemies;
+    private GameObject curSelectedEnemy;
+    private int        curSelectedIndex;
+    private ArrayList  affectedEnemies;
+    private Ability    curAbility;
 
-    private bool environmentStart = true;
-    private bool playerStart = true;
-    private bool playerEnd = false;
-
-    public Slider cargoBar;
+    ///////////////
+    // UI
+    ///////////////
     public GameObject healthBar;
+    public Slider cargoBar;
     public Text cargoText;
 
     void Start()
@@ -69,69 +102,153 @@ public class PlayerController : MonoBehaviour
         switch (GameMaster.CurrentState)
         {
             case (GameMaster.GameState.GAME_START):
-                {
-                    // TODO: Some level initialization
+            {
+                // TODO: Some level initialization
 
-                    GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
-                }
-                break;
+                GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
+            }
+            break;
 
             case (GameMaster.GameState.PLAYER_TURN):
+            {
+                if (playerStart)
                 {
-                    if (playerStart)
-                    {
-                        // TODO: Start turn with some kind of indicator/turn number/etc.
+                    // TODO: Start turn with some kind of indicator/turn number/etc.
 
-                        /* NOTE: BFS that determines available player movement.
-                         *       Clears arrays at the beginning of each turn.
-                         *
-                         *       In a coroutine to free current process and allow variable 
-                         *       speed in populating the grid.
-                         */
-                        playerStart = false;
-                        environmentStart = true;
-                        destList = new ArrayList();
-                        StartCoroutine("GridBFS");
+                    /* NOTE: BFS that determines available player movement.
+                     *       Clears arrays at the beginning of each turn.
+                     *
+                     *       In a coroutine to free current process and allow variable 
+                     *       speed in populating the grid.
+                     */
+                    playerStart = false;
+                    environmentStart = true;
+                    playerMoveCount = 2;
+
+                    destList = new ArrayList();
+                    StartCoroutine("GridBFS");
+                }
+                else if (destReached)
+                {
+                    GameMaster.CurrentState = GameMaster.GameState.GAME_WIN;
+                }
+                else if (selectingEnemy)
+                {
+                    if (Input.GetKeyDown(KeyCode.RightArrow))
+                    {
+                        curSelectedIndex++;
+                        if (curSelectedIndex == selectableEnemies.Count)
+                            curSelectedIndex = 0;
+                        SelectEnemy();
                     }
-                    else if (nextPosition != curPosition)
+                    else if (Input.GetKeyDown(KeyCode.LeftArrow))
+                    {
+                        curSelectedIndex--;
+                        if (curSelectedIndex == -1)
+                            curSelectedIndex = selectableEnemies.Count - 1;
+                        SelectEnemy();
+                    }
+                    else if (Input.GetKeyDown(KeyCode.Space))
+                    {
+                        if (curSelectedEnemy != null)
+                        {
+                            switch (curAbility)
+                            {
+                                case (Ability.EMP):
+                                {
+                                    EnemyLoS curLos = curSelectedEnemy.GetComponent<EnemyLoS>();
+                                    curLos.GetEMPed();
+                                }
+                                break;
+
+                                case (Ability.EMP_BLAST):
+                                {
+                                    GetEnemyListInArea(affectedEnemies, curSelectedEnemy.transform.position, 5f);
+                                    for (int i = 0; i < affectedEnemies.Count; i++)
+                                    {
+                                        GameObject curEnemy = (GameObject)affectedEnemies[i];
+                                        EnemyLoS curLos = curEnemy.GetComponent<EnemyLoS>();
+                                        curLos.GetEMPed();
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    else if (Input.GetKeyDown(KeyCode.Escape))
+                    {
+                        EnemyLoS curLos = curSelectedEnemy.GetComponent<EnemyLoS>();
+                        curLos.Deselect();
+                        selectingEnemy = false;
+                    }
+                }
+                else if (playerMoveCount > 0 &&
+                         !holdMoves)
+                {
+                    /*
+                     * NOTE: If the player has moves left and are not currently in action, 
+                     * allow them to either move on the grid or use an ability,
+                     * or allow them to end the turn.
+                     */
+                    if (nextPosition != curPosition)
                     {
                         /*
                          * NOTE: Pathfinds backwards from selected GridSpace to player
                          *       iTweens player to each gridspace
                          */
+                        holdMoves = true;
                         curPosition = nextPosition;
                         moveList = new ArrayList();
                         Pathfind(nextPosition);
                         MovePlayer();
                     }
-                    // NOTE: We may want to have an automated end turn after player uses up their AP (or whatever).
-                    if (playerEnd)
+                    else if (Input.GetKeyDown(KeyCode.Alpha1))
                     {
-                        for (int i = 0; i < destList.Count; i++)
-                            if (curPosition == (Vector3)destList[i])
-                                GameMaster.CurrentState = GameMaster.GameState.GAME_WIN;
-
-                        playerEnd = false;
-                        playerStart = true;
-                        if (GameMaster.CurrentState == GameMaster.GameState.PLAYER_TURN)
-                            GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
+                        // Hyper jump
+                        if (!hyperJumping)
+                        {
+                            hyperJumping = true;
+                        }
+                        else
+                            hyperJumping = false;
                     }
-
-                    //SetCargoText();//Setting cargo amount text
+                    else if (Input.GetKeyDown(KeyCode.Alpha2))
+                    {
+                        BeginSelecting(Ability.EMP);
+                    }
+                    else if (Input.GetKeyDown(KeyCode.Alpha3))
+                    {
+                        BeginSelecting(Ability.EMP_BLAST);
+                    }
+                    else if (Input.GetKeyDown(KeyCode.Alpha0))
+                    {
+                        // End turn
+                        playerStart = true;
+                        GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
+                    }
                 }
-                break;
-            case (GameMaster.GameState.GAME_LOSS):
+                else
                 {
-                    // TODO: Some game statistics, then main menu or lose scene etc.
+                    playerStart = true;
+                    GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
                 }
-                break;
+
+                //SetCargoText();//Setting cargo amount text
+            }
+            break;
+
+            case (GameMaster.GameState.GAME_LOSS):
+            {
+                // TODO: Some game statistics, then main menu or lose scene etc.
+            }
+            break;
 
             case (GameMaster.GameState.GAME_WIN):
-                {
-                    // TODO: Some game statistics, then main menu or win scene etc.
-                    SceneManager.LoadScene(0);
-                }
-                break;
+            {
+                // TODO: Some game statistics, then main menu or win scene etc.
+                SceneManager.LoadScene(0);
+            }
+            break;
         }
     }
 
@@ -148,7 +265,7 @@ public class PlayerController : MonoBehaviour
         bool toggleBool = true;
         while (BFSQueue.Count != 0)
         {
-            float curDelay = BFSDelay * (5.0f / BFSQueue.Count);
+            float curDelay = BFSDelay / (float)BFSQueue.Count;
             if (toggleBool) yield return new WaitForSeconds(curDelay);
             toggleBool = !toggleBool;
 
@@ -167,10 +284,10 @@ public class PlayerController : MonoBehaviour
     }
 
     // Adds to queue if not visited/obstructed and if it's in MAX_MOVE range of player
-    void CheckAndAddAvailBFS(float x, float y, float dist)
+    void CheckAndAddAvailBFS(float x, float z, float dist)
     {
         // Create array space vector
-        Vector2 posOffset = new Vector2(x - transform.position.x + MAX_MOVE, y - transform.position.z + MAX_MOVE);
+        Vector2 posOffset = new Vector2(x - transform.position.x + MAX_MOVE, z - transform.position.z + MAX_MOVE);
 
         if (posOffset.x > MAX_MOVE * 2 || posOffset.x < 0 ||
             posOffset.y > MAX_MOVE * 2 || posOffset.y < 0)
@@ -182,12 +299,16 @@ public class PlayerController : MonoBehaviour
             {
                 BlockedGrid[(int)posOffset.x, (int)posOffset.y] = true;
                 // Check for collision
-                if (!Physics.CheckBox(new Vector3(x, 0f, y), new Vector3(0.499f, 10f, 0.499f), Quaternion.identity, 255, QueryTriggerInteraction.Ignore))
+                if (!Physics.CheckBox(new Vector3(x, 0f, z), 
+                                      new Vector3(0.499f, 10f, 0.499f), Quaternion.identity, 
+                                      255, QueryTriggerInteraction.Ignore))
                 {
                     bool hiddenSpace = false;
                     bool destSpace = false;
                     // Check for stealth trigger
-                    Collider[] triggerArray = Physics.OverlapBox(new Vector3(x, 0f, y), new Vector3(0.499f, 10f, 0.499f), Quaternion.identity, 255, QueryTriggerInteraction.Collide);
+                    Collider[] triggerArray = Physics.OverlapBox(new Vector3(x, 0f, z), 
+                                                                 new Vector3(0.499f, 10f, 0.499f), Quaternion.identity, 
+                                                                 255, QueryTriggerInteraction.Collide);
                     if (triggerArray.Length > 0)
                     {
                         /* 
@@ -200,16 +321,16 @@ public class PlayerController : MonoBehaviour
                             else if (triggerArray[i].tag.Equals("Destination"))
                             {
                                 destSpace = true;
-                                destList.Add(new Vector3(x, 0f, y));
+                                destList.Add(new Vector3(x, 0f, z));
                             }
                             else return;
                         }
                     }
                     // Everything is good: make space available for the player, and add it to the queue to be checked
-                    GameObject.Instantiate(gridPlane, new Vector3(x, -0.3f, y), Quaternion.identity);
+                    GameObject.Instantiate(gridPlane, new Vector3(x, -0.3f, z), Quaternion.identity);
                     GridSpace newSpace = new GridSpace
                     {
-                        coordinates = new Vector3(x, 0f, y),
+                        coordinates = new Vector3(x, 0f, z),
                         hidden = hiddenSpace,
                         distance = dist + 1,
                         destination = destSpace
@@ -291,7 +412,7 @@ public class PlayerController : MonoBehaviour
                     moveList.RemoveAt(moveList.Count - 1);
                     curRight = tempRight;
                     curUp = tempUp;
-                    curDur += 0.5f;
+                    curDur += 0.2f;
 
                     spaceCount++;
                 }
@@ -312,8 +433,57 @@ public class PlayerController : MonoBehaviour
         else
         {
             transform.position = new Vector3(curPosition.x, 0f, curPosition.z);
-            playerEnd = true;
+            playerMoveCount--;
+
+            for (int i = 0; i < destList.Count; i++)
+                if (curPosition == (Vector3)destList[i])
+                    destReached = true;
+
+            if (!destReached && playerMoveCount > 0)
+            {
+                destList = new ArrayList();
+                StartCoroutine("GridBFS");
+            }
         }
+    }
+
+    void BeginSelecting(Ability ab)
+    {
+        selectingEnemy = true;
+        curAbility = ab;
+        if (selectableEnemies == null)
+            GetEnemyListInArea(selectableEnemies, transform.position, 10f);
+        if (selectableEnemies.Count > 0)
+        {
+            curSelectedIndex = 0;
+            SelectEnemy();
+        }
+        else
+            selectingEnemy = false;
+    }
+
+    void GetEnemyListInArea(ArrayList curList, Vector3 origin, float radius)
+    {
+        curList = new ArrayList();
+        Collider[] rawColliderArray = Physics.OverlapSphere(origin, radius);
+        for (int i = 0; i < rawColliderArray.Length; i++)
+        {
+            if (rawColliderArray[i].tag == "Enemy")
+                curList.Add(rawColliderArray[i].gameObject);
+        }
+    }
+
+    void SelectEnemy()
+    {
+        EnemyLoS curLos;
+        if (curSelectedEnemy != null)
+        {
+            curLos = curSelectedEnemy.GetComponent<EnemyLoS>();
+            curLos.Deselect();
+        }
+        curSelectedEnemy = (GameObject)selectableEnemies[curSelectedIndex];
+        curLos = curSelectedEnemy.GetComponent<EnemyLoS>();
+        curLos.Select();
     }
 
     public void decreaseHealth()
