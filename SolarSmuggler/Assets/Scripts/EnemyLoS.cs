@@ -33,6 +33,7 @@ public class EnemyLoS : MonoBehaviour
     private Vector3    playerPos;
     private bool       init;
     private bool       playerFound;
+    private bool       isSelected;
 
     public struct GridNode
     {
@@ -55,14 +56,26 @@ public class EnemyLoS : MonoBehaviour
     private GridNode playerNode;
     private GridNode dest;
 
+    //Select Variables
+    public  GameObject selectPrefab;
+    private GameObject selectInst;
+
+    //Condition Variables
+    private bool emp;
+    public  GameObject empPrefab;
+    private GameObject empInst;
+
+    private bool disoriented;
+    public  GameObject disorientedPrefab;
+    private GameObject disorientedInst;
+
     void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         init = true;
         playerFound = false;
     }
-
-
+        
     void Update()
     {
         if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
@@ -78,7 +91,16 @@ public class EnemyLoS : MonoBehaviour
                 EnemySearchPlane = new GridNode[(int)MAX_SPOT, (int)MAX_SPOT];
                 StartCoroutine("initESP");
             }
-            else {
+            else if (emp)
+            {
+                emp = false;
+                Destroy(empInst);
+                init = true;
+                Debug.Log("PLAYER_TURN -from enemyLOS EMPed");
+                GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
+            }
+            else
+            {
                 // Thomas: Added this small debug line so we'll see exactly what the ray is doing when we test this out.
                 Debug.DrawLine(transform.position, player.transform.position, Color.cyan, 0.5f);
 
@@ -274,6 +296,44 @@ public class EnemyLoS : MonoBehaviour
         }
     }
 
+    public void Select()
+    {
+        if (selectInst == null)
+            selectInst = (GameObject)GameObject.Instantiate(selectPrefab, new Vector3(transform.position.x, 0.1f, transform.position.z), Quaternion.identity);
+    }
+
+    public void Deselect()
+    {
+        if (selectInst != null)
+            Destroy(selectInst);
+    }
+
+    public void GetEMPed()
+    {
+        if (Random.Range(0, 3) == 2)
+        {
+            GetDisoriented();
+            return;
+        }
+        emp = true;
+        if (empInst == null)
+        {
+            empInst = (GameObject)GameObject.Instantiate(empPrefab, new Vector3(transform.position.x, 0.1f, transform.position.z), Quaternion.identity);
+            empInst.transform.parent = transform;
+        }
+    }
+
+    public void GetDisoriented()
+    {
+        disoriented = true;
+        if (disorientedInst == null)
+        {
+            disorientedInst = (GameObject)GameObject.Instantiate(disorientedPrefab, 
+                                                                 new Vector3(transform.position.x, 0.1f, transform.position.z), Quaternion.identity);
+            disorientedInst.transform.parent = transform;
+        }
+    }
+
     void ShootAtPlayer(Vector3 dest)
     {
         float dist = Vector3.Distance(dest, playerPos);
@@ -282,6 +342,15 @@ public class EnemyLoS : MonoBehaviour
         {
             Debug.Log("Shooting at Player");
             int shotHit = Random.Range(0, 2);
+
+            // If disoriented, cut shot chance in half
+            if (disoriented && shotHit == 1)
+            {
+                disoriented = false;
+                Destroy(disorientedInst);
+                shotHit = Random.Range(0, 2);
+            }
+            
             if (shotHit == 1)
             {
                 Debug.Log("Player has been hit, health is " + (player.GetComponent<PlayerController>().curr_Health-2) + "\n");

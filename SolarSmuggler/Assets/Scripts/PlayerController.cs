@@ -41,10 +41,11 @@ public class PlayerController : MonoBehaviour
     public  static int playerMoveCount = 0;
     private bool environmentStart = true;
     private bool playerStart      = true;
-    
+
     private bool selectingEnemy = false;
     private bool hyperJumping   = false;
     private bool holdMoves      = false;
+    private bool newMove        = false;
 
     ///////////////
     // Movement
@@ -123,8 +124,12 @@ public class PlayerController : MonoBehaviour
                      */
                     playerStart = false;
                     environmentStart = true;
+                    newMove = true;
                     playerMoveCount = 2;
-
+                }
+                if (newMove)
+                {
+                    newMove = false;
                     destList = new ArrayList();
                     StartCoroutine("GridBFS");
                 }
@@ -132,7 +137,8 @@ public class PlayerController : MonoBehaviour
                 {
                     GameMaster.CurrentState = GameMaster.GameState.GAME_WIN;
                 }
-                else if (selectingEnemy)
+                else if (playerMoveCount > 0 && 
+                         selectingEnemy)
                 {
                     if (Input.GetKeyDown(KeyCode.RightArrow))
                     {
@@ -163,7 +169,7 @@ public class PlayerController : MonoBehaviour
 
                                 case (Ability.EMP_BLAST):
                                 {
-                                    GetEnemyListInArea(affectedEnemies, curSelectedEnemy.transform.position, 5f);
+                                    GetEnemyListInArea(ref affectedEnemies, curSelectedEnemy.transform.position, 5f);
                                     for (int i = 0; i < affectedEnemies.Count; i++)
                                     {
                                         GameObject curEnemy = (GameObject)affectedEnemies[i];
@@ -173,6 +179,11 @@ public class PlayerController : MonoBehaviour
                                 }
                                 break;
                             }
+                            DeselectEnemy();
+                            selectingEnemy = false;
+                            playerMoveCount--;
+                            if (playerMoveCount > 0)
+                                newMove = true;
                         }
                     }
                     else if (Input.GetKeyDown(KeyCode.Escape))
@@ -452,9 +463,10 @@ public class PlayerController : MonoBehaviour
         selectingEnemy = true;
         curAbility = ab;
         if (selectableEnemies == null)
-            GetEnemyListInArea(selectableEnemies, transform.position, 10f);
+            GetEnemyListInArea(ref selectableEnemies, transform.position, 10f);
         if (selectableEnemies.Count > 0)
         {
+            Debug.Log("Selectable enemies exist.");
             curSelectedIndex = 0;
             SelectEnemy();
         }
@@ -462,7 +474,7 @@ public class PlayerController : MonoBehaviour
             selectingEnemy = false;
     }
 
-    void GetEnemyListInArea(ArrayList curList, Vector3 origin, float radius)
+    void GetEnemyListInArea(ref ArrayList curList, Vector3 origin, float radius)
     {
         curList = new ArrayList();
         Collider[] rawColliderArray = Physics.OverlapSphere(origin, radius);
@@ -475,15 +487,24 @@ public class PlayerController : MonoBehaviour
 
     void SelectEnemy()
     {
-        EnemyLoS curLos;
+        Debug.Log("Select new.");
+        if (curSelectedEnemy != null && selectableEnemies.Count == 1)
+            return;
+        
         if (curSelectedEnemy != null)
         {
-            curLos = curSelectedEnemy.GetComponent<EnemyLoS>();
-            curLos.Deselect();
+            DeselectEnemy();
         }
+
         curSelectedEnemy = (GameObject)selectableEnemies[curSelectedIndex];
-        curLos = curSelectedEnemy.GetComponent<EnemyLoS>();
+        EnemyLoS curLos = curSelectedEnemy.GetComponent<EnemyLoS>();
         curLos.Select();
+    }
+
+    void DeselectEnemy()
+    {
+        EnemyLoS curLos = curSelectedEnemy.GetComponent<EnemyLoS>();
+        curLos.Deselect();
     }
 
     public void decreaseHealth()

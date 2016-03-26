@@ -9,7 +9,7 @@ TagManager:
   - Moon
   - Asteroid Field
   - Destination
-  - Stealth
+  - Enemy
   layers:
   - Default
   - TransparentFX

@@ -1,10 +1,13 @@
 fileFormatVersion: 2
 guid: 42ff1508e8be85e49bc38a0119fb3541
-timeCreated: 1455764957
+timeCreated: 1459004956
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - selectPrefab: {fileID: 112190, guid: 31c0109c653ba4657b80b004d9619899, type: 2}
+  - empPrefab: {fileID: 131872, guid: 6e4d294c4ec1a4e7e9365d0d054cdead, type: 2}
+  - disorientedPrefab: {fileID: 196578, guid: eb78f246507de474fbaedb42d434d791, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
