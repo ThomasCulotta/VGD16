@@ -25,12 +25,12 @@ public class PlayerController : MonoBehaviour
     ///////////////
     // Ship stats
     ///////////////
-    private float max_Health  = 100f;
-    public  float curr_Health = 100f;
+    public float max_Health  = 100f;
+    public float curr_Health = 100f;
 
     // If we ever decide for cargo size
-    private int max_Cargo  = 100;
-    private int curr_Cargo = 0;
+    public int max_Cargo  = 100;
+    public int curr_Cargo = 0;
 
     // Used for determining what happens to cargo
     private int cargoResult = 0;
