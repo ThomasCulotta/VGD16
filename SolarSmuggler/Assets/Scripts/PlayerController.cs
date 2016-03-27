@@ -83,7 +83,6 @@ public class PlayerController : MonoBehaviour
     ///////////////
     public GameObject healthBar;
     public Slider cargoBar;
-    public Text cargoText;
 
     void Start()
     {
@@ -244,7 +243,6 @@ public class PlayerController : MonoBehaviour
                     GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
                 }
 
-                //SetCargoText();//Setting cargo amount text
             }
             break;
 
@@ -522,10 +520,10 @@ public class PlayerController : MonoBehaviour
         healthBar.transform.localScale = new Vector3(healthVal, healthBar.transform.localScale.y, healthBar.transform.localScale.z);
     }
 
-    public void SetCargoBar(float cargo)
-    {
-        cargoBar.value = cargo;
-    }
+    //public void SetCargoBar(float cargo)
+    //{
+    //    cargoBar.value = cargo;
+    //}
 
     public void AdjustCargo()
     {
@@ -585,10 +583,5 @@ public class PlayerController : MonoBehaviour
             curr_Cargo = cargo_calc;
         else
             curr_Cargo = max_limit;
-    }
-
-    void SetCargoText()
-    {
-        cargoText.text = "Cargo: " + curr_Cargo.ToString();
     }
 }

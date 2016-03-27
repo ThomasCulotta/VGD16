@@ -13,14 +13,21 @@ public class HUDScript : MonoBehaviour {
 	public Image cargoShard2;
 	public Image cargoShard3;
 
+	public Text cargoText;
+	public Text healthText;
+
 	// Use this for initialization
 	void Start () {
 		GameObject player = GameObject.FindWithTag("Player");
 		PlayerController playerController = player.GetComponent<PlayerController> ();
-		HealthUpdate(playerController.curr_Health, playerController.max_Health);
-		CargoUpdate(playerController.curr_Cargo, playerController.max_Cargo);
 
-		//healthShard1.fillAmount = 0.5f;
+		float health = playerController.curr_Health;
+		float max_Health = playerController.max_Health;
+		float cargo = playerController.curr_Cargo;
+		float max_Cargo = playerController.max_Cargo;
+
+		HealthUpdate(health, max_Health);
+		CargoUpdate(cargo, max_Cargo);
 	}
 
 	// Update is called once per frame
@@ -28,7 +35,7 @@ public class HUDScript : MonoBehaviour {
 	
 	}
 
-	void HealthUpdate (float health, float max_Health) 
+	public void HealthUpdate (float health, float max_Health) 
 	{
 		float bars_filled = health / (max_Health/4);
 		if (bars_filled <= 1) 
@@ -53,9 +60,11 @@ public class HUDScript : MonoBehaviour {
 			healthShard3.fillAmount = 1.0f;
 			healthShard4.fillAmount = bars_filled - 3;
 		}
+
+		SetHealthText (health);
 	}
 
-	void CargoUpdate (float cargo, float max_Cargo) 
+	public void CargoUpdate (float cargo, float max_Cargo) 
 	{
 		float bars_filled = cargo / (max_Cargo/3);
 		if (bars_filled <= 1) 
@@ -73,5 +82,16 @@ public class HUDScript : MonoBehaviour {
 			cargoShard2.fillAmount = 1.0f;
 			cargoShard3.fillAmount = bars_filled - 2;
 		}
+		SetCargoText (cargo);
+	}
+
+	void SetCargoText(float cargo)
+	{
+		cargoText.text = "Cargo: " + cargo.ToString();
+	}
+
+	void SetHealthText(float health)
+	{
+		healthText.text = "Health: " + health.ToString();
 	}
 }
