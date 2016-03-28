@@ -32,8 +32,11 @@ public class EnemyLoS : MonoBehaviour
     private Vector3    curPos;
     private Vector3    playerPos;
     private bool       init;
+    private bool       turnInProgress;
     private bool       playerFound;
     private bool       isSelected;
+    private int        myID;
+    private static int latestID = 0;
 
     public struct GridNode
     {
@@ -75,7 +78,13 @@ public class EnemyLoS : MonoBehaviour
         init = true;
         playerFound = false;
     }
-        
+
+    void Start()
+    {
+        //Static counter give each enemy a unique sequential id the corresponds to SpawnSystem.enemyCheckList array
+        myID = latestID++;
+    }
+
     void Update()
     {
         if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
@@ -84,58 +93,66 @@ public class EnemyLoS : MonoBehaviour
             if (init)
             {
                 init = false;
+                turnInProgress = true;
                 playerFound = false;
                 playerNode = new GridNode();
                 playerPos = player.transform.position;
                 curPos = transform.position;
+
                 EnemySearchPlane = new GridNode[(int)MAX_SPOT, (int)MAX_SPOT];
                 StartCoroutine("initESP");
             }
-            else if (emp)
-            {
-                emp = false;
-                Destroy(empInst);
-                init = true;
-                Debug.Log("PLAYER_TURN -from enemyLOS EMPed");
-                GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
-            }
-            else
-            {
-                // Thomas: Added this small debug line so we'll see exactly what the ray is doing when we test this out.
-                Debug.DrawLine(transform.position, player.transform.position, Color.cyan, 0.5f);
-
-                //Movement
-                moveList = new ArrayList();
-                if (playerFound)
+            else if (turnInProgress)
                 {
-                    PathFinding(MAX_MOVE, MAX_MOVE);
-                    dest = (GridNode)moveList[moveList.Count - 1];
-                    moveEnemy();
-                }
-
-
-                //Checks if player is obstructed by obstacle 
-                Vector3 heading = player.transform.position - transform.position;
-                if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
-                {
-                    Debug.Log("Spotted");
-                    //Combat
-                    if (hit.collider.tag.Equals("Player"))
+                    if (emp)
                     {
-                        Debug.Log("Player hit is confirmed");
-                        ShootAtPlayer(dest.coords);
+                        emp = false;
+                        Destroy(empInst);
+                        Debug.Log("PLAYER_TURN -from enemyLOS EMPed");
+                        //GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
+                        EndMyTurn();
+                    }
+                    else
+                    {
+                        // Thomas: Added this small debug line so we'll see exactly what the ray is doing when we test this out.
+                        Debug.DrawLine(transform.position, player.transform.position, Color.cyan, 0.5f);
+
+                        //Movement
+                        moveList = new ArrayList();
+                        if (playerFound)
+                        {
+                            PathFinding(MAX_MOVE, MAX_MOVE);
+                            dest = (GridNode)moveList[moveList.Count - 1];
+                            moveEnemy();
+                        }
+
+
+                        //Checks if player is obstructed by obstacle 
+                        Vector3 heading = player.transform.position - transform.position;
+                        if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
+                        {
+                            Debug.Log("Spotted");
+                            //Combat
+                            if (hit.collider.tag.Equals("Player"))
+                            {
+                                Debug.Log("Player hit is confirmed");
+                                ShootAtPlayer(dest.coords);
+                            }
+                        }
+
+                        //Change the Game State to PLAYER_TURN
+                        if (moveList.Count == 0)
+                        {
+                            Debug.Log("PLAYER_TURN -from enemyLOS");
+                            //GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
+                            EndMyTurn();
+                        }
                     }
                 }
-
-                //Change the Game State to PLAYER_TURN
-                if (moveList.Count == 0)
-                {
-                    init = true;
-                    Debug.Log("PLAYER_TURN -from enemyLOS");
-                    GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
-                }
-            }
         }
+        // Can't have enemies re-initing before all enemies check in
+        else if (GameMaster.CurrentState == GameMaster.GameState.ENVIRONMENT_TURN)
+            init = true;
     }
 
     /*
@@ -294,6 +311,12 @@ public class EnemyLoS : MonoBehaviour
                                                   "oncomplete", "moveEnemy",
                                                   "oncompletetarget", gameObject));
         }
+    }
+
+    void EndMyTurn()
+    {
+        turnInProgress = false;
+        SpawnSystem.CheckInEnemy(myID);
     }
 
     public void Select()

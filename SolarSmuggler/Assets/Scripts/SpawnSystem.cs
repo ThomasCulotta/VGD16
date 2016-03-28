@@ -27,6 +27,14 @@ public class SpawnSystem : MonoBehaviour {
     public float yOrg;
     public float scale;
 
+    //Enemies
+    /* NOTE(Thomas): Putting this in for an enemy check in system.
+     *               MAX = 1 for single manual enemy.
+     *               Enemy spawn function would be nice.
+     */
+    public const int MAX_ENEMIES = 1;
+    private static bool[] enemyCheckList;
+
     //Enum is used for random Pickup Spawning
     enum Pickups
     {
@@ -46,10 +54,40 @@ public class SpawnSystem : MonoBehaviour {
     }
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
         spawnPlanets();
         spawnPickups();
+        enemyCheckList = new bool[MAX_ENEMIES];
 	}
+
+    void LateUpdate()
+    {
+        if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
+        {
+            if (AllEnemiesCheckedIn())
+            {
+                GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
+                enemyCheckList = new bool[MAX_ENEMIES];
+            }
+        }
+    }
+
+    private bool AllEnemiesCheckedIn()
+    {
+        for (int i = 0; i < MAX_ENEMIES; i++)
+        {
+            if (!enemyCheckList[i])
+                return false;
+        }
+        return true;
+    }
+
+    // Enemies call this at the end of their turn with their id
+    public static void CheckInEnemy(int i)
+    {
+        enemyCheckList[i] = true;
+    }
 	
 	void spawnPickups()
     {
