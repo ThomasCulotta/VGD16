@@ -10,6 +10,9 @@ TagManager:
   - Asteroid Field
   - Destination
   - Enemy
+  - Start Button
+  - Stealth
+  - HUD
   layers:
   - Default
   - TransparentFX

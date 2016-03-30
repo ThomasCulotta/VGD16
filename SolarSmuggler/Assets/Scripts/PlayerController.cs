@@ -25,8 +25,8 @@ public class PlayerController : MonoBehaviour
     ///////////////
     // Ship stats
     ///////////////
-    public float max_Health  = 100f;
-    public float curr_Health = 100f;
+    public int max_Health  = 100;
+    public int curr_Health = 100;
 
     // If we ever decide for cargo size
     public int max_Cargo  = 100;
@@ -92,7 +92,7 @@ public class PlayerController : MonoBehaviour
 
         // Initialize player stats...
         curr_Health = max_Health; //set player to maximum health
-        curr_Cargo = max_Cargo; //set cargo to maximum capacity
+		curr_Cargo = 0; //set cargo to min capacity
         //InvokeRepeating("decreaseHealth", 1f, 1f); just for testing purposes, this decreases health by 2 every second
         //SetCargoBar(curr_Cargo);
     }
@@ -507,7 +507,7 @@ public class PlayerController : MonoBehaviour
 
     public void decreaseHealth()
     {
-        curr_Health -= 2f; // whatever happens to player we decrease health
+        curr_Health -= 2; // whatever happens to player we decrease health
 
         //need a ratio to from current health & max health to scale the hp bar
         float calc_Health = curr_Health / max_Health;
@@ -534,53 +534,58 @@ public class PlayerController : MonoBehaviour
         {
             case 1: // Good negotiation, pirates are happy
                 randVal = rand.Next(1, 5) * 6;
-                CargoSub(randVal);
+                Sub(randVal);
                 break;
             case 2: // Decent negotiation, pirates are alright with you
                 randVal = rand.Next(2, 6) * 7;
-                CargoSub(randVal);
+                Sub(randVal);
                 break;
             case 3: // Bad negotiation, pirates hate you
                 randVal = rand.Next(3, 8) * 8;
-                CargoSub(randVal);
+                Sub(randVal);
                 break;
             case 4: // You've run into the space police and were caught, but let go; cargo forfeited
                 curr_Cargo = 0;
                 break;
             case 5: // Run into space police or pirates and tried to run but got shot so lost some cargo
                 randVal = rand.Next(2, 5) * 10;
-                CargoSub(randVal);
+                Sub(randVal);
                 break;
             case 6: // Attempted recovery of cargo after being shot
                 randVal = rand.Next(2, 5) * 5;
-                CargoAdd(randVal);
+				Add(randVal, max_Cargo);
                 break;
             case 7: // Found random cargo near asteroid or something and went to loot it
                 randVal = rand.Next(3, 6) * 6;
-                CargoAdd(randVal);
+				Add(randVal, max_Cargo);
                 break;
                 //Do I need a default case?
         }
+		/* Not for now
+		GameObject HUD = GameObject.FindWithTag("HUD");
+		HUDScript HUDScript = HUD.GetComponent<HUDScript> ();
+		HUDScript.CargoUpdate(curr_Cargo, max_Cargo);
+		*/
     }
 
-    void CargoSub(int randVal)
+    void Sub(int randVal)
     {
         int min_limit = 0;
-        int cargo_calc = curr_Cargo - randVal;
+        int diff = curr_Cargo - randVal;
 
-        if (cargo_calc >= min_limit)
-            curr_Cargo = cargo_calc;
+        if (diff >= min_limit)
+            curr_Cargo = diff;
         else
             curr_Cargo = min_limit;
     }
 
-    void CargoAdd(int randVal)
+    void Add(int randVal, int max)
     {
-        int max_limit = 100;
-        int cargo_calc = curr_Cargo + randVal;
+        int max_limit = max;
+        int sum = curr_Cargo + randVal;
 
-        if (cargo_calc <= max_limit)
-            curr_Cargo = cargo_calc;
+        if (sum <= max_limit)
+            curr_Cargo = sum;
         else
             curr_Cargo = max_limit;
     }
