@@ -45,8 +45,8 @@ You are an interstellar smuggler trying to build his reputation within the Galac
 #### Core
 1. Grid Movement
   - [x] Prototype WASD
-  - [ ] Move to click
-  - [ ] Optional Navigate around obstacles
+  - [x] Move to click
+  - [x] Navigate around obstacles
 2. Cargo System
   - [ ] Decrease/Increase loot within limits
   - [ ] Decrease/Increase speed accordingly
@@ -54,12 +54,11 @@ You are an interstellar smuggler trying to build his reputation within the Galac
   - [ ] Decrease/Increase within limits
   - [ ] Optional Low health lowers cargo capacity
 4. Win Condition
-  - [ ] Trigger at destination planet
+  - [x] Trigger at destination planet
   - [ ] Loads win scene
   - [ ] Calculates score
 5. Stealth System
-  - [ ] Trigger volume around asteroid fields and nebulas
-  - [ ] Trigger volume in planets' shadow
+  - [x] Trigger volume around asteroid fields and nebulas
 
 #### Extra
 1. Ability System
@@ -100,7 +99,7 @@ You are an interstellar smuggler trying to build his reputation within the Galac
   - [x] Inside a sphere collider
   - [ ] Optional Trigger volume in planet's shadow
 3. Asteroid fields
-  - [ ] Have trigger volume for stealth
+  - [x] Have trigger volume for stealth
 
 #### Extra
 1. Nebulas
