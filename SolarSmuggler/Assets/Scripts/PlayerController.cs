@@ -113,8 +113,6 @@ public class PlayerController : MonoBehaviour
             {
                 if (playerStart)
                 {
-                    // TODO: Start turn with some kind of indicator/turn number/etc.
-
                     /* NOTE: BFS that determines available player movement.
                      *       Clears arrays at the beginning of each turn.
                      *
@@ -129,6 +127,7 @@ public class PlayerController : MonoBehaviour
                 if (newMove)
                 {
                     newMove = false;
+                    holdMoves = false;
                     destList = new ArrayList();
                     StartCoroutine("GridBFS");
                 }
@@ -237,12 +236,18 @@ public class PlayerController : MonoBehaviour
                         GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
                     }
                 }
-                else
+                else if (playerMoveCount == 0)
                 {
                     playerStart = true;
                     GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
                 }
 
+            }
+            break;
+
+            case (GameMaster.GameState.ENVIRONMENT_TURN):
+            {
+                GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
             }
             break;
 
@@ -450,8 +455,7 @@ public class PlayerController : MonoBehaviour
 
             if (!destReached && playerMoveCount > 0)
             {
-                destList = new ArrayList();
-                StartCoroutine("GridBFS");
+                newMove = true;
             }
         }
     }
