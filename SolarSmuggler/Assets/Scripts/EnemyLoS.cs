@@ -114,22 +114,24 @@ public class EnemyLoS : MonoBehaviour
                 }
 
 
-                //Checks if player is obstructed by obstacle 
-                Vector3 heading = player.transform.position - transform.position;
-                if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
-                {
-                    Debug.Log("Spotted");
-                    //Combat
-                    if (hit.collider.tag.Equals("Player"))
-                    {
-                        Debug.Log("Player hit is confirmed");
-                        ShootAtPlayer(dest.coords);
-                    }
-                }
+               
 
                 //Change the Game State to PLAYER_TURN
                 if (moveList.Count == 0)
                 {
+                    //Checks if player is obstructed by obstacle 
+                    Vector3 heading = player.transform.position - transform.position;
+                    if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
+                    {
+                        Debug.Log("Spotted");
+                        //Combat
+                        if (hit.collider.tag.Equals("Player"))
+                        {
+                            Debug.Log("Player hit is confirmed");
+                            ShootAtPlayer(dest.coords);
+                        }
+                    }
+
                     init = true;
                     Debug.Log("PLAYER_TURN -from enemyLOS");
                     GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
