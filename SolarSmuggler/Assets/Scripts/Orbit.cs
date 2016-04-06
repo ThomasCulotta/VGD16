@@ -4,7 +4,7 @@ using System.Collections;
 public class Orbit : MonoBehaviour
 {
 	public float rotationSpeed = 1.0f; //how fast the satellite orbits the primary
-	float timer = 3; //the amount of time the environment phase lasts
+	float timer = 2; //the amount of time the environment phase lasts
 
 	void Start()
 	{
@@ -21,11 +21,6 @@ public class Orbit : MonoBehaviour
 			StartCoroutine ("Timer");
         	transform.Rotate(new Vector3(0f, rotationSpeed, 0f)); //orbits the satellite around the primary
 			//timer -= Time.deltaTime;
-			if (timer <= 0) //once the environment's time ends
-			{
-				timer = 3; //resets the timer back to 10, not sure if necessary
-
-			}
 		}
 	}
 

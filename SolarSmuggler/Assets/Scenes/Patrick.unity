@@ -150,11 +150,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1faf8893e2d43a2a6d8954091414fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  max_Health: 100
   curr_Health: 100
+  max_Cargo: 100
+  curr_Cargo: 0
   gridPlane: {fileID: 197374, guid: 8fa79261a207341a098e5d60406a6fd0, type: 2}
-  cargoBar: {fileID: 1481114321}
   healthBar: {fileID: 297591408}
-  cargoText: {fileID: 831366808}
+  cargoBar: {fileID: 1481114321}
 --- !u!4 &180007110 stripped
 Transform:
   m_PrefabParentObject: {fileID: 400002, guid: fac213d622b59458689bdcd8934c0425, type: 3}
@@ -207,7 +209,7 @@ MonoBehaviour:
   pixHeight: 512
   xOrg: 0
   yOrg: 0
-  scale: 25
+  scale: 10
 --- !u!4 &206420264
 Transform:
   m_ObjectHideFlags: 0
@@ -973,6 +975,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42ff1508e8be85e49bc38a0119fb3541, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectPrefab: {fileID: 0}
+  empPrefab: {fileID: 0}
+  disorientedPrefab: {fileID: 0}
 --- !u!1 &1835420640
 GameObject:
   m_ObjectHideFlags: 0

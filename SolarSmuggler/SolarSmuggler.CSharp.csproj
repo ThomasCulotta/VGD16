@@ -75,6 +75,8 @@
     <Compile Include="Assets\Scripts\EnemyLoS.cs" />
     <Compile Include="Assets\Scripts\GameMaster.cs" />
     <Compile Include="Assets\Scripts\GridSpace.cs" />
+    <Compile Include="Assets\Scripts\HUDScript.cs" />
+    <Compile Include="Assets\Scripts\IndicatorMovement.cs" />
     <Compile Include="Assets\Scripts\IsoCamera.cs" />
     <Compile Include="Assets\Scripts\MenuController.cs" />
     <Compile Include="Assets\Scripts\MoonOrbit.cs" />
