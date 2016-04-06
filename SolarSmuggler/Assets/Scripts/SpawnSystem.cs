@@ -3,7 +3,7 @@
  * @Description: This Script spawns in Game Objects using
  *      a Blue Noise Procedural Generation.
  *
- *  @Use: Create an empty Game Object and add this script to it. 
+ * @Use: Create an empty Game Object and add this script to it. 
  *
  */
 
@@ -12,8 +12,8 @@ using System.Collections;
 
 public class SpawnSystem : MonoBehaviour {
     //Spawn Area
-    public float START_GAME_AREA = 0;
-    public float MAX_GAME_AREA   = 300;
+    public int START_GAME_AREA = 0;
+    public int MAX_GAME_AREA   = 300;
 
     //This number can be tweaked to increase or decrease number of spawns
     public int MAX_PICKUP_CELLS = 5;
@@ -26,6 +26,9 @@ public class SpawnSystem : MonoBehaviour {
     public float xOrg;
     public float yOrg;
     public float scale;
+
+    //Planet Transform
+    bool[] posAvailable;
 
     //Enemies
     /* NOTE(Thomas): Putting this in for an enemy check in system.
@@ -48,7 +51,7 @@ public class SpawnSystem : MonoBehaviour {
     enum Planets
     {
         FROST,
-        DESERT,
+        PURPLE,
         WATER,
         COUNT
     }
@@ -56,6 +59,8 @@ public class SpawnSystem : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
     {
+        posAvailable = new bool[MAX_GAME_AREA *MAX_GAME_AREA];
+        initAvaiableSpots();
         spawnPlanets();
         spawnPickups();
         enemyCheckList = new bool[MAX_ENEMIES];
@@ -155,6 +160,7 @@ public class SpawnSystem : MonoBehaviour {
         {
             float spawnMinX = cellSize * i;
             float spawnMaxX = cellSize * (i + 1);
+            Vector3 center = new Vector3(MAX_GAME_AREA / 2, 0, MAX_GAME_AREA / 2);
 
             //creating space between cells
             spawnMinX += 5;
@@ -174,6 +180,17 @@ public class SpawnSystem : MonoBehaviour {
                 Planets spawnType = (Planets)Random.Range((int)Planets.FROST, (int)Planets.COUNT);
                 int spawnPosX = (int)Random.Range(spawnMinX, spawnMaxX);
                 int spawnPosZ = (int)Random.Range(spawnMinZ, spawnMaxZ);
+                Vector3 spawnPos = new Vector3(spawnPosX, 0, spawnPosZ);
+
+                while (!isAvailable(spawnPos))
+                {
+                    spawnPosX = (int)Random.Range(spawnMinX, spawnMaxX);
+                    spawnPosZ = (int)Random.Range(spawnMinZ, spawnMaxZ);
+                    spawnPos = new Vector3(spawnPosX, 0, spawnPosZ);
+                }
+
+                AddToList(spawnPos);
+
                 int size = Random.Range(3, 8);
                 int hasMoon = Random.Range(0, 2);
 
@@ -182,28 +199,28 @@ public class SpawnSystem : MonoBehaviour {
                     case (Planets.FROST):
                         {
                             Debug.Log("Making FROST");
-                            GameObject frost = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                            frost.transform.localScale = new Vector3(size, size, size);
-                            createTexture(frost);
-                            Instantiate(frost, new Vector3(spawnPosX, 0f, spawnPosZ), Quaternion.identity);
+                            GameObject frost = (GameObject) Resources.Load("Prefabs/Ice Planet", typeof(GameObject));
+                            frost.GetComponentInChildren<Transform>().transform.localScale = new Vector3(size, size, size);
+                            Instantiate(frost, center, Quaternion.identity);
+                            frost.transform.FindChild("Planet 0").localPosition = GridPos2PlanetPos(spawnPos);
                         }
                         break;
-                    case (Planets.DESERT):
+                    case (Planets.PURPLE):
                         {
-                            Debug.Log("Making DESERT");
-                            GameObject desert = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                            desert.transform.localScale = new Vector3(size, size, size);
-                            createTexture(desert);
-                            Instantiate(desert, new Vector3(spawnPosX, 0f, spawnPosZ), Quaternion.identity);
+                            Debug.Log("Making Purple");
+                            GameObject purple = (GameObject)Resources.Load("Prefabs/Purple Planet", typeof(GameObject));
+                            purple.transform.localScale = new Vector3(size, size, size);
+                            purple.GetComponentInChildren<Transform>().transform.localPosition = GridPos2PlanetPos(spawnPos);
+                            Instantiate(purple, center, Quaternion.identity);
                         }
                         break;
                     case (Planets.WATER):
                         {
                             Debug.Log("Making WATER");
-                            GameObject water = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                            water.transform.localScale = new Vector3(size, size, size);
-                            createTexture(water);
-                            Instantiate(water, new Vector3(spawnPosX, 0f, spawnPosZ), Quaternion.identity);
+                            GameObject water = (GameObject)Resources.Load("Prefabs/Planet 2", typeof(GameObject));
+                            water.GetComponentInChildren<Transform>().transform.localScale = new Vector3(size, size, size);
+                            Instantiate(water, center, Quaternion.identity);
+                            water.transform.FindChild("Planet 0").localPosition = GridPos2PlanetPos(spawnPos);
                         }
                         break;
                 }
@@ -214,10 +231,10 @@ public class SpawnSystem : MonoBehaviour {
         }
     }
 
-    void createTexture(GameObject planet)
+    void createTexture(GameObject moon)
     {
         
-        Texture2D planetTerrain = new Texture2D(pixHeight, pixWidth);
+        Texture2D moonTerrain = new Texture2D(pixHeight, pixWidth);
         Color32[] color = new Color32[pixWidth * pixHeight];
 
         int index =  0;
@@ -226,8 +243,8 @@ public class SpawnSystem : MonoBehaviour {
             for (float j = 0; j < pixWidth; j++)
             {
 
-                float xCoord = xOrg + j / planetTerrain.width * scale;
-                float yCoord = yOrg + i / planetTerrain.height * scale;
+                float xCoord = xOrg + j / moonTerrain.width * scale;
+                float yCoord = yOrg + i / moonTerrain.height * scale;
                 float result = Mathf.PerlinNoise(xCoord, yCoord);
                 byte RGBVal = (byte)(result * 255);
                 color[index] = new Color32(RGBVal, RGBVal, RGBVal, 1);
@@ -235,8 +252,38 @@ public class SpawnSystem : MonoBehaviour {
             }
         }
 
-        planetTerrain.SetPixels32(color);
-        planetTerrain.Apply();
-        planet.GetComponent<Renderer>().material.mainTexture = planetTerrain;
+        //applying pattern to the texture and giving the texture to the moon
+        moonTerrain.SetPixels32(color);
+        moonTerrain.Apply();
+        moon.GetComponent<Renderer>().material.mainTexture = moonTerrain;
+    }
+
+
+    Vector3 GridPos2PlanetPos(Vector3 pos)
+    {
+        return new Vector3((int)pos.x -300, 0, (int)pos.z - 300);
+    }
+
+    void initAvaiableSpots()
+    {
+        for(int i = 0; i < posAvailable.Length; i++)
+        {
+            posAvailable[i] = true;
+        }
+    }
+
+    void AddToList(Vector3 pos)
+    {
+        int index = ((int)pos.x * (int)pos.x % 300) * (int)pos.z;
+        posAvailable[index] = false;
+    }
+
+    bool isAvailable(Vector3 pos)
+    {
+        int index = ((int)pos.x * (int)pos.x % 300) * (int)pos.z;
+        if (posAvailable[index] == true)
+            return true;
+        else
+            return false;
     }
 }

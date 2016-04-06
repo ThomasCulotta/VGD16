@@ -15,6 +15,9 @@ using System.Collections;
  */
 public class EnemyLoS : MonoBehaviour
 {
+    //Ememy checkin
+    private static int maxEnemies = 1;
+
     //Debug Variables
     private const bool DEBUG = false;
 
@@ -35,8 +38,8 @@ public class EnemyLoS : MonoBehaviour
     private bool       turnInProgress;
     private bool       playerFound;
     private bool       isSelected;
-    private int        myID;
-    private static int latestID = 0;
+    private bool       isFinished;
+    private bool       shot;
 
     public struct GridNode
     {
@@ -72,87 +75,98 @@ public class EnemyLoS : MonoBehaviour
     public  GameObject disorientedPrefab;
     private GameObject disorientedInst;
 
-    void Awake()
+    void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         init = true;
+        isFinished = false;
         playerFound = false;
-    }
-
-    void Start()
-    {
-        //Static counter give each enemy a unique sequential id the corresponds to SpawnSystem.enemyCheckList array
-        myID = latestID++;
+        shot = true;
     }
 
     void Update()
     {
         if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
         {
+            // Thomas: Added this small debug line so we'll see exactly what the ray is doing when we test this out.
+            Debug.DrawLine(transform.position, player.transform.position, Color.cyan, 0.5f);
+
             //Reset Game Board
             if (init)
             {
                 init = false;
                 turnInProgress = true;
                 playerFound = false;
+                isFinished = false;
+                shot = true;
                 playerNode = new GridNode();
                 playerPos = player.transform.position;
                 curPos = transform.position;
 
+                //set to MAX_ENEMIES in SpawnSystem
+                maxEnemies = 1;
                 EnemySearchPlane = new GridNode[(int)MAX_SPOT, (int)MAX_SPOT];
                 StartCoroutine("initESP");
             }
-            else if (turnInProgress)
+            else
+            {
+                if (emp)
                 {
-                    if (emp)
+                    emp = false;
+                    Destroy(empInst);
+                    init = true;
+                    Debug.Log("PLAYER_TURN -from enemyLOS EMPed");
+                    GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
+                }
+                else if (!isFinished)
+                {
+                    //Movement
+                    if (playerFound)
                     {
-                        emp = false;
-                        Destroy(empInst);
-                        Debug.Log("PLAYER_TURN -from enemyLOS EMPed");
-                        //GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
-                        EndMyTurn();
-                    }
-                    else
-                    {
-                        // Thomas: Added this small debug line so we'll see exactly what the ray is doing when we test this out.
-                        Debug.DrawLine(transform.position, player.transform.position, Color.cyan, 0.5f);
-
-                        //Movement
                         moveList = new ArrayList();
-                        if (playerFound)
+                        PathFinding(MAX_MOVE, MAX_MOVE);
+                        if (moveList.Count > 0)
                         {
-                            PathFinding(MAX_MOVE, MAX_MOVE);
                             dest = (GridNode)moveList[moveList.Count - 1];
                             moveEnemy();
                         }
-
-
-                        //Checks if player is obstructed by obstacle 
-                        Vector3 heading = player.transform.position - transform.position;
-                        if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
+                        else
                         {
-                            Debug.Log("Spotted");
-                            //Combat
-                            if (hit.collider.tag.Equals("Player"))
-                            {
-                                Debug.Log("Player hit is confirmed");
-                                ShootAtPlayer(dest.coords);
-                            }
+                            dest.coords = transform.position;
                         }
 
-                        //Change the Game State to PLAYER_TURN
                         if (moveList.Count == 0)
                         {
-                            Debug.Log("PLAYER_TURN -from enemyLOS");
-                            //GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
-                            EndMyTurn();
+                            //Checks if player is obstructed by obstacle 
+                            Vector3 heading = player.transform.position - transform.position;
+                            if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
+                            {
+                                //Combat
+                                if (hit.collider.tag.Equals("Player") && shot)
+                                {
+                                    ShootAtPlayer(dest.coords);
+                                    shot = false;
+                                }
+                            }
                         }
                     }
                 }
+
+                //Change the Game State to PLAYER_TURN
+                if (!isFinished)
+                {
+                    maxEnemies--;
+                    isFinished = true;
+                }
+
+                if (maxEnemies <= 0)
+                {
+                    init = true;
+                    Debug.Log("PLAYER_TURN -from enemyLOS");
+                    GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
+                }
+            }
         }
-        // Can't have enemies re-initing before all enemies check in
-        else if (GameMaster.CurrentState == GameMaster.GameState.ENVIRONMENT_TURN)
-            init = true;
     }
 
     /*
@@ -299,24 +313,19 @@ public class EnemyLoS : MonoBehaviour
 
             do
             {
-                GridNode tempNode = (GridNode)moveList[0];
-                curNode = tempNode;
+                Debug.Log("MoveList Count: " + moveList.Count);
+                curNode = (GridNode)moveList[0];
                 moveList.RemoveAt(0);
                 curDur += 0.5f;
 
             } while (0 < moveList.Count);
+            Debug.Log("MoveList Count: " + moveList.Count);
             iTween.MoveTo(gameObject, iTween.Hash("x", curNode.coords.x,
                                                   "z", curNode.coords.z,
                                                   "time", curDur,
                                                   "oncomplete", "moveEnemy",
                                                   "oncompletetarget", gameObject));
         }
-    }
-
-    void EndMyTurn()
-    {
-        turnInProgress = false;
-        SpawnSystem.CheckInEnemy(myID);
     }
 
     public void Select()
@@ -360,10 +369,10 @@ public class EnemyLoS : MonoBehaviour
     void ShootAtPlayer(Vector3 dest)
     {
         float dist = Vector3.Distance(dest, playerPos);
-        Debug.Log("MAX_FIRE_DIST=" + MAX_FIRE_DIST +" " + "dist=" + dist);
+        //Debug.Log("MAX_FIRE_DIST=" + MAX_FIRE_DIST +" " + "dist=" + dist);
         if (MAX_FIRE_DIST >= dist)
         {
-            Debug.Log("Shooting at Player");
+            //Debug.Log("Shooting at Player");
             int shotHit = Random.Range(0, 2);
 
             // If disoriented, cut shot chance in half
@@ -376,15 +385,16 @@ public class EnemyLoS : MonoBehaviour
             
             if (shotHit == 1)
             {
-                Debug.Log("Player has been hit, health is " + (player.GetComponent<PlayerController>().curr_Health-2) + "\n");
+                /*
                 Vector3[] linePos = { transform.position, playerPos };
                 LineRenderer laser = new LineRenderer();
                 laser.SetColors(Color.red, Color.red);
                 laser.SetPositions(linePos);
+                */
                 player.GetComponent<PlayerController>().decreaseHealth();
-               
+                //Debug.Log("Player has been hit, health is " + (player.GetComponent<PlayerController>().curr_Health) + "\n");
             } else {
-                Debug.Log("Enemy has missed player, health is " + player.GetComponent<PlayerController>().curr_Health + "\n");
+                //Debug.Log("Enemy has missed player, health is " + player.GetComponent<PlayerController>().curr_Health + "\n");
             }
         }
         
