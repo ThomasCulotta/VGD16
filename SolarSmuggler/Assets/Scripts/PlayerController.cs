@@ -25,8 +25,8 @@ public class PlayerController : MonoBehaviour
     ///////////////
     // Ship stats
     ///////////////
-    public int max_Health  = 100;
-    public int curr_Health = 100;
+    public float max_Health  = 100f;
+    public float curr_Health = 100f;
 
     // If we ever decide for cargo size
     public int max_Cargo  = 100;
@@ -39,11 +39,12 @@ public class PlayerController : MonoBehaviour
     // Player turn
     ///////////////
     public  static int playerMoveCount = 0;
-    private bool environmentStart = true;
     private bool playerStart      = true;
 
+    // public static so GridSpace can color accordingly
+    public static bool hyperJumping   = false;
+
     private bool selectingEnemy = false;
-    private bool hyperJumping   = false;
     private bool holdMoves      = false;
     private bool newMove        = false;
 
@@ -58,9 +59,10 @@ public class PlayerController : MonoBehaviour
 
     public  static bool[,] BlockedGrid;
     private GridSpace[,]   PlayerGrid;
+    private ArrayList      gridPlanes;    
 
     public  GameObject gridPlane;
-    private const int  MAX_MOVE = 10;
+    private int  MAX_MOVE = 10;
 
     private ArrayList moveList;
     private ArrayList destList;
@@ -89,10 +91,11 @@ public class PlayerController : MonoBehaviour
         nextPosition = curPosition = transform.position;
         // Force player to grid
         transform.position = new Vector3(Mathf.Floor(transform.position.x), 0f, Mathf.Floor(transform.position.z));
+        gridPlanes = new ArrayList();
 
         // Initialize player stats...
         curr_Health = max_Health; //set player to maximum health
-		curr_Cargo = 0; //set cargo to min capacity
+        curr_Cargo = max_Cargo; //set cargo to maximum capacity
         //InvokeRepeating("decreaseHealth", 1f, 1f); just for testing purposes, this decreases health by 2 every second
         //SetCargoBar(curr_Cargo);
     }
@@ -113,6 +116,8 @@ public class PlayerController : MonoBehaviour
             {
                 if (playerStart)
                 {
+                    // TODO: Start turn with some kind of indicator/turn number/etc.
+
                     /* NOTE: BFS that determines available player movement.
                      *       Clears arrays at the beginning of each turn.
                      *
@@ -120,134 +125,135 @@ public class PlayerController : MonoBehaviour
                      *       speed in populating the grid.
                      */
                     playerStart = false;
-                    environmentStart = true;
                     newMove = true;
                     playerMoveCount = 2;
                 }
                 if (newMove)
                 {
-                    newMove = false;
-                    holdMoves = false;
+                    newMove  = false;
                     destList = new ArrayList();
+                    MAX_MOVE = 10;
+
+                    if (hyperJumping)
+                        MAX_MOVE = 18;
+                    for (int i = 0; i < gridPlanes.Count; i++)
+                        DestroyImmediate((GameObject)gridPlanes[i]);
+                    gridPlanes.Clear();
                     StartCoroutine("GridBFS");
                 }
                 else if (destReached)
                 {
                     GameMaster.CurrentState = GameMaster.GameState.GAME_WIN;
                 }
-                else if (playerMoveCount > 0 && 
-                         selectingEnemy)
+                else if (playerMoveCount > 0)
                 {
-                    if (Input.GetKeyDown(KeyCode.RightArrow))
+                    if (selectingEnemy)
                     {
-                        curSelectedIndex++;
-                        if (curSelectedIndex == selectableEnemies.Count)
-                            curSelectedIndex = 0;
-                        SelectEnemy();
-                    }
-                    else if (Input.GetKeyDown(KeyCode.LeftArrow))
-                    {
-                        curSelectedIndex--;
-                        if (curSelectedIndex == -1)
-                            curSelectedIndex = selectableEnemies.Count - 1;
-                        SelectEnemy();
-                    }
-                    else if (Input.GetKeyDown(KeyCode.Space))
-                    {
-                        if (curSelectedEnemy != null)
+                        if (Input.GetKeyDown(KeyCode.RightArrow))
                         {
-                            switch (curAbility)
+                            curSelectedIndex++;
+                            if (curSelectedIndex == selectableEnemies.Count)
+                                curSelectedIndex = 0;
+                            SelectEnemy();
+                        }
+                        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+                        {
+                            curSelectedIndex--;
+                            if (curSelectedIndex == -1)
+                                curSelectedIndex = selectableEnemies.Count - 1;
+                            SelectEnemy();
+                        }
+                        else if (Input.GetKeyDown(KeyCode.Space))
+                        {
+                            if (curSelectedEnemy != null)
                             {
-                                case (Ability.EMP):
+                                switch (curAbility)
                                 {
-                                    EnemyLoS curLos = curSelectedEnemy.GetComponent<EnemyLoS>();
-                                    curLos.GetEMPed();
-                                }
-                                break;
-
-                                case (Ability.EMP_BLAST):
-                                {
-                                    GetEnemyListInArea(ref affectedEnemies, curSelectedEnemy.transform.position, 5f);
-                                    for (int i = 0; i < affectedEnemies.Count; i++)
+                                    case (Ability.EMP):
                                     {
-                                        GameObject curEnemy = (GameObject)affectedEnemies[i];
-                                        EnemyLoS curLos = curEnemy.GetComponent<EnemyLoS>();
+                                        EnemyLoS curLos = curSelectedEnemy.GetComponent<EnemyLoS>();
                                         curLos.GetEMPed();
                                     }
+                                    break;
+
+                                    case (Ability.EMP_BLAST):
+                                    {
+                                        GetEnemyListInArea(ref affectedEnemies, curSelectedEnemy.transform.position, 5f);
+                                        for (int i = 0; i < affectedEnemies.Count; i++)
+                                        {
+                                            GameObject curEnemy = (GameObject)affectedEnemies[i];
+                                            EnemyLoS curLos = curEnemy.GetComponent<EnemyLoS>();
+                                            curLos.GetEMPed();
+                                        }
+                                    }
+                                    break;
                                 }
-                                break;
+                                DeselectEnemy();
+                                selectingEnemy = false;
+                                playerMoveCount--;
+                                if (playerMoveCount > 0)
+                                    newMove = true;
                             }
-                            DeselectEnemy();
+                        }
+                        else if (Input.GetKeyDown(KeyCode.Escape))
+                        {
+                            EnemyLoS curLos = curSelectedEnemy.GetComponent<EnemyLoS>();
+                            curLos.Deselect();
                             selectingEnemy = false;
-                            playerMoveCount--;
-                            if (playerMoveCount > 0)
-                                newMove = true;
                         }
                     }
-                    else if (Input.GetKeyDown(KeyCode.Escape))
-                    {
-                        EnemyLoS curLos = curSelectedEnemy.GetComponent<EnemyLoS>();
-                        curLos.Deselect();
-                        selectingEnemy = false;
-                    }
-                }
-                else if (playerMoveCount > 0 &&
-                         !holdMoves)
-                {
-                    /*
-                     * NOTE: If the player has moves left and are not currently in action, 
-                     * allow them to either move on the grid or use an ability,
-                     * or allow them to end the turn.
-                     */
-                    if (nextPosition != curPosition)
+                    else if (!holdMoves)
                     {
                         /*
-                         * NOTE: Pathfinds backwards from selected GridSpace to player
-                         *       iTweens player to each gridspace
-                         */
-                        holdMoves = true;
-                        curPosition = nextPosition;
-                        moveList = new ArrayList();
-                        Pathfind(nextPosition);
-                        MovePlayer();
-                    }
-                    else if (Input.GetKeyDown(KeyCode.Alpha1))
-                    {
-                        // Hyper jump
-                        if (!hyperJumping)
+                        * NOTE: If the player has moves left and are not currently in action, 
+                        * allow them to either move on the grid or use an ability,
+                        * or allow them to end the turn.
+                        */
+                        if (nextPosition != curPosition)
                         {
-                            hyperJumping = true;
+                            /*
+                            * NOTE: Pathfinds backwards from selected GridSpace to player
+                            *       iTweens player to each gridspace
+                            */
+                            holdMoves = true;
+                            curPosition = nextPosition;
+                            moveList = new ArrayList();
+                            Pathfind(nextPosition);
+                            MovePlayer();
                         }
-                        else
-                            hyperJumping = false;
-                    }
-                    else if (Input.GetKeyDown(KeyCode.Alpha2))
-                    {
-                        BeginSelecting(Ability.EMP);
-                    }
-                    else if (Input.GetKeyDown(KeyCode.Alpha3))
-                    {
-                        BeginSelecting(Ability.EMP_BLAST);
-                    }
-                    else if (Input.GetKeyDown(KeyCode.Alpha0))
-                    {
-                        // End turn
-                        playerStart = true;
-                        GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
+                        else if (Input.GetKeyDown(KeyCode.Alpha1))
+                        {
+                            // Hyper jump
+                            if (!hyperJumping)
+                            {
+                                hyperJumping = true;
+                                newMove      = true;
+                            }
+                            else
+                                hyperJumping = false;
+                        }
+                        else if (Input.GetKeyDown(KeyCode.Alpha2))
+                        {
+                            BeginSelecting(Ability.EMP);
+                        }
+                        else if (Input.GetKeyDown(KeyCode.Alpha3))
+                        {
+                            BeginSelecting(Ability.EMP_BLAST);
+                        }
+                        else if (Input.GetKeyDown(KeyCode.Alpha0))
+                        {
+                            // End turn
+                            playerStart = true;
+                            GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
+                        }
                     }
                 }
-                else if (playerMoveCount == 0)
+                else
                 {
+                    // End turn
                     playerStart = true;
                     GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
                 }
-
-            }
-            break;
-
-            case (GameMaster.GameState.ENVIRONMENT_TURN):
-            {
-                GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
             }
             break;
 
@@ -268,33 +274,34 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator GridBFS()
     {
-        PlayerGrid = new GridSpace[MAX_MOVE * 2 + 1, MAX_MOVE * 2 + 1];
+        PlayerGrid  = new GridSpace[MAX_MOVE * 2 + 1, MAX_MOVE * 2 + 1];
         BlockedGrid = new bool[MAX_MOVE * 2 + 1, MAX_MOVE * 2 + 1];
+
         BFSQueue = new Queue();
-        BFSDelay = 0.001f;
+
         // Set player position to blocked immediately
         BlockedGrid[MAX_MOVE, MAX_MOVE] = true;
         GridSpace playerSpace = new GridSpace { coordinates = transform.position };
+
         BFSQueue.Enqueue(playerSpace);
-        bool toggleBool = true;
+
         while (BFSQueue.Count != 0)
         {
-            float curDelay = BFSDelay / (float)BFSQueue.Count;
-            if (toggleBool) yield return new WaitForSeconds(curDelay);
-            toggleBool = !toggleBool;
-
             GridSpace cur = (GridSpace)BFSQueue.Dequeue();
+
             // Check the cardinal spaces around cur
             CheckAndAddAvailBFS(cur.coordinates.x, cur.coordinates.z + 1, cur.distance);
             CheckAndAddAvailBFS(cur.coordinates.x, cur.coordinates.z - 1, cur.distance);
             CheckAndAddAvailBFS(cur.coordinates.x + 1, cur.coordinates.z, cur.distance);
             CheckAndAddAvailBFS(cur.coordinates.x - 1, cur.coordinates.z, cur.distance);
+
             // Check the diagonal spaces around cur
             CheckAndAddAvailBFS(cur.coordinates.x + 1, cur.coordinates.z + 1, cur.distance + 0.4f);
             CheckAndAddAvailBFS(cur.coordinates.x - 1, cur.coordinates.z - 1, cur.distance + 0.4f);
             CheckAndAddAvailBFS(cur.coordinates.x + 1, cur.coordinates.z - 1, cur.distance + 0.4f);
             CheckAndAddAvailBFS(cur.coordinates.x - 1, cur.coordinates.z + 1, cur.distance + 0.4f);
         }
+        yield return null;
     }
 
     // Adds to queue if not visited/obstructed and if it's in MAX_MOVE range of player
@@ -312,6 +319,7 @@ public class PlayerController : MonoBehaviour
             if (!BlockedGrid[(int)posOffset.x, (int)posOffset.y])   // Check for not visited
             {
                 BlockedGrid[(int)posOffset.x, (int)posOffset.y] = true;
+
                 // Check for collision
                 if (!Physics.CheckBox(new Vector3(x, 0f, z), 
                                       new Vector3(0.499f, 10f, 0.499f), Quaternion.identity, 
@@ -319,6 +327,7 @@ public class PlayerController : MonoBehaviour
                 {
                     bool hiddenSpace = false;
                     bool destSpace = false;
+
                     // Check for stealth trigger
                     Collider[] triggerArray = Physics.OverlapBox(new Vector3(x, 0f, z), 
                                                                  new Vector3(0.499f, 10f, 0.499f), Quaternion.identity, 
@@ -340,8 +349,9 @@ public class PlayerController : MonoBehaviour
                             else return;
                         }
                     }
+
                     // Everything is good: make space available for the player, and add it to the queue to be checked
-                    GameObject.Instantiate(gridPlane, new Vector3(x, -0.3f, z), Quaternion.identity);
+                    gridPlanes.Add(GameObject.Instantiate(gridPlane, new Vector3(x, 0f, z), Quaternion.identity));
                     GridSpace newSpace = new GridSpace
                     {
                         coordinates = new Vector3(x, 0f, z),
@@ -349,6 +359,7 @@ public class PlayerController : MonoBehaviour
                         distance = dist + 1,
                         destination = destSpace
                     };
+
                     PlayerGrid[(int)posOffset.x, (int)posOffset.y] = newSpace;
                     if (dist + 1 <= 10)
                         BFSQueue.Enqueue(newSpace);
@@ -412,12 +423,14 @@ public class PlayerController : MonoBehaviour
             // Set initial space to player pos
             GridSpace curSpace = new GridSpace();
             curSpace.coordinates = transform.position;
+
             // Check if next space is in same direction if there are still spaces to check
             do
             {
                 GridSpace tempSpace = (GridSpace)moveList[moveList.Count - 1];
                 int tempRight = (int)(tempSpace.coordinates.x - curSpace.coordinates.x);
                 int tempUp = (int)(tempSpace.coordinates.z - curSpace.coordinates.z);
+
                 // Pop last gridspace in list if it's in the same line as prev spaces or if it's the first pass
                 if (spaceCount == 0 ||
                    (tempRight == curRight && tempUp == curUp))
@@ -452,10 +465,11 @@ public class PlayerController : MonoBehaviour
             for (int i = 0; i < destList.Count; i++)
                 if (curPosition == (Vector3)destList[i])
                     destReached = true;
-
+            
             if (!destReached && playerMoveCount > 0)
             {
                 newMove = true;
+                holdMoves = false;
             }
         }
     }
@@ -464,8 +478,10 @@ public class PlayerController : MonoBehaviour
     {
         selectingEnemy = true;
         curAbility = ab;
+       
         if (selectableEnemies == null)
             GetEnemyListInArea(ref selectableEnemies, transform.position, 10f);
+
         if (selectableEnemies.Count > 0)
         {
             Debug.Log("Selectable enemies exist.");
@@ -480,6 +496,7 @@ public class PlayerController : MonoBehaviour
     {
         curList = new ArrayList();
         Collider[] rawColliderArray = Physics.OverlapSphere(origin, radius);
+
         for (int i = 0; i < rawColliderArray.Length; i++)
         {
             if (rawColliderArray[i].tag == "Enemy")
@@ -490,6 +507,7 @@ public class PlayerController : MonoBehaviour
     void SelectEnemy()
     {
         Debug.Log("Select new.");
+
         if (curSelectedEnemy != null && selectableEnemies.Count == 1)
             return;
         
@@ -511,7 +529,7 @@ public class PlayerController : MonoBehaviour
 
     public void decreaseHealth()
     {
-        curr_Health -= 2; // whatever happens to player we decrease health
+        curr_Health -= 2f; // whatever happens to player we decrease health
 
         //need a ratio to from current health & max health to scale the hp bar
         float calc_Health = curr_Health / max_Health;
@@ -538,84 +556,54 @@ public class PlayerController : MonoBehaviour
         {
             case 1: // Good negotiation, pirates are happy
                 randVal = rand.Next(1, 5) * 6;
-                Sub(randVal, true);
+                CargoSub(randVal);
                 break;
             case 2: // Decent negotiation, pirates are alright with you
                 randVal = rand.Next(2, 6) * 7;
-                Sub(randVal, true);
+                CargoSub(randVal);
                 break;
             case 3: // Bad negotiation, pirates hate you
                 randVal = rand.Next(3, 8) * 8;
-                Sub(randVal, true);
+                CargoSub(randVal);
                 break;
             case 4: // You've run into the space police and were caught, but let go; cargo forfeited
                 curr_Cargo = 0;
                 break;
             case 5: // Run into space police or pirates and tried to run but got shot so lost some cargo
                 randVal = rand.Next(2, 5) * 10;
-                Sub(randVal, true);
+                CargoSub(randVal);
                 break;
             case 6: // Attempted recovery of cargo after being shot
                 randVal = rand.Next(2, 5) * 5;
-				Add(randVal, max_Cargo, true);
+                CargoAdd(randVal);
                 break;
             case 7: // Found random cargo near asteroid or something and went to loot it
                 randVal = rand.Next(3, 6) * 6;
-				Add(randVal, max_Cargo, true);
+                CargoAdd(randVal);
                 break;
                 //Do I need a default case?
         }
-		/* Not for now
-		GameObject HUD = GameObject.FindWithTag("HUD");
-		HUDScript HUDScript = HUD.GetComponent<HUDScript> ();
-		HUDScript.CargoUpdate(curr_Cargo, max_Cargo);
-		*/
     }
 
-    void Sub(int randVal, bool isCargo)
+    void CargoSub(int randVal)
     {
         int min_limit = 0;
-		int current;
+        int cargo_calc = curr_Cargo - randVal;
 
-		if (isCargo) 
-			current = curr_Cargo;
-		else 
-			current = curr_Health;
-
-        int diff = current - randVal;
-
-        if (diff >= min_limit)
-            current = diff;
+        if (cargo_calc >= min_limit)
+            curr_Cargo = cargo_calc;
         else
-            current = min_limit;
-
-		if (isCargo) 
-			curr_Cargo = current;
-		else 
-			curr_Health = current;
+            curr_Cargo = min_limit;
     }
 
-    void Add(int randVal, int max, bool isCargo)
+    void CargoAdd(int randVal)
     {
-        int max_limit = max;
-		int current;
+        int max_limit = 100;
+        int cargo_calc = curr_Cargo + randVal;
 
-		if (isCargo)
-			current = curr_Cargo;
-		else
-			current = curr_Health;
-
-        int sum = current + randVal;
-
-        if (sum <= max_limit)
-            current = sum;
+        if (cargo_calc <= max_limit)
+            curr_Cargo = cargo_calc;
         else
-            current = max_limit;
-
-		if (isCargo) 
-			curr_Cargo = current;
-		else 
-			curr_Health = current;
-
+            curr_Cargo = max_limit;
     }
 }

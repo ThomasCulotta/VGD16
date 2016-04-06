@@ -16,8 +16,7 @@ public class IsoCamera : MonoBehaviour
     private float manDeltaZ;
     private float deltaRotY;
     private float deltaZoom;
-    private bool  movingToPlayer;
-    private bool  constMoveToPlayer;
+    private bool  moveToPlayer;
 
     private Vector3 prevMousePos = Vector3.zero;
     private Vector3 curMousePos  = Vector3.zero;
@@ -27,8 +26,7 @@ public class IsoCamera : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         cam = transform.GetChild(0).gameObject;
-        movingToPlayer = false;
-        constMoveToPlayer = false;
+        moveToPlayer = false;
 	}
 	
 	void FixedUpdate()
@@ -41,19 +39,15 @@ public class IsoCamera : MonoBehaviour
         prevMousePos = curMousePos;
         curMousePos = Input.mousePosition;
 
-        // Should we move to player?
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            movingToPlayer = !movingToPlayer;
-        }
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            constMoveToPlayer = !constMoveToPlayer;
+            moveToPlayer = !moveToPlayer;
         }
 
         // Translation X and Z
-        if (movingToPlayer || constMoveToPlayer)
+        if (moveToPlayer)
         {
+            transform.rotation = Quaternion.identity;
             if (Mathf.Abs(transform.position.x - player.transform.position.x) > 0.25f)
                 deltaX = (player.transform.position.x - transform.position.x) / 5f;
             if (Mathf.Abs(transform.position.z - player.transform.position.z) > 0.25f)
@@ -67,7 +61,7 @@ public class IsoCamera : MonoBehaviour
         }
         
         // Rotation Y
-		if (Input.GetMouseButton(0) && !movingToPlayer)
+        if (Input.GetMouseButton(0) && !moveToPlayer)
         {
             //if mouse0 is pressed down
             deltaRotY = (curMousePos.x - prevMousePos.x);
@@ -82,11 +76,9 @@ public class IsoCamera : MonoBehaviour
 
 	void Update()
     {
-        if (movingToPlayer || constMoveToPlayer)
+        if (moveToPlayer)
             if (deltaX != 0 || deltaZ != 0)
                 transform.Translate(new Vector3(deltaX * CAM_SPEED * Time.deltaTime, 0f, deltaZ * CAM_SPEED * Time.deltaTime));
-            else
-                movingToPlayer = false;
         else
             transform.Translate(new Vector3(manDeltaX * CAM_SPEED * Time.deltaTime, 0f, manDeltaZ * CAM_SPEED * Time.deltaTime));
 
