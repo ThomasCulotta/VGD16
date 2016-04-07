@@ -12,8 +12,6 @@ public class IsoCamera : MonoBehaviour
 
     private float deltaX;
     private float deltaZ;
-    private float manDeltaX;
-    private float manDeltaZ;
     private float deltaRotY;
     private float deltaZoom;
     private bool  moveToPlayer;
@@ -33,8 +31,6 @@ public class IsoCamera : MonoBehaviour
     {
         deltaX = 0f;
         deltaZ = 0f;
-        manDeltaX = 0f;
-        manDeltaZ = 0f;
         deltaRotY = 0f;
         prevMousePos = curMousePos;
         curMousePos = Input.mousePosition;

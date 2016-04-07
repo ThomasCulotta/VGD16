@@ -17,8 +17,8 @@ public class PlayerController : MonoBehaviour
     ///////////////
     // Ship stats
     ///////////////
-    public float max_Health  = 100f;
-    public float curr_Health = 100f;
+    public int max_Health  = 100;
+    public int curr_Health = 100;
 
     // If we ever decide for cargo size
     public int max_Cargo  = 100;
@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
 
     // Used for determining what happens to cargo
     private int cargoResult = 0;
-    
+
     ///////////////
     // Player turn
     ///////////////
@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour
     private bool selectingEnemy = false;
     private bool holdMoves      = false;
     private bool newMove        = false;
-    public  bool cloaked        = false;
+    private bool imHidden       = false;
 
     ///////////////
     // Movement
@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour
 
     public  static bool[,] BlockedGrid;
     private GridSpace[,]   PlayerGrid;
-    private ArrayList      gridPlanes;    
+    private ArrayList      gridPlanes;
 
     public  GameObject gridPlane;
     private int  MAX_MOVE = 10;
@@ -113,11 +113,11 @@ public class PlayerController : MonoBehaviour
                     /* NOTE: BFS that determines available player movement.
                      *       Clears arrays at the beginning of each turn.
                      *
-                     *       In a coroutine to free current process and allow variable 
+                     *       In a coroutine to free current process and allow variable
                      *       speed in populating the grid.
                      */
                     playerStart = false;
-                    cloaked = false;
+                    imHidden = false;
                     newMove = true;
                     playerMoveCount = 2;
                 }
@@ -157,7 +157,7 @@ public class PlayerController : MonoBehaviour
                             {
                                 EnemyLoS curLos = curSelectedEnemy.GetComponent<EnemyLoS>();
                                 curLos.GetEMPed();
-         
+
                                 DeselectEnemy();
                                 selectingEnemy = false;
                                 playerMoveCount--;
@@ -175,7 +175,7 @@ public class PlayerController : MonoBehaviour
                     else if (!holdMoves)
                     {
                         /*
-                        * NOTE: If the player has moves left and are not currently in action, 
+                        * NOTE: If the player has moves left and are not currently in action,
                         * allow them to either move on the grid or use an ability,
                         * or allow them to end the turn.
                         */
@@ -245,7 +245,7 @@ public class PlayerController : MonoBehaviour
                         {
                             Debug.Log("CLOAKING");
                             // Cloaking
-                            cloaked = true;
+                            imHidden = true;
                         }
                         else if (Input.GetKeyDown(KeyCode.Alpha0))
                         {
@@ -332,8 +332,8 @@ public class PlayerController : MonoBehaviour
                 BlockedGrid[(int)posOffset.x, (int)posOffset.y] = true;
 
                 // Check for collision
-                if (!Physics.CheckBox(new Vector3(x, 0f, z), 
-                                      new Vector3(0.499f, 10f, 0.499f), Quaternion.identity, 
+                if (!Physics.CheckBox(new Vector3(x, 0f, z),
+                                      new Vector3(0.499f, 10f, 0.499f), Quaternion.identity,
                                       255, QueryTriggerInteraction.Ignore))
                 {
                     bool hiddenSpace = false;
@@ -341,12 +341,12 @@ public class PlayerController : MonoBehaviour
                     bool destSpace   = false;
 
                     // Check for stealth trigger
-                    Collider[] triggerArray = Physics.OverlapBox(new Vector3(x, 0f, z), 
-                                                                 new Vector3(0.499f, 10f, 0.499f), Quaternion.identity, 
+                    Collider[] triggerArray = Physics.OverlapBox(new Vector3(x, 0f, z),
+                                                                 new Vector3(0.499f, 10f, 0.499f), Quaternion.identity,
                                                                  255, QueryTriggerInteraction.Collide);
                     if (triggerArray.Length > 0)
                     {
-                        /* 
+                        /*
                          * NOTE: Loop will help catch unnecessary triggers.
                          *       Won't really be necessary in "release" build.
                          */
@@ -482,9 +482,11 @@ public class PlayerController : MonoBehaviour
             GridSpace curGrid = PlayerGrid[(int)posOffset.x, (int)posOffset.y];
 
             destReached = curGrid.destination;
+            if (!imHidden)
+                imHidden = true;
             if (curGrid.cargo)
-                CargoAdd(Random.Range(5, 15));
-            
+                Add(Random.Range(5, 15), max_Cargo, true);
+
             if (!destReached && playerMoveCount > 0)
             {
                 newMove = true;
@@ -511,7 +513,7 @@ public class PlayerController : MonoBehaviour
 
         if (curSelectedEnemy != null && selectableEnemies.Count == 1)
             return;
-        
+
         if (curSelectedEnemy != null)
         {
             DeselectEnemy();
@@ -530,7 +532,7 @@ public class PlayerController : MonoBehaviour
 
     public void decreaseHealth()
     {
-        curr_Health -= 2f; // whatever happens to player we decrease health
+        curr_Health -= 2; // whatever happens to player we decrease health
 
         //need a ratio to from current health & max health to scale the hp bar
         float calc_Health = curr_Health / max_Health;
@@ -557,54 +559,84 @@ public class PlayerController : MonoBehaviour
         {
             case 1: // Good negotiation, pirates are happy
                 randVal = rand.Next(1, 5) * 6;
-                CargoSub(randVal);
+                Sub(randVal, true);
                 break;
             case 2: // Decent negotiation, pirates are alright with you
                 randVal = rand.Next(2, 6) * 7;
-                CargoSub(randVal);
+                Sub(randVal, true);
                 break;
             case 3: // Bad negotiation, pirates hate you
                 randVal = rand.Next(3, 8) * 8;
-                CargoSub(randVal);
+                Sub(randVal, true);
                 break;
             case 4: // You've run into the space police and were caught, but let go; cargo forfeited
                 curr_Cargo = 0;
                 break;
             case 5: // Run into space police or pirates and tried to run but got shot so lost some cargo
                 randVal = rand.Next(2, 5) * 10;
-                CargoSub(randVal);
+                Sub(randVal, true);
                 break;
             case 6: // Attempted recovery of cargo after being shot
                 randVal = rand.Next(2, 5) * 5;
-                CargoAdd(randVal);
+                Add(randVal, max_Cargo, true);
                 break;
             case 7: // Found random cargo near asteroid or something and went to loot it
                 randVal = rand.Next(3, 6) * 6;
-                CargoAdd(randVal);
+                Add(randVal, max_Cargo, true);
                 break;
                 //Do I need a default case?
         }
+        /* Not for now
+        GameObject HUD = GameObject.FindWithTag("HUD");
+        HUDScript HUDScript = HUD.GetComponent<HUDScript> ();
+        HUDScript.CargoUpdate(curr_Cargo, max_Cargo);
+        */
     }
 
-    void CargoSub(int randVal)
+    void Sub(int randVal, bool isCargo)
     {
         int min_limit = 0;
-        int cargo_calc = curr_Cargo - randVal;
+        int current;
 
-        if (cargo_calc >= min_limit)
-            curr_Cargo = cargo_calc;
+        if (isCargo)
+            current = curr_Cargo;
         else
-            curr_Cargo = min_limit;
+            current = curr_Health;
+
+        int diff = current - randVal;
+
+        if (diff >= min_limit)
+            current = diff;
+        else
+            current = min_limit;
+
+        if (isCargo)
+            curr_Cargo = current;
+        else
+            curr_Health = current;
     }
 
-    void CargoAdd(int randVal)
+    void Add(int randVal, int max, bool isCargo)
     {
-        int max_limit = 100;
-        int cargo_calc = curr_Cargo + randVal;
+        int max_limit = max;
+        int current;
 
-        if (cargo_calc <= max_limit)
-            curr_Cargo = cargo_calc;
+        if (isCargo)
+            current = curr_Cargo;
         else
-            curr_Cargo = max_limit;
+            current = curr_Health;
+
+        int sum = current + randVal;
+
+        if (sum <= max_limit)
+            current = sum;
+        else
+            current = max_limit;
+
+        if (isCargo)
+            curr_Cargo = current;
+        else
+            curr_Health = current;
+
     }
 }
