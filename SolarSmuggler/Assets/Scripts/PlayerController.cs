@@ -2,7 +2,6 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
-using System;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,6 +9,7 @@ public class PlayerController : MonoBehaviour
     {
         public Vector3 coordinates;
         public bool hidden;
+        public bool cargo;
         public float distance;
         public bool destination;
     }
@@ -121,6 +121,10 @@ public class PlayerController : MonoBehaviour
                     newMove = true;
                     playerMoveCount = 2;
                 }
+                else if (destReached)
+                {
+                    GameMaster.CurrentState = GameMaster.GameState.GAME_WIN;
+                }
                 if (newMove)
                 {
                     newMove  = false;
@@ -128,10 +132,6 @@ public class PlayerController : MonoBehaviour
                     MAX_MOVE = 10;
 
                     StartCoroutine("GridBFS");
-                }
-                else if (destReached)
-                {
-                    GameMaster.CurrentState = GameMaster.GameState.GAME_WIN;
                 }
                 else if (playerMoveCount > 0)
                 {
@@ -337,7 +337,8 @@ public class PlayerController : MonoBehaviour
                                       255, QueryTriggerInteraction.Ignore))
                 {
                     bool hiddenSpace = false;
-                    bool destSpace = false;
+                    bool cargoSpace  = false;
+                    bool destSpace   = false;
 
                     // Check for stealth trigger
                     Collider[] triggerArray = Physics.OverlapBox(new Vector3(x, 0f, z), 
@@ -351,7 +352,10 @@ public class PlayerController : MonoBehaviour
                          */
                         for (int i = 0; i < triggerArray.Length; i++)
                         {
-                            if (triggerArray[i].tag.Equals("Stealth")) hiddenSpace = true;
+                            if (triggerArray[i].tag.Equals("Stealth"))
+                                hiddenSpace = true;
+                            else if (triggerArray[i].tag.Equals("Cargo"))
+                                cargoSpace = true;
                             else if (triggerArray[i].tag.Equals("Destination"))
                             {
                                 destSpace = true;
@@ -367,6 +371,7 @@ public class PlayerController : MonoBehaviour
                     {
                         coordinates = new Vector3(x, 0f, z),
                         hidden = hiddenSpace,
+                        cargo = cargoSpace,
                         distance = dist + 1,
                         destination = destSpace
                     };
@@ -407,15 +412,15 @@ public class PlayerController : MonoBehaviour
             // Check cardinal spaces first
             GridSpace closestSpace = PlayerGrid[meX, loY];
 
-            if (PlayerGrid[meX, hiY].distance <= closestSpace.distance) closestSpace = PlayerGrid[meX, hiY];
-            if (PlayerGrid[hiX, meY].distance <= closestSpace.distance) closestSpace = PlayerGrid[hiX, meY];
-            if (PlayerGrid[loX, meY].distance <= closestSpace.distance) closestSpace = PlayerGrid[loX, meY];
+            if (PlayerGrid[meX, hiY].distance <= closestSpace.distance && PlayerGrid[meX, hiY].distance > 0) closestSpace = PlayerGrid[meX, hiY];
+            if (PlayerGrid[hiX, meY].distance <= closestSpace.distance && PlayerGrid[hiX, meY].distance > 0) closestSpace = PlayerGrid[hiX, meY];
+            if (PlayerGrid[loX, meY].distance <= closestSpace.distance && PlayerGrid[loX, meY].distance > 0) closestSpace = PlayerGrid[loX, meY];
 
             // Check diagonals
-            if (PlayerGrid[hiX, hiY].distance <= closestSpace.distance) closestSpace = PlayerGrid[hiX, hiY];
-            if (PlayerGrid[hiX, loY].distance <= closestSpace.distance) closestSpace = PlayerGrid[hiX, loY];
-            if (PlayerGrid[loX, hiY].distance <= closestSpace.distance) closestSpace = PlayerGrid[loX, hiY];
-            if (PlayerGrid[loX, loY].distance <= closestSpace.distance) closestSpace = PlayerGrid[loX, loY];
+            if (PlayerGrid[hiX, hiY].distance <= closestSpace.distance && PlayerGrid[hiX, hiY].distance > 0) closestSpace = PlayerGrid[hiX, hiY];
+            if (PlayerGrid[hiX, loY].distance <= closestSpace.distance && PlayerGrid[hiX, loY].distance > 0) closestSpace = PlayerGrid[hiX, loY];
+            if (PlayerGrid[loX, hiY].distance <= closestSpace.distance && PlayerGrid[loX, hiY].distance > 0) closestSpace = PlayerGrid[loX, hiY];
+            if (PlayerGrid[loX, loY].distance <= closestSpace.distance && PlayerGrid[loX, loY].distance > 0) closestSpace = PlayerGrid[loX, loY];
 
             Pathfind(closestSpace.coordinates);
         }
@@ -473,9 +478,12 @@ public class PlayerController : MonoBehaviour
             transform.position = new Vector3(curPosition.x, 0f, curPosition.z);
             playerMoveCount--;
 
-            for (int i = 0; i < destList.Count; i++)
-                if (curPosition == (Vector3)destList[i])
-                    destReached = true;
+            Vector2 posOffset = new Vector2(curPosition.x - transform.position.x + MAX_MOVE, curPosition.z - transform.position.z + MAX_MOVE);
+            GridSpace curGrid = PlayerGrid[(int)posOffset.x, (int)posOffset.y];
+
+            destReached = curGrid.destination;
+            if (curGrid.cargo)
+                CargoAdd(Random.Range(5, 15));
             
             if (!destReached && playerMoveCount > 0)
             {
