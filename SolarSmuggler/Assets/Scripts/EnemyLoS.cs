@@ -15,9 +15,11 @@ using System.Collections;
  */
 public class EnemyLoS : MonoBehaviour
 {
-    //Enemy checkin
-    private const int MAX_ENEMY_COUNT = 3;
-    private static int maxEnemies = MAX_ENEMY_COUNT;
+    //Enemy check in
+    private static ArrayList finishedList = new ArrayList();
+    private int finishedListIndex;
+    private int id;
+    private bool removed;
 
     //Debug Variables
     private const bool DEBUG = false;
@@ -39,7 +41,6 @@ public class EnemyLoS : MonoBehaviour
     private bool       turnInProgress;
     private bool       playerFound;
     private bool       isSelected;
-    private bool       isFinished;
     private bool       shot;
 
     public struct GridNode
@@ -76,13 +77,14 @@ public class EnemyLoS : MonoBehaviour
     public  GameObject disorientedPrefab;
     private GameObject disorientedInst;
 
-    void Start()
+    void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         init = true;
-        isFinished = false;
         playerFound = false;
         shot = true;
+        id = GetInstanceID();
+        removed = false;
     }
 
     void Update()
@@ -92,25 +94,29 @@ public class EnemyLoS : MonoBehaviour
             // Thomas: Added this small debug line so we'll see exactly what the ray is doing when we test this out.
             Debug.DrawLine(transform.position, player.transform.position, Color.cyan, 0.5f);
 
-            //Reset Game Board
+            //Reset Game Board.
             if (init)
             {
-                init = false;
-                turnInProgress = true;
-                playerFound = false;
-                isFinished = false;
-                shot = true;
-                playerNode = new GridNode();
-                playerPos = player.transform.position;
-                curPos = transform.position;
-
-                //set to MAX_ENEMIES in SpawnSystem
-                maxEnemies = MAX_ENEMY_COUNT;
-                EnemySearchPlane = new GridNode[(int)MAX_SPOT, (int)MAX_SPOT];
+                init              = false;
+                removed           = false;
+                finishedList.Add(id);
+                finishedListIndex = finishedList.Count - 1;
+                turnInProgress    = true;
+                playerFound       = false;
+                shot              = true;
+                playerNode        = new GridNode();
+                playerPos         = player.transform.position;
+                curPos            = transform.position;
+                EnemySearchPlane  = new GridNode[(int)MAX_SPOT, (int)MAX_SPOT];
                 StartCoroutine("initESP");
+                Debug.Log(id + "Checking in, finishedList Count: " + finishedList.Count);
             }
             else
             {
+                //Recalculating enemy instance Array posistion. 
+                UpdateIndex();
+
+                //Player ended enemy turn with emp.
                 if (emp)
                 {
                     emp = false;
@@ -119,7 +125,7 @@ public class EnemyLoS : MonoBehaviour
                     Debug.Log("PLAYER_TURN -from enemyLOS EMPed");
                     GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
                 }
-                else if (!isFinished)
+                else if (finishedList.Count > 0 && !removed)
                 {
                     //Movement
                     if (playerFound)
@@ -138,7 +144,7 @@ public class EnemyLoS : MonoBehaviour
 
                         if (moveList.Count == 0)
                         {
-                            //Checks if player is obstructed by obstacle 
+                            //Checks if player is obstructed by obstacle. 
                             Vector3 heading = player.transform.position - transform.position;
                             if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
                             {
@@ -153,19 +159,22 @@ public class EnemyLoS : MonoBehaviour
                     }
                 }
 
-                //Change the Game State to PLAYER_TURN
-                if (!isFinished)
+                //Change the Game State to PLAYER_TURN.
+                if ( finishedList.Count > 0 && !removed)
                 {
-                    maxEnemies--;
-                    isFinished = true;
+                    finishedList.RemoveAt(finishedListIndex);
+                    removed = true;
+                    Debug.Log(id + " Checking out, finishedList Count: " + finishedList.Count);
                 }
 
-                if (maxEnemies <= 0)
+                if (finishedList.Count <= 0)
                 {
                     init = true;
                     Debug.Log("PLAYER_TURN -from enemyLOS");
                     GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
                 }
+
+
             }
         }
     }
@@ -217,10 +226,6 @@ public class EnemyLoS : MonoBehaviour
             if (xM1 > -1       && yM1 > -1       && !EnemySearchPlane[xM1, yM1].visited) visit(xM1, yM1); //SouthWest
             if (xP1 < MAX_SPOT && yM1 > -1       && !EnemySearchPlane[xP1, yM1].visited) visit(xP1, yM1); //SouthEast
             if (xM1 > -1       && yP1 < MAX_SPOT && !EnemySearchPlane[xM1, yP1].visited) visit(xM1, yP1); //NorthWest
-
-            //Debug
-            if(DEBUG)
-                Debug.Log("[" + cur.x + "," + cur.y + "]" + " Coords: " + cur.coords + "; Visited: " + cur.visited + "; hasPlayer: " + cur.hasPlayer + "; Distance: " + cur.dist);
         }
     }
 
@@ -370,10 +375,8 @@ public class EnemyLoS : MonoBehaviour
     void ShootAtPlayer(Vector3 dest)
     {
         float dist = Vector3.Distance(dest, playerPos);
-        //Debug.Log("MAX_FIRE_DIST=" + MAX_FIRE_DIST +" " + "dist=" + dist);
         if (MAX_FIRE_DIST >= dist)
         {
-            //Debug.Log("Shooting at Player");
             int shotHit = Random.Range(0, 2);
 
             // If disoriented, cut shot chance in half
@@ -400,4 +403,18 @@ public class EnemyLoS : MonoBehaviour
         }
         
     }
+
+    //Updates Enemy Instance Index in finishedList
+    void UpdateIndex()
+    {
+        int i;
+        for(i = 0; i<finishedList.Count; i++)
+        {
+            if((int)finishedList[i] == id)
+            {
+                finishedListIndex = i;
+            }
+        }
+    }
+
 }
