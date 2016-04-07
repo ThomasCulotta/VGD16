@@ -3,7 +3,7 @@ using System.Collections;
 
 public class IsoCamera : MonoBehaviour
 {
-    private const float CAM_SPEED = 10f;
+    private const float CAM_SPEED = 6f;
     private const float ROT_SPEED = 50f;
     private const float ZOOM_SPEED = 10f;
 
@@ -47,17 +47,15 @@ public class IsoCamera : MonoBehaviour
         // Translation X and Z
         if (moveToPlayer)
         {
-            transform.rotation = Quaternion.identity;
             if (Mathf.Abs(transform.position.x - player.transform.position.x) > 0.25f)
                 deltaX = (player.transform.position.x - transform.position.x) / 5f;
             if (Mathf.Abs(transform.position.z - player.transform.position.z) > 0.25f)
                 deltaZ = (player.transform.position.z - transform.position.z) / 5f;
-            Debug.Log("Moving");
         }
         else
         {
-            manDeltaX = Input.GetAxisRaw("Horizontal");
-            manDeltaZ = Input.GetAxisRaw("Vertical");
+            deltaX = Input.GetAxisRaw("Horizontal");
+            deltaZ = Input.GetAxisRaw("Vertical");
         }
         
         // Rotation Y
@@ -76,12 +74,9 @@ public class IsoCamera : MonoBehaviour
 
 	void Update()
     {
-        if (moveToPlayer)
-            if (deltaX != 0 || deltaZ != 0)
-                transform.Translate(new Vector3(deltaX * CAM_SPEED * Time.deltaTime, 0f, deltaZ * CAM_SPEED * Time.deltaTime));
-        else
-            transform.Translate(new Vector3(manDeltaX * CAM_SPEED * Time.deltaTime, 0f, manDeltaZ * CAM_SPEED * Time.deltaTime));
-
+        if (deltaX != 0 || deltaZ != 0)
+            transform.position = transform.position + new Vector3(deltaX * CAM_SPEED * Time.deltaTime, 0f, deltaZ * CAM_SPEED * Time.deltaTime);
+        
         if (deltaRotY != 0)
             transform.Rotate(0f, deltaRotY * ROT_SPEED * Time.deltaTime, 0f);
 
