@@ -14,14 +14,6 @@ public class PlayerController : MonoBehaviour
         public bool destination;
     }
 
-    public enum Ability
-    {
-        EMP,
-        EMP_BLAST,
-
-        ABILITY_COUNT
-    }
-
     ///////////////
     // Ship stats
     ///////////////
@@ -39,7 +31,7 @@ public class PlayerController : MonoBehaviour
     // Player turn
     ///////////////
     public  static int playerMoveCount = 0;
-    private bool playerStart      = true;
+    private bool playerStart = true;
 
     // public static so GridSpace can color accordingly
     public static bool hyperJumping   = false;
@@ -47,6 +39,7 @@ public class PlayerController : MonoBehaviour
     private bool selectingEnemy = false;
     private bool holdMoves      = false;
     private bool newMove        = false;
+    public  bool cloaked        = false;
 
     ///////////////
     // Movement
@@ -78,7 +71,6 @@ public class PlayerController : MonoBehaviour
     private GameObject curSelectedEnemy;
     private int        curSelectedIndex;
     private ArrayList  affectedEnemies;
-    private Ability    curAbility;
 
     ///////////////
     // UI
@@ -125,6 +117,7 @@ public class PlayerController : MonoBehaviour
                      *       speed in populating the grid.
                      */
                     playerStart = false;
+                    cloaked = false;
                     newMove = true;
                     playerMoveCount = 2;
                 }
@@ -134,11 +127,6 @@ public class PlayerController : MonoBehaviour
                     destList = new ArrayList();
                     MAX_MOVE = 10;
 
-                    if (hyperJumping)
-                        MAX_MOVE = 18;
-                    for (int i = 0; i < gridPlanes.Count; i++)
-                        DestroyImmediate((GameObject)gridPlanes[i]);
-                    gridPlanes.Clear();
                     StartCoroutine("GridBFS");
                 }
                 else if (destReached)
@@ -167,27 +155,9 @@ public class PlayerController : MonoBehaviour
                         {
                             if (curSelectedEnemy != null)
                             {
-                                switch (curAbility)
-                                {
-                                    case (Ability.EMP):
-                                    {
-                                        EnemyLoS curLos = curSelectedEnemy.GetComponent<EnemyLoS>();
-                                        curLos.GetEMPed();
-                                    }
-                                    break;
-
-                                    case (Ability.EMP_BLAST):
-                                    {
-                                        GetEnemyListInArea(ref affectedEnemies, curSelectedEnemy.transform.position, 5f);
-                                        for (int i = 0; i < affectedEnemies.Count; i++)
-                                        {
-                                            GameObject curEnemy = (GameObject)affectedEnemies[i];
-                                            EnemyLoS curLos = curEnemy.GetComponent<EnemyLoS>();
-                                            curLos.GetEMPed();
-                                        }
-                                    }
-                                    break;
-                                }
+                                EnemyLoS curLos = curSelectedEnemy.GetComponent<EnemyLoS>();
+                                curLos.GetEMPed();
+         
                                 DeselectEnemy();
                                 selectingEnemy = false;
                                 playerMoveCount--;
@@ -215,35 +185,75 @@ public class PlayerController : MonoBehaviour
                             * NOTE: Pathfinds backwards from selected GridSpace to player
                             *       iTweens player to each gridspace
                             */
-                            holdMoves = true;
-                            curPosition = nextPosition;
-                            moveList = new ArrayList();
-                            Pathfind(nextPosition);
-                            MovePlayer();
+                            if (hyperJumping)
+                            {
+                                transform.position = nextPosition;
+                                curPosition = nextPosition;
+                                newMove = true;
+                            }
+                            else
+                            {
+                                holdMoves = true;
+                                curPosition = nextPosition;
+                                moveList = new ArrayList();
+                                Pathfind(nextPosition);
+                                MovePlayer();
+                            }
+                            for (int i = 0; i < gridPlanes.Count; i++)
+                                Destroy((GameObject)gridPlanes[i]);
+                            gridPlanes.Clear();
                         }
                         else if (Input.GetKeyDown(KeyCode.Alpha1))
                         {
                             // Hyper jump
+                            Debug.Log("HYPER JUMPING");
                             if (!hyperJumping)
                             {
                                 hyperJumping = true;
                                 newMove      = true;
+                                for (int i = 0; i < gridPlanes.Count; i++)
+                                    Destroy((GameObject)gridPlanes[i]);
+                                gridPlanes.Clear();
                             }
                             else
+                            {
                                 hyperJumping = false;
+                                newMove      = true;
+                                for (int i = 0; i < gridPlanes.Count; i++)
+                                    Destroy((GameObject)gridPlanes[i]);
+                                gridPlanes.Clear();
+                            }
                         }
                         else if (Input.GetKeyDown(KeyCode.Alpha2))
                         {
-                            BeginSelecting(Ability.EMP);
+                            Debug.Log("EMP SELECTION");
+                            selectingEnemy = true;
+
+                            if (selectableEnemies == null)
+                                GetEnemyListInArea(ref selectableEnemies, transform.position, 10f);
+
+                            if (selectableEnemies.Count > 0)
+                            {
+                                Debug.Log("Selectable enemies exist.");
+                                curSelectedIndex = 0;
+                                SelectEnemy();
+                            }
+                            else
+                                selectingEnemy = false;
                         }
                         else if (Input.GetKeyDown(KeyCode.Alpha3))
                         {
-                            BeginSelecting(Ability.EMP_BLAST);
+                            Debug.Log("CLOAKING");
+                            // Cloaking
+                            cloaked = true;
                         }
                         else if (Input.GetKeyDown(KeyCode.Alpha0))
                         {
                             // End turn
                             playerStart = true;
+                            for (int i = 0; i < gridPlanes.Count; i++)
+                                Destroy((GameObject)gridPlanes[i]);
+                            gridPlanes.Clear();
                             GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
                         }
                     }
@@ -252,6 +262,7 @@ public class PlayerController : MonoBehaviour
                 {
                     // End turn
                     playerStart = true;
+                    holdMoves = false;
                     GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
                 }
             }
@@ -472,24 +483,6 @@ public class PlayerController : MonoBehaviour
                 holdMoves = false;
             }
         }
-    }
-
-    void BeginSelecting(Ability ab)
-    {
-        selectingEnemy = true;
-        curAbility = ab;
-       
-        if (selectableEnemies == null)
-            GetEnemyListInArea(ref selectableEnemies, transform.position, 10f);
-
-        if (selectableEnemies.Count > 0)
-        {
-            Debug.Log("Selectable enemies exist.");
-            curSelectedIndex = 0;
-            SelectEnemy();
-        }
-        else
-            selectingEnemy = false;
     }
 
     void GetEnemyListInArea(ref ArrayList curList, Vector3 origin, float radius)

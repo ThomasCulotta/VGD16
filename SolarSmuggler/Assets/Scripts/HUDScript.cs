@@ -21,8 +21,8 @@ public class HUDScript : MonoBehaviour {
 		GameObject player = GameObject.FindWithTag("Player");
 		PlayerController playerController = player.GetComponent<PlayerController> ();
 
-		int health = playerController.curr_Health;
-		int max_Health = playerController.max_Health;
+		int health = (int)playerController.curr_Health;
+		int max_Health = (int)playerController.max_Health;
 		int cargo = playerController.curr_Cargo;
 		int max_Cargo = playerController.max_Cargo;
 
