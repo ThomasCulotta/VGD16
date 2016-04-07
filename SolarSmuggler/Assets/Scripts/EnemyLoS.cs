@@ -15,8 +15,9 @@ using System.Collections;
  */
 public class EnemyLoS : MonoBehaviour
 {
-    //Ememy checkin
-    private static int maxEnemies = 1;
+    //Enemy checkin
+    private const int MAX_ENEMY_COUNT = 3;
+    private static int maxEnemies = MAX_ENEMY_COUNT;
 
     //Debug Variables
     private const bool DEBUG = false;
@@ -104,7 +105,7 @@ public class EnemyLoS : MonoBehaviour
                 curPos = transform.position;
 
                 //set to MAX_ENEMIES in SpawnSystem
-                maxEnemies = 1;
+                maxEnemies = MAX_ENEMY_COUNT;
                 EnemySearchPlane = new GridNode[(int)MAX_SPOT, (int)MAX_SPOT];
                 StartCoroutine("initESP");
             }
@@ -142,7 +143,7 @@ public class EnemyLoS : MonoBehaviour
                             if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
                             {
                                 //Combat
-                                if (hit.collider.tag.Equals("Player") && shot)
+                                if (shot)
                                 {
                                     ShootAtPlayer(dest.coords);
                                     shot = false;
@@ -392,9 +393,9 @@ public class EnemyLoS : MonoBehaviour
                 laser.SetPositions(linePos);
                 */
                 player.GetComponent<PlayerController>().decreaseHealth();
-                //Debug.Log("Player has been hit, health is " + (player.GetComponent<PlayerController>().curr_Health) + "\n");
+                Debug.Log("Player has been hit, health is " + (player.GetComponent<PlayerController>().curr_Health) + "\n");
             } else {
-                //Debug.Log("Enemy has missed player, health is " + player.GetComponent<PlayerController>().curr_Health + "\n");
+                Debug.Log("Enemy has missed player, health is " + player.GetComponent<PlayerController>().curr_Health + "\n");
             }
         }
         
