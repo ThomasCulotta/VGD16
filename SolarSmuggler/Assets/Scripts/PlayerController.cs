@@ -230,6 +230,9 @@ public class PlayerController : MonoBehaviour
                                 if (Random.Range(0, 10) >= 3)
                                     decreaseHealth();
                                 hyperCoolDown = 3;
+                                for (int i = 0; i < gridPlanes.Count; i++)
+                                    Destroy((GameObject)gridPlanes[i]);
+                                gridPlanes.Clear();
                             }
                             else
                             {
