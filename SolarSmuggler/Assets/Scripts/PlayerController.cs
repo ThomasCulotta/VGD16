@@ -75,8 +75,7 @@ public class PlayerController : MonoBehaviour
     ///////////////
     // UI
     ///////////////
-    public GameObject healthBar;
-    public Slider cargoBar;
+    public HUDScript hudScript;
 
     void Start()
     {
@@ -90,6 +89,9 @@ public class PlayerController : MonoBehaviour
         curr_Cargo = max_Cargo; //set cargo to maximum capacity
         //InvokeRepeating("decreaseHealth", 1f, 1f); just for testing purposes, this decreases health by 2 every second
         //SetCargoBar(curr_Cargo);
+
+        GameObject HUD = GameObject.FindGameObjectWithTag("HUD");
+        hudScript = HUD.GetComponent<HUDScript>();
     }
 
     void Update()
@@ -535,20 +537,8 @@ public class PlayerController : MonoBehaviour
         curr_Health -= 2; // whatever happens to player we decrease health
 
         //need a ratio to from current health & max health to scale the hp bar
-        float calc_Health = curr_Health / max_Health;
-        setHealthBar(calc_Health);
+        hudScript.HealthUpdate(curr_Health, max_Health);
     }
-
-    public void setHealthBar(float healthVal)
-    {
-        //health value needs to be from 0 to 1
-        healthBar.transform.localScale = new Vector3(healthVal, healthBar.transform.localScale.y, healthBar.transform.localScale.z);
-    }
-
-    //public void SetCargoBar(float cargo)
-    //{
-    //    cargoBar.value = cargo;
-    //}
 
     public void AdjustCargo()
     {
@@ -611,9 +601,15 @@ public class PlayerController : MonoBehaviour
             current = min_limit;
 
         if (isCargo)
+        {
             curr_Cargo = current;
+            hudScript.CargoUpdate(curr_Cargo, max_Cargo);
+        }
         else
+        {
             curr_Health = current;
+            hudScript.HealthUpdate(curr_Health, max_Health);
+        }
     }
 
     void Add(int randVal, int max, bool isCargo)
@@ -634,9 +630,15 @@ public class PlayerController : MonoBehaviour
             current = max_limit;
 
         if (isCargo)
+        {
             curr_Cargo = current;
+            hudScript.CargoUpdate(curr_Cargo, max_Cargo);
+        }
         else
+        {
             curr_Health = current;
+            hudScript.HealthUpdate(curr_Health, max_Health);
+        }
 
     }
 }
