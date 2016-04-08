@@ -16,32 +16,34 @@ using System.Collections;
 public class EnemyLoS : MonoBehaviour
 {
     //Enemy check in
+    private static bool init;
     private static ArrayList finishedList = new ArrayList();
+    private static bool ready;
     private int finishedListIndex;
     private int id;
     private bool removed;
+    private const int MAX_ENEMIES = 5;
 
     //Debug Variables
     private const bool DEBUG = false;
 
     //Constant Variables
-    private const int   MAX_MOVE = 7;
+    private const int MAX_MOVE = 7;
     private const float MAX_SPOT = (MAX_MOVE * 2 + 1);
     private const float MAX_FIRE_DIST = 2f;
 
     //Utility Variables
     private GameObject player;
     private RaycastHit hit;
-    private Component  playerControllerScript;
-    private Queue      BFSQueue;
-    private ArrayList  moveList;
-    private Vector3    curPos;
-    private Vector3    playerPos;
-    private bool       init;
-    private bool       turnInProgress;
-    private bool       playerFound;
-    private bool       isSelected;
-    private bool       shot;
+    private Component playerControllerScript;
+    private Queue BFSQueue;
+    private ArrayList moveList;
+    private Vector3 curPos;
+    private Vector3 playerPos;
+    private bool turnInProgress;
+    private bool playerFound;
+    private bool isSelected;
+    private bool shot;
 
     public struct GridNode
     {
@@ -65,22 +67,23 @@ public class EnemyLoS : MonoBehaviour
     private GridNode dest;
 
     //Select Variables
-    public  GameObject selectPrefab;
+    public GameObject selectPrefab;
     private GameObject selectInst;
 
     //Condition Variables
     private bool emp;
-    public  GameObject empPrefab;
+    public GameObject empPrefab;
     private GameObject empInst;
 
     private bool disoriented;
-    public  GameObject disorientedPrefab;
+    public GameObject disorientedPrefab;
     private GameObject disorientedInst;
 
     void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         init = true;
+        ready = true;
         playerFound = false;
         shot = true;
         id = GetInstanceID();
@@ -97,25 +100,27 @@ public class EnemyLoS : MonoBehaviour
             //Reset Game Board.
             if (init)
             {
-                init              = false;
-                removed           = false;
-                finishedList.Add(id);
-                finishedListIndex = finishedList.Count - 1;
-                turnInProgress    = true;
-                playerFound       = false;
-                shot              = true;
-                playerNode        = new GridNode();
-                playerPos         = player.transform.position;
-                curPos            = transform.position;
-                EnemySearchPlane  = new GridNode[(int)MAX_SPOT, (int)MAX_SPOT];
-                StartCoroutine("initESP");
-//                Debug.Log(id + "Checking in, finishedList Count: " + finishedList.Count);
+                turnInProgress = true;
+                playerFound = false;
+                shot = true;
+                playerNode = new GridNode();
+                playerPos = player.transform.position;
+                curPos = transform.position;
+
+                if (!finishedList.Contains(id))
+                {
+                    EnemySearchPlane = new GridNode[(int)MAX_SPOT, (int)MAX_SPOT];
+                    StartCoroutine("initESP");
+                    finishedList.Add(id);
+                    Debug.Log(id + " Checking in, finishedList Count: " + finishedList.Count);
+                }
+
+                if (MAX_ENEMIES == finishedList.Count)
+                    init = false;
+
             }
             else
             {
-                //Recalculating enemy instance Array posistion. 
-                UpdateIndex();
-
                 //Player ended enemy turn with emp.
                 if (emp)
                 {
@@ -125,12 +130,11 @@ public class EnemyLoS : MonoBehaviour
                     Debug.Log("PLAYER_TURN -from enemyLOS EMPed");
                     GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
                 }
-                else if (finishedList.Count > 0 && !removed)
+                else if (finishedList.Count > 0 && finishedList.Contains(id))
                 {
                     //Movement
-                    if (playerFound && player.GetComponent<PlayerController>().imHidden)
+                    if (playerFound)
                     {
-                            Debug.Log("PlayerFound");
                         moveList = new ArrayList();
                         PathFinding(MAX_MOVE, MAX_MOVE);
                         if (moveList.Count > 0)
@@ -161,21 +165,21 @@ public class EnemyLoS : MonoBehaviour
                 }
 
                 //Change the Game State to PLAYER_TURN.
-                if ( finishedList.Count > 0 && !removed)
+                if (finishedList.Count > 0 && finishedList.Contains(id))
                 {
-                    finishedList.RemoveAt(finishedListIndex);
-                    removed = true;
-//                    Debug.Log(id + " Checking out, finishedList Count: " + finishedList.Count);
+                    finishedList.Remove(id);
+                    Debug.Log(id + " Checking out, finishedList Count: " + finishedList.Count);
                 }
 
                 if (finishedList.Count <= 0)
                 {
+                    Debug.Log("PLAYER_TURN -from enemyLOS");
                     init = true;
-                //    Debug.Log("PLAYER_TURN -from enemyLOS");
                     GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
                 }
 
-
+                //Recalculating enemy instance Array posistion. 
+                //UpdateIndex();
             }
         }
     }
@@ -187,12 +191,12 @@ public class EnemyLoS : MonoBehaviour
     IEnumerator initESP()
     {
         //the Enemy GridNode is primed
-        EnemySearchPlane[MAX_MOVE, MAX_MOVE].coords    = new Vector3(transform.position.x, 0f, transform.position.z);
-        EnemySearchPlane[MAX_MOVE, MAX_MOVE].visited   = true;
+        EnemySearchPlane[MAX_MOVE, MAX_MOVE].coords = new Vector3(transform.position.x, 0f, transform.position.z);
+        EnemySearchPlane[MAX_MOVE, MAX_MOVE].visited = true;
         EnemySearchPlane[MAX_MOVE, MAX_MOVE].hasPlayer = false;
-        EnemySearchPlane[MAX_MOVE, MAX_MOVE].dist      = Vector3.Distance(transform.position, playerPos);
-        EnemySearchPlane[MAX_MOVE, MAX_MOVE].x         = MAX_MOVE;
-        EnemySearchPlane[MAX_MOVE, MAX_MOVE].y         = MAX_MOVE;
+        EnemySearchPlane[MAX_MOVE, MAX_MOVE].dist = Vector3.Distance(transform.position, playerPos);
+        EnemySearchPlane[MAX_MOVE, MAX_MOVE].x = MAX_MOVE;
+        EnemySearchPlane[MAX_MOVE, MAX_MOVE].y = MAX_MOVE;
 
         //Init the Queue to begin the Flood Fill
         BFSQueue = new Queue();
@@ -210,7 +214,7 @@ public class EnemyLoS : MonoBehaviour
         {
             //Get current node out of Queue
             GridNode cur = (GridNode)BFSQueue.Dequeue();
-            
+
             //Saving Computations
             int xP1 = cur.x + 1;
             int xM1 = cur.x - 1;
@@ -219,14 +223,14 @@ public class EnemyLoS : MonoBehaviour
 
             //Checking Boundaries and if visited
             if (yP1 < MAX_SPOT && !EnemySearchPlane[cur.x, yP1].visited) visit(cur.x, yP1); //North
-            if (yM1 > -1       && !EnemySearchPlane[cur.x, yM1].visited) visit(cur.x, yM1); //South
+            if (yM1 > -1 && !EnemySearchPlane[cur.x, yM1].visited) visit(cur.x, yM1); //South
             if (xP1 < MAX_SPOT && !EnemySearchPlane[xP1, cur.y].visited) visit(xP1, cur.y); //East
-            if (xM1 > -1       && !EnemySearchPlane[xM1, cur.y].visited) visit(xM1, cur.y); //West
+            if (xM1 > -1 && !EnemySearchPlane[xM1, cur.y].visited) visit(xM1, cur.y); //West
 
             if (xP1 < MAX_SPOT && yP1 < MAX_SPOT && !EnemySearchPlane[xP1, yP1].visited) visit(xP1, yP1); //NorthEast
-            if (xM1 > -1       && yM1 > -1       && !EnemySearchPlane[xM1, yM1].visited) visit(xM1, yM1); //SouthWest
-            if (xP1 < MAX_SPOT && yM1 > -1       && !EnemySearchPlane[xP1, yM1].visited) visit(xP1, yM1); //SouthEast
-            if (xM1 > -1       && yP1 < MAX_SPOT && !EnemySearchPlane[xM1, yP1].visited) visit(xM1, yP1); //NorthWest
+            if (xM1 > -1 && yM1 > -1 && !EnemySearchPlane[xM1, yM1].visited) visit(xM1, yM1); //SouthWest
+            if (xP1 < MAX_SPOT && yM1 > -1 && !EnemySearchPlane[xP1, yM1].visited) visit(xP1, yM1); //SouthEast
+            if (xM1 > -1 && yP1 < MAX_SPOT && !EnemySearchPlane[xM1, yP1].visited) visit(xM1, yP1); //NorthWest
         }
     }
 
@@ -237,12 +241,12 @@ public class EnemyLoS : MonoBehaviour
         float yCoord = y + transform.position.z - MAX_MOVE;
 
         //init GridNode
-        EnemySearchPlane[x, y].coords    = new Vector3(xCoord, 0f, yCoord);
-        EnemySearchPlane[x, y].visited   = true;
+        EnemySearchPlane[x, y].coords = new Vector3(xCoord, 0f, yCoord);
+        EnemySearchPlane[x, y].visited = true;
         EnemySearchPlane[x, y].hasPlayer = false;
-        EnemySearchPlane[x, y].dist      = Vector3.Distance(EnemySearchPlane[x, y].coords, playerPos);
-        EnemySearchPlane[x, y].x         = x;
-        EnemySearchPlane[x, y].y         = y;
+        EnemySearchPlane[x, y].dist = Vector3.Distance(EnemySearchPlane[x, y].coords, playerPos);
+        EnemySearchPlane[x, y].x = x;
+        EnemySearchPlane[x, y].y = y;
 
         //Player Found, info is loaded into a new Grid Node struct for easy access
         if (EnemySearchPlane[x, y].coords == player.transform.position)
@@ -250,7 +254,7 @@ public class EnemyLoS : MonoBehaviour
             EnemySearchPlane[x, y].hasPlayer = true;
             playerNode = EnemySearchPlane[x, y];
             playerFound = true;
-            Debug.Log("Found Player at " + playerNode.x + "," + playerNode.y + " He is " + EnemySearchPlane[MAX_MOVE, MAX_MOVE].dist + " away.");
+            Debug.Log(id + " Found Player at " + playerNode.x + "," + playerNode.y + " He is " + EnemySearchPlane[MAX_MOVE, MAX_MOVE].dist + " away.");
         }
 
         //Enque so neighbors can be checked.
@@ -265,7 +269,7 @@ public class EnemyLoS : MonoBehaviour
     void PathFinding(int curX, int curY)
     {
         GridNode closestSpace;
-        if(EnemySearchPlane[curX, curY].dist > 1.4f)
+        if (EnemySearchPlane[curX, curY].dist > 1.4f)
         {
             //Saving Computations
             int xP1 = curX + 1;
@@ -274,20 +278,20 @@ public class EnemyLoS : MonoBehaviour
             int yM1 = curY - 1;
 
             //Checking Bounds
-            if (yP1 > MAX_SPOT-1) yP1--;
-            if (xP1 > MAX_SPOT-1) xP1--;
+            if (yP1 > MAX_SPOT - 1) yP1--;
+            if (xP1 > MAX_SPOT - 1) xP1--;
             if (xM1 < 0) xM1++;
             if (yM1 < 0) yM1++;
 
             //init closestSpace to current Node.
             closestSpace = EnemySearchPlane[curX, curY];
-           
+
             //Cardinals
             if (EnemySearchPlane[curX, yP1].dist < closestSpace.dist && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[curX, yP1]; //North
             if (EnemySearchPlane[curX, yM1].dist < closestSpace.dist && EnemySearchPlane[curX, yM1].visited) closestSpace = EnemySearchPlane[curX, yM1]; //South
             if (EnemySearchPlane[xP1, curY].dist < closestSpace.dist && EnemySearchPlane[xP1, curY].visited) closestSpace = EnemySearchPlane[xP1, curY]; //East
             if (EnemySearchPlane[xM1, curY].dist < closestSpace.dist && EnemySearchPlane[xM1, curY].visited) closestSpace = EnemySearchPlane[xM1, curY]; //West
-            
+
             //Diagonals
             if (EnemySearchPlane[xP1, yP1].dist < closestSpace.dist && EnemySearchPlane[xP1, yP1].visited) closestSpace = EnemySearchPlane[xP1, yP1]; //NorthEast
             if (EnemySearchPlane[xP1, yM1].dist < closestSpace.dist && EnemySearchPlane[xP1, yM1].visited) closestSpace = EnemySearchPlane[xP1, yM1]; //SouthEast
@@ -320,13 +324,13 @@ public class EnemyLoS : MonoBehaviour
 
             do
             {
-                Debug.Log("MoveList Count: " + moveList.Count);
+                //Debug.Log("MoveList Count: " + moveList.Count);
                 curNode = (GridNode)moveList[0];
                 moveList.RemoveAt(0);
                 curDur += 0.5f;
 
             } while (0 < moveList.Count);
-            Debug.Log("MoveList Count: " + moveList.Count);
+            //Debug.Log("MoveList Count: " + moveList.Count);
             iTween.MoveTo(gameObject, iTween.Hash("x", curNode.coords.x,
                                                   "z", curNode.coords.z,
                                                   "time", curDur,
@@ -367,7 +371,7 @@ public class EnemyLoS : MonoBehaviour
         disoriented = true;
         if (disorientedInst == null)
         {
-            disorientedInst = (GameObject)GameObject.Instantiate(disorientedPrefab, 
+            disorientedInst = (GameObject)GameObject.Instantiate(disorientedPrefab,
                                                                  new Vector3(transform.position.x, 0.1f, transform.position.z), Quaternion.identity);
             disorientedInst.transform.parent = transform;
         }
@@ -387,7 +391,7 @@ public class EnemyLoS : MonoBehaviour
                 Destroy(disorientedInst);
                 shotHit = Random.Range(0, 2);
             }
-            
+
             if (shotHit == 1)
             {
                 /*
@@ -398,20 +402,22 @@ public class EnemyLoS : MonoBehaviour
                 */
                 player.GetComponent<PlayerController>().decreaseHealth();
                 Debug.Log("Player has been hit, health is " + (player.GetComponent<PlayerController>().curr_Health) + "\n");
-            } else {
+            }
+            else
+            {
                 Debug.Log("Enemy has missed player, health is " + player.GetComponent<PlayerController>().curr_Health + "\n");
             }
         }
-        
+
     }
 
     //Updates Enemy Instance Index in finishedList
     void UpdateIndex()
     {
         int i;
-        for(i = 0; i<finishedList.Count; i++)
+        for (i = 0; i < finishedList.Count; i++)
         {
-            if((int)finishedList[i] == id)
+            if ((int)finishedList[i] == id)
             {
                 finishedListIndex = i;
             }
