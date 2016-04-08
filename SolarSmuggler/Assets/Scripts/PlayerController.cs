@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
     ///////////////
     // Player turn
     ///////////////
+    private IsoCamera camNullScript;
     public  static int playerMoveCount = 0;
     private bool playerStart = true;
 
@@ -90,6 +91,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        camNullScript = Camera.main.gameObject.transform.parent.GetComponent<IsoCamera>();
         nextPosition = curPosition = transform.position;
         // Force player to grid
         transform.position = new Vector3(Mathf.Floor(transform.position.x), 0f, Mathf.Floor(transform.position.z));
@@ -563,14 +565,27 @@ public class PlayerController : MonoBehaviour
 
             destReached = curGrid.destination;
             if (hyperJumping)
-            hyperJumping = false;
+                hyperJumping = false;
+
+            imHidden = curGrid.hidden;
+
+            if (curGrid.cargo)
+            {
+                Collider[] cargoArray = Physics.OverlapBox(new Vector3(curGrid.coordinates.x, 0f, curGrid.coordinates.z),
+                                                             new Vector3(0.1f, 10f, 0.1f), Quaternion.identity,
+                                                             255, QueryTriggerInteraction.Collide);
+                for (int i = 0; i < cargoArray.Length; i++)
+                    if (cargoArray[i].tag.Equals("Cargo"))
+                    {
+                        GameObject.Destroy(cargoArray[i]);
+                        break;
+                    }
+                Add(Random.Range(5, 15), max_Cargo, true);
+            }
 
             if (!destReached && playerMoveCount > 0)
             {
-                if (!imHidden)
-                    imHidden = true;
-                if (curGrid.cargo)
-                    Add(Random.Range(5, 15), max_Cargo, true);
+
                 
                 if (playerMoveCount > 0)
                 {
@@ -619,6 +634,7 @@ public class PlayerController : MonoBehaviour
     public void decreaseHealth()
     {
         curr_Health -= Random.Range(5, 15);
+        camNullScript.DamageIndicator();
 
         //need a ratio to from current health & max health to scale the hp bar
         hudScript.HealthUpdate(curr_Health, max_Health);

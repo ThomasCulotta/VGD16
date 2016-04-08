@@ -84,4 +84,9 @@ public class IsoCamera : MonoBehaviour
         if (deltaZoom != 0)
             cam.transform.Translate(Vector3.forward * deltaZoom * ZOOM_SPEED);
     }
+
+    public void DamageIndicator()
+    {
+        iTween.ShakePosition(gameObject, iTween.Hash("amount", new Vector3(1f, 1f, 1f), "time", 0.5f));
+    }
 }
