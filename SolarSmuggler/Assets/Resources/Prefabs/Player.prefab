@@ -207,8 +207,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.7, y: 1, z: 0.7}
+  m_Center: {x: 0, y: -1, z: 0}
 --- !u!114 &11439308
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -225,8 +225,8 @@ MonoBehaviour:
   max_Cargo: 100
   curr_Cargo: 0
   gridPlane: {fileID: 197374, guid: 8fa79261a207341a098e5d60406a6fd0, type: 2}
-  healthBar: {fileID: 0}
-  cargoBar: {fileID: 0}
+  timer: 2
+  hudScript: {fileID: 0}
 --- !u!114 &11482614
 MonoBehaviour:
   m_ObjectHideFlags: 1

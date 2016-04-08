@@ -13,6 +13,7 @@ TagManager:
   - Start Button
   - Stealth
   - HUD
+  - Cargo
   layers:
   - Default
   - TransparentFX

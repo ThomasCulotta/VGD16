@@ -109,7 +109,7 @@ public class EnemyLoS : MonoBehaviour
                 curPos            = transform.position;
                 EnemySearchPlane  = new GridNode[(int)MAX_SPOT, (int)MAX_SPOT];
                 StartCoroutine("initESP");
-                Debug.Log(id + "Checking in, finishedList Count: " + finishedList.Count);
+//                Debug.Log(id + "Checking in, finishedList Count: " + finishedList.Count);
             }
             else
             {
@@ -128,8 +128,9 @@ public class EnemyLoS : MonoBehaviour
                 else if (finishedList.Count > 0 && !removed)
                 {
                     //Movement
-                    if (playerFound)
+                    if (playerFound && player.GetComponent<PlayerController>().imHidden)
                     {
+                            Debug.Log("PlayerFound");
                         moveList = new ArrayList();
                         PathFinding(MAX_MOVE, MAX_MOVE);
                         if (moveList.Count > 0)
@@ -164,13 +165,13 @@ public class EnemyLoS : MonoBehaviour
                 {
                     finishedList.RemoveAt(finishedListIndex);
                     removed = true;
-                    Debug.Log(id + " Checking out, finishedList Count: " + finishedList.Count);
+//                    Debug.Log(id + " Checking out, finishedList Count: " + finishedList.Count);
                 }
 
                 if (finishedList.Count <= 0)
                 {
                     init = true;
-                    Debug.Log("PLAYER_TURN -from enemyLOS");
+                //    Debug.Log("PLAYER_TURN -from enemyLOS");
                     GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
                 }
 

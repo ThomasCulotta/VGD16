@@ -9,6 +9,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 469486}
   - 114: {fileID: 11425950}
+  - 65: {fileID: 6511384}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -91,6 +92,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 164830}
   m_Mesh: {fileID: 4300000, guid: 2db8f36fa00354f91a6062e5806b2e5d, type: 3}
+--- !u!65 &6511384
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 120564}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &11425950
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -102,9 +115,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42ff1508e8be85e49bc38a0119fb3541, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectPrefab: {fileID: 0}
-  empPrefab: {fileID: 0}
-  disorientedPrefab: {fileID: 0}
+  selectPrefab: {fileID: 112190, guid: 31c0109c653ba4657b80b004d9619899, type: 2}
+  empPrefab: {fileID: 131872, guid: 6e4d294c4ec1a4e7e9365d0d054cdead, type: 2}
+  disorientedPrefab: {fileID: 196578, guid: eb78f246507de474fbaedb42d434d791, type: 2}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

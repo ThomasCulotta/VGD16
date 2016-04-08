@@ -55,7 +55,7 @@ public class IsoCamera : MonoBehaviour
         }
         
         // Rotation Y
-        if (Input.GetMouseButton(0) && !moveToPlayer)
+        if (Input.GetMouseButton(0))
         {
             //if mouse0 is pressed down
             deltaRotY = (curMousePos.x - prevMousePos.x);
@@ -71,7 +71,12 @@ public class IsoCamera : MonoBehaviour
 	void Update()
     {
         if (deltaX != 0 || deltaZ != 0)
-            transform.position = transform.position + new Vector3(deltaX * CAM_SPEED * Time.deltaTime, 0f, deltaZ * CAM_SPEED * Time.deltaTime);
+        {
+            if (moveToPlayer)
+                transform.position = transform.position + new Vector3(deltaX * CAM_SPEED * Time.deltaTime, 0f, deltaZ * CAM_SPEED * Time.deltaTime);
+            else
+                transform.Translate(new Vector3(deltaX * CAM_SPEED * Time.deltaTime, 0f, deltaZ * CAM_SPEED * Time.deltaTime));
+        }
         
         if (deltaRotY != 0)
             transform.Rotate(0f, deltaRotY * ROT_SPEED * Time.deltaTime, 0f);

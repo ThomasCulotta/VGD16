@@ -5,7 +5,7 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
-    public struct GridSpace
+    public struct GridSquare
     {
         public Vector3 coordinates;
         public bool hidden;
@@ -33,13 +33,18 @@ public class PlayerController : MonoBehaviour
     public  static int playerMoveCount = 0;
     private bool playerStart = true;
 
-    // public static so GridSpace can color accordingly
+    // public static so GridSquare can color accordingly
     public static bool hyperJumping   = false;
 
     private bool selectingEnemy = false;
     private bool holdMoves      = false;
     private bool newMove        = false;
-    private bool imHidden       = false;
+    public bool imHidden       = false;
+    private bool imCloaked      = false;
+
+    private int hyperCoolDown = 0;
+    private int empCoolDown = 0;
+    private int cloakingCoolDown = 0;
 
     ///////////////
     // Movement
@@ -51,7 +56,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 curPosition;
 
     public  static bool[,] BlockedGrid;
-    private GridSpace[,]   PlayerGrid;
+    private GridSquare[,]   PlayerGrid;
     private ArrayList      gridPlanes;
 
     public  GameObject gridPlane;
@@ -125,9 +130,30 @@ public class PlayerController : MonoBehaviour
                      *       speed in populating the grid.
                      */
                     playerStart = false;
-                    imHidden = false;
+                    if (imCloaked)
+                    {
+                        imCloaked = false;
+                        imHidden = false;
+                        MAX_MOVE = 5;
+                    }
+                    else
+                    {
+                        MAX_MOVE = 10;
+                        if (imHidden)
+                        {
+                            imHidden = false;
+                            if (Random.Range(0, 10) >= 3)
+                                decreaseHealth();
+                        }
+                    }
                     newMove = true;
                     playerMoveCount = 2;
+                    if (hyperCoolDown > 0)
+                        hyperCoolDown--;
+                    if (empCoolDown > 0)
+                        empCoolDown--;
+                    if (cloakingCoolDown > 0)
+                        cloakingCoolDown--;
                 }
                 else if (destReached)
                 {
@@ -137,7 +163,6 @@ public class PlayerController : MonoBehaviour
                 {
                     newMove  = false;
                     destList = new ArrayList();
-                    MAX_MOVE = 10;
 
                     StartCoroutine("GridBFS");
                 }
@@ -171,6 +196,7 @@ public class PlayerController : MonoBehaviour
                                 playerMoveCount--;
                                 if (playerMoveCount > 0)
                                     newMove = true;
+                                empCoolDown = 4;
                             }
                         }
                         else if (Input.GetKeyDown(KeyCode.Escape))
@@ -190,7 +216,7 @@ public class PlayerController : MonoBehaviour
                         if (nextPosition != curPosition)
                         {
                             /*
-                            * NOTE: Pathfinds backwards from selected GridSpace to player
+                            * NOTE: Pathfinds backwards from selected GridSquare to player
                             *       iTweens player to each gridspace
                             */
                             if (hyperJumping)
@@ -198,6 +224,10 @@ public class PlayerController : MonoBehaviour
                                 transform.position = nextPosition;
                                 curPosition = nextPosition;
                                 newMove = true;
+                                hyperJumping = false;
+                                if (Random.Range(0, 10) >= 3)
+                                    decreaseHealth();
+                                hyperCoolDown = 3;
                             }
                             else
                             {
@@ -211,7 +241,7 @@ public class PlayerController : MonoBehaviour
                                 Destroy((GameObject)gridPlanes[i]);
                             gridPlanes.Clear();
                         }
-                        else if (Input.GetKeyDown(KeyCode.Alpha1))
+                        else if (Input.GetKeyDown(KeyCode.Alpha1) && hyperCoolDown == 0)
                         {
                             // Hyper jump
                             Debug.Log("HYPER JUMPING");
@@ -232,7 +262,7 @@ public class PlayerController : MonoBehaviour
                                 gridPlanes.Clear();
                             }
                         }
-                        else if (Input.GetKeyDown(KeyCode.Alpha2))
+                        else if (Input.GetKeyDown(KeyCode.Alpha2) && empCoolDown == 0)
                         {
                             Debug.Log("EMP SELECTION");
                             selectingEnemy = true;
@@ -249,11 +279,19 @@ public class PlayerController : MonoBehaviour
                             else
                                 selectingEnemy = false;
                         }
-                        else if (Input.GetKeyDown(KeyCode.Alpha3))
+                        else if (Input.GetKeyDown(KeyCode.Alpha3) && cloakingCoolDown == 0)
                         {
                             Debug.Log("CLOAKING");
                             // Cloaking
                             imHidden = true;
+                            imCloaked = true;
+                            playerMoveCount--;
+                            if (playerMoveCount > 0)
+                                newMove = true;
+                            cloakingCoolDown = 4;
+                            for (int i = 0; i < gridPlanes.Count; i++)
+                                Destroy((GameObject)gridPlanes[i]);
+                            gridPlanes.Clear();
                         }
                         else if (Input.GetKeyDown(KeyCode.Alpha0))
                         {
@@ -299,7 +337,7 @@ public class PlayerController : MonoBehaviour
             case (GameMaster.GameState.GAME_WIN):
             {
                 // TODO: Some game statistics, then main menu or win scene etc.
-                SceneManager.LoadScene(0);
+                SceneManager.LoadScene(1);
             }
             break;
         }
@@ -314,20 +352,20 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator GridBFS()
     {
-        PlayerGrid  = new GridSpace[MAX_MOVE * 2 + 1, MAX_MOVE * 2 + 1];
+        PlayerGrid  = new GridSquare[MAX_MOVE * 2 + 1, MAX_MOVE * 2 + 1];
         BlockedGrid = new bool[MAX_MOVE * 2 + 1, MAX_MOVE * 2 + 1];
 
         BFSQueue = new Queue();
 
         // Set player position to blocked immediately
         BlockedGrid[MAX_MOVE, MAX_MOVE] = true;
-        GridSpace playerSpace = new GridSpace { coordinates = transform.position };
+        GridSquare playerSpace = new GridSquare { coordinates = transform.position };
 
         BFSQueue.Enqueue(playerSpace);
 
         while (BFSQueue.Count != 0)
         {
-            GridSpace cur = (GridSpace)BFSQueue.Dequeue();
+            GridSquare cur = (GridSquare)BFSQueue.Dequeue();
 
             // Check the cardinal spaces around cur
             CheckAndAddAvailBFS(cur.coordinates.x, cur.coordinates.z + 1, cur.distance);
@@ -395,8 +433,21 @@ public class PlayerController : MonoBehaviour
                     }
 
                     // Everything is good: make space available for the player, and add it to the queue to be checked
-                    gridPlanes.Add(GameObject.Instantiate(gridPlane, new Vector3(x, 0f, z), Quaternion.identity));
-                    GridSpace newSpace = new GridSpace
+                    GameObject tempGrid = (GameObject)GameObject.Instantiate(gridPlane, new Vector3(x, 0f, z), Quaternion.identity);
+                    GridSpace  tempGS = tempGrid.GetComponent<GridSpace>();
+                    tempGS.baseColor = new Color(50f / 255f, 150f / 255f, 240f / 255f);
+                    if (hyperJumping)
+                        tempGS.baseColor = Color.yellow;
+                    if (hiddenSpace)
+                        tempGS.baseColor = Color.grey;
+                    if (cargoSpace)
+                        tempGS.baseColor = Color.blue;
+                    if (destSpace)
+                        tempGS.baseColor = Color.green;
+                    
+                    gridPlanes.Add(tempGrid);
+
+                    GridSquare newSpace = new GridSquare
                     {
                         coordinates = new Vector3(x, 0f, z),
                         hidden = hiddenSpace,
@@ -439,7 +490,7 @@ public class PlayerController : MonoBehaviour
         if (PlayerGrid[(int)posOffset.x, (int)posOffset.y].distance > 1.4f)
         {
             // Check cardinal spaces first
-            GridSpace closestSpace = PlayerGrid[meX, loY];
+            GridSquare closestSpace = PlayerGrid[meX, loY];
 
             if (PlayerGrid[meX, hiY].distance <= closestSpace.distance && PlayerGrid[meX, hiY].distance > 0) closestSpace = PlayerGrid[meX, hiY];
             if (PlayerGrid[hiX, meY].distance <= closestSpace.distance && PlayerGrid[hiX, meY].distance > 0) closestSpace = PlayerGrid[hiX, meY];
@@ -457,7 +508,7 @@ public class PlayerController : MonoBehaviour
 
     void MovePlayer()
     {
-        // Translate to next GridSpace
+        // Translate to next GridSquare
         if (moveList.Count > 0)
         {
             int curRight = 0;
@@ -466,13 +517,13 @@ public class PlayerController : MonoBehaviour
             float curDur = 0f;
 
             // Set initial space to player pos
-            GridSpace curSpace = new GridSpace();
+            GridSquare curSpace = new GridSquare();
             curSpace.coordinates = transform.position;
 
             // Check if next space is in same direction if there are still spaces to check
             do
             {
-                GridSpace tempSpace = (GridSpace)moveList[moveList.Count - 1];
+                GridSquare tempSpace = (GridSquare)moveList[moveList.Count - 1];
                 int tempRight = (int)(tempSpace.coordinates.x - curSpace.coordinates.x);
                 int tempUp = (int)(tempSpace.coordinates.z - curSpace.coordinates.z);
 
@@ -508,18 +559,24 @@ public class PlayerController : MonoBehaviour
             playerMoveCount--;
 
             Vector2 posOffset = new Vector2(curPosition.x - transform.position.x + MAX_MOVE, curPosition.z - transform.position.z + MAX_MOVE);
-            GridSpace curGrid = PlayerGrid[(int)posOffset.x, (int)posOffset.y];
+            GridSquare curGrid = PlayerGrid[(int)posOffset.x, (int)posOffset.y];
 
             destReached = curGrid.destination;
-            if (!imHidden)
-                imHidden = true;
-            if (curGrid.cargo)
-                Add(Random.Range(5, 15), max_Cargo, true);
+            if (hyperJumping)
+            hyperJumping = false;
 
             if (!destReached && playerMoveCount > 0)
             {
-                newMove = true;
-                holdMoves = false;
+                if (!imHidden)
+                    imHidden = true;
+                if (curGrid.cargo)
+                    Add(Random.Range(5, 15), max_Cargo, true);
+                
+                if (playerMoveCount > 0)
+                {
+                    newMove = true;
+                    holdMoves = false;
+                }
             }
         }
     }
