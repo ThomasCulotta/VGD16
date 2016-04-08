@@ -3862,6 +3862,7 @@ GameObject:
   - 135: {fileID: 1835420642}
   - 23: {fileID: 1835420641}
   - 114: {fileID: 1835420645}
+  - 122: {fileID: 1835420646}
   m_Layer: 0
   m_Name: Sun
   m_TagString: Planet
@@ -3946,6 +3947,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationSpeed: 1
+--- !u!122 &1835420646
+Halo:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1835420640}
+  m_Enabled: 1
+  m_Color:
+    serializedVersion: 2
+    rgba: 4291230715
+  m_Size: 4.16
 --- !u!4 &1842730831 stripped
 Transform:
   m_PrefabParentObject: {fileID: 445474, guid: b3d51068fa66347c7adeb2c9bcc808d3, type: 2}
