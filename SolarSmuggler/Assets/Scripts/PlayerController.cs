@@ -57,14 +57,14 @@ public class PlayerController : MonoBehaviour
     private Vector3 curPosition;
 
     public  static bool[,] BlockedGrid;
-    private GridSquare[,]   PlayerGrid;
+    private GridSquare[,]  PlayerGrid;
+    private GridSquare     moveEndSpace;
     private ArrayList      gridPlanes;
 
     public  GameObject gridPlane;
     private int  MAX_MOVE = 10;
 
     private ArrayList moveList;
-    private ArrayList destList;
     private bool destReached = false;
 
     private bool lastRight;
@@ -159,12 +159,12 @@ public class PlayerController : MonoBehaviour
                 }
                 else if (destReached)
                 {
+                    SceneManager.LoadScene(0);
                     GameMaster.CurrentState = GameMaster.GameState.GAME_WIN;
                 }
                 if (newMove)
                 {
                     newMove  = false;
-                    destList = new ArrayList();
 
                     StartCoroutine("GridBFS");
                 }
@@ -239,9 +239,6 @@ public class PlayerController : MonoBehaviour
                                 Pathfind(nextPosition);
                                 MovePlayer();
                             }
-                            for (int i = 0; i < gridPlanes.Count; i++)
-                                Destroy((GameObject)gridPlanes[i]);
-                            gridPlanes.Clear();
                         }
                         else if (Input.GetKeyDown(KeyCode.Alpha1) && hyperCoolDown == 0)
                         {
@@ -423,14 +420,10 @@ public class PlayerController : MonoBehaviour
                         {
                             if (triggerArray[i].tag.Equals("Stealth"))
                                 hiddenSpace = true;
-                            else if (triggerArray[i].tag.Equals("Cargo"))
+                            if (triggerArray[i].tag.Equals("Cargo"))
                                 cargoSpace = true;
-                            else if (triggerArray[i].tag.Equals("Destination"))
-                            {
+                            if (triggerArray[i].tag.Equals("Destination"))
                                 destSpace = true;
-                                destList.Add(new Vector3(x, 0f, z));
-                            }
-                            else return;
                         }
                     }
 
@@ -546,6 +539,9 @@ public class PlayerController : MonoBehaviour
             }
             while (moveList.Count > 0);
 
+            if (moveList.Count == 0)
+                moveEndSpace = curSpace;
+
             // Move player to the furthest in-line space
             iTween.MoveTo(gameObject, iTween.Hash("x", curSpace.coordinates.x,
                                                   "z", curSpace.coordinates.z,
@@ -560,14 +556,12 @@ public class PlayerController : MonoBehaviour
             transform.position = new Vector3(curPosition.x, 0f, curPosition.z);
             playerMoveCount--;
 
-            Vector2 posOffset = new Vector2(curPosition.x - transform.position.x + MAX_MOVE, curPosition.z - transform.position.z + MAX_MOVE);
-            GridSquare curGrid = PlayerGrid[(int)posOffset.x, (int)posOffset.y];
+            GridSquare curGrid = moveEndSpace;
 
             destReached = curGrid.destination;
             if (hyperJumping)
                 hyperJumping = false;
 
-            imHidden = curGrid.hidden;
 
             if (curGrid.cargo)
             {
@@ -583,16 +577,19 @@ public class PlayerController : MonoBehaviour
                 Add(Random.Range(5, 15), max_Cargo, true);
             }
 
+            imHidden = curGrid.hidden;
+            if (imHidden)
+                Debug.Log("YAY");
+
             if (!destReached && playerMoveCount > 0)
             {
-
-                
-                if (playerMoveCount > 0)
-                {
-                    newMove = true;
-                    holdMoves = false;
-                }
+                newMove = true;
+                holdMoves = false;
             }
+
+            for (int i = 0; i < gridPlanes.Count; i++)
+                Destroy((GameObject)gridPlanes[i]);
+            gridPlanes.Clear();
         }
     }
 

@@ -87,6 +87,6 @@ public class IsoCamera : MonoBehaviour
 
     public void DamageIndicator()
     {
-        iTween.ShakePosition(gameObject, iTween.Hash("amount", new Vector3(1f, 1f, 1f), "time", 0.5f));
+        iTween.ShakePosition(gameObject, iTween.Hash("amount", new Vector3(0.4f, 0.4f, 0.4f), "time", 0.5f));
     }
 }
