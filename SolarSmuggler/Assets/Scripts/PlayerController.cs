@@ -73,6 +73,12 @@ public class PlayerController : MonoBehaviour
     private ArrayList  affectedEnemies;
 
     ///////////////
+    // Timer
+    ///////////////
+    private bool timerInit = false;
+    public float timer = 2f;
+
+    ///////////////
     // UI
     ///////////////
     public HUDScript hudScript;
@@ -252,10 +258,13 @@ public class PlayerController : MonoBehaviour
                         else if (Input.GetKeyDown(KeyCode.Alpha0))
                         {
                             // End turn
-                            playerStart = true;
                             for (int i = 0; i < gridPlanes.Count; i++)
                                 Destroy((GameObject)gridPlanes[i]);
                             gridPlanes.Clear();
+                            playerMoveCount = 0;
+                            playerStart = true;
+                            holdMoves = false;
+                            timerInit = true;
                             GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
                         }
                     }
@@ -265,7 +274,18 @@ public class PlayerController : MonoBehaviour
                     // End turn
                     playerStart = true;
                     holdMoves = false;
+                    timerInit = true;
                     GameMaster.CurrentState = GameMaster.GameState.ENEMY_TURN;
+                }
+            }
+            break;
+
+            case (GameMaster.GameState.ENVIRONMENT_TURN):
+            {
+                if (timerInit)
+                {
+                    timerInit = false;
+                    StartCoroutine("Timer");
                 }
             }
             break;
@@ -283,6 +303,13 @@ public class PlayerController : MonoBehaviour
             }
             break;
         }
+    }
+
+    IEnumerator Timer()
+    {
+        yield return new WaitForSeconds (timer);
+        //      Debug.Log("Evironment_TURN -from Orbit");
+        GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN; //starts the player's turn
     }
 
     IEnumerator GridBFS()
@@ -534,7 +561,7 @@ public class PlayerController : MonoBehaviour
 
     public void decreaseHealth()
     {
-        curr_Health -= 2; // whatever happens to player we decrease health
+        curr_Health -= Random.Range(5, 15);
 
         //need a ratio to from current health & max health to scale the hp bar
         hudScript.HealthUpdate(curr_Health, max_Health);
