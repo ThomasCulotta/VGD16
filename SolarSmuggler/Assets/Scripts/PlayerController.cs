@@ -571,7 +571,7 @@ public class PlayerController : MonoBehaviour
                 for (int i = 0; i < cargoArray.Length; i++)
                     if (cargoArray[i].tag.Equals("Cargo"))
                     {
-                        GameObject.Destroy(cargoArray[i]);
+                        GameObject.Destroy(cargoArray[i].gameObject);
                         break;
                     }
                 Add(Random.Range(5, 15), max_Cargo, true);
