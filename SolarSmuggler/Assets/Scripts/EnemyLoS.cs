@@ -150,7 +150,7 @@ public class EnemyLoS : MonoBehaviour
                         if (moveList.Count == 0)
                         {
                             //Checks if player is obstructed by obstacle. 
-                            Vector3 heading = player.transform.position - transform.position;
+                            Vector3 heading = player.transform.position - transform.position + new Vector3(0f, -1f, 0f);
                             if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
                             {
                                 //Combat
