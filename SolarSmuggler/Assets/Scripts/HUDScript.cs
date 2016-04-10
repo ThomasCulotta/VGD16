@@ -37,49 +37,58 @@ public class HUDScript : MonoBehaviour {
 
 	public void HealthUpdate (int health, int max_Health) 
 	{
-		float bars_filled = (float)health / ((float)max_Health/4);
-		if (bars_filled <= 1) 
+		float bars_filled = (float)health / ((float)max_Health/4.0f);
+		if (bars_filled <= 1.0f) 
 		{
 			healthShard1.fillAmount = bars_filled;
+			healthShard2.fillAmount = 0f;
+			healthShard3.fillAmount = 0f;
+			healthShard4.fillAmount = 0f;
 		} 
-		else if (bars_filled <= 2)
+		else if (bars_filled <= 2.0f)
 		{
 			healthShard1.fillAmount = 1.0f;
-			healthShard2.fillAmount = bars_filled - 1;
+			healthShard2.fillAmount = bars_filled - 1.0f;
+			healthShard3.fillAmount = 0f;
+			healthShard4.fillAmount = 0f;
 		}
-		else if (bars_filled <= 3) 
+		else if (bars_filled <= 3.0f) 
 		{
 			healthShard1.fillAmount = 1.0f;
 			healthShard2.fillAmount = 1.0f;
-			healthShard3.fillAmount = bars_filled - 2;
+			healthShard3.fillAmount = bars_filled - 2.0f;
+			healthShard4.fillAmount = 0f;
 		}
-		else if (bars_filled <= 4) 
+		else if (bars_filled <= 4.0f) 
 		{
 			healthShard1.fillAmount = 1.0f;
 			healthShard2.fillAmount = 1.0f;
 			healthShard3.fillAmount = 1.0f;
-			healthShard4.fillAmount = bars_filled - 3;
+			healthShard4.fillAmount = bars_filled - 3.0f;
 		}
 		SetHealthText (health, max_Health);
 	}
 
 	public void CargoUpdate (int cargo, int max_Cargo) 
 	{
-		float bars_filled = (float)cargo / ((float)max_Cargo/3);
-		if (bars_filled <= 1) 
+		float bars_filled = (float)cargo / ((float)max_Cargo/3.0f);
+		if (bars_filled <= 1.0f) 
 		{
 			cargoShard1.fillAmount = bars_filled;
+			cargoShard2.fillAmount = 0f;
+			cargoShard3.fillAmount = 0f;
 		} 
-		else if (bars_filled <= 2)
+		else if (bars_filled <= 2.0f)
 		{
 			cargoShard1.fillAmount = 1.0f;
-			cargoShard2.fillAmount = bars_filled - 1;
+			cargoShard2.fillAmount = bars_filled - 1.0f;
+			cargoShard3.fillAmount = 0f;
 		}
-		else if (bars_filled <= 3) 
+		else if (bars_filled <= 3.0f) 
 		{
 			cargoShard1.fillAmount = 1.0f;
 			cargoShard2.fillAmount = 1.0f;
-			cargoShard3.fillAmount = bars_filled - 2;
+			cargoShard3.fillAmount = bars_filled - 2.0f;
 		}
 		SetCargoText (cargo, max_Cargo);
 		Debug.Log ("bars_filled:" + bars_filled);
