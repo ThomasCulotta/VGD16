@@ -20,7 +20,7 @@ public class IsoCamera : MonoBehaviour
     private Vector3 curMousePos  = Vector3.zero;
 
     // Use this for initialization
-    void Start ()
+    void Awake ()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         cam = transform.GetChild(0).gameObject;

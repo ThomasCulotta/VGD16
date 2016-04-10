@@ -15,6 +15,7 @@ using System.Collections;
  */
 public class EnemyLoS : MonoBehaviour
 {
+
     //Enemy check in
     private static bool init;
     private static ArrayList finishedList = new ArrayList();
@@ -22,7 +23,7 @@ public class EnemyLoS : MonoBehaviour
     private int finishedListIndex;
     private int id;
     private bool removed;
-    private const int MAX_ENEMIES = 5;
+    private int MAX_ENEMIES = 5; 
 
     //Debug Variables
     private const bool DEBUG = false;
@@ -95,7 +96,7 @@ public class EnemyLoS : MonoBehaviour
         if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
         {
             // Thomas: Added this small debug line so we'll see exactly what the ray is doing when we test this out.
-            Debug.DrawLine(transform.position, player.transform.position, Color.cyan, 0.5f);
+            //Debug.DrawLine(transform.position, player.transform.position, Color.cyan, 0.5f);
 
             //Reset Game Board.
             if (init)

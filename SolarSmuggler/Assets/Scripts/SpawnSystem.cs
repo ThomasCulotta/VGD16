@@ -50,6 +50,7 @@ public class SpawnSystem : MonoBehaviour {
     GameObject cameraMaster;
     GameObject sun;
     GameObject UI;
+    GameObject spaceStation;
 
     //Enum is used for random Pickup Spawning
     enum Pickups
@@ -93,6 +94,7 @@ public class SpawnSystem : MonoBehaviour {
         cameraMaster = (GameObject)Resources.Load("Prefabs/Game Camera");
         UI = (GameObject)Resources.Load("Prefabs/Player UI");
         sun = (GameObject)Resources.Load("Prefabs/Sun");
+        spaceStation = (GameObject)Resources.Load("Prefabs/Space Station");
 
         /***********************************************************************************/
 
@@ -107,9 +109,9 @@ public class SpawnSystem : MonoBehaviour {
         spawnSun();
         spawnPlanetsWhite();
         spawnCargoWhite();
-        spawnEnemiesWhite();
+        spawnSpaceStation();
         spawnPlayer();
-        initCamera();
+        spawnEnemiesWhite();
         loadPlayerUI();
     }
 
@@ -164,7 +166,7 @@ public class SpawnSystem : MonoBehaviour {
 
     void spawnEnemiesWhite()
     {
-        for (int i = 0; i < MAX_CARGO; i++)
+        for (int i = 0; i < MAX_ENEMIES; i++)
         {
             int spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
             int spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
@@ -185,7 +187,19 @@ public class SpawnSystem : MonoBehaviour {
 
     void spawnSpaceStation()
     {
+        int spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
+        int spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
+        Vector3 spawnPos = new Vector3(spawnX, 0, spawnY);
 
+        while (!isAvailable(spawnPos))
+        {
+            spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
+            spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
+            spawnPos = new Vector3(spawnX, 0, spawnY);
+        }
+
+        AddToList(spawnPos);
+        Instantiate(spaceStation, spawnPos, Quaternion.identity);
     }
 
     void spawnPlayer()
@@ -203,7 +217,10 @@ public class SpawnSystem : MonoBehaviour {
 
         AddToList(spawnPos);
         Instantiate(player, spawnPos, Quaternion.identity);
+        //Debug.Log("SpawnPos " + spawnPos);
+        //Debug.Log("PlayerPo " + player.transform.position);
         player.tag = "Player";
+        initCamera(spawnPos);
     }
 
     void createTexture(GameObject moon)
@@ -250,7 +267,7 @@ public class SpawnSystem : MonoBehaviour {
     bool isAvailable(Vector3 pos)
     {
         int index = ((int)pos.x * MAX_GAME_AREA) + (int)pos.z;
-        Debug.Log("Index: " + index);
+        //Debug.Log("Index: " + index);
         if (posAvailable[index] == true)
             return true;
         else
@@ -263,14 +280,15 @@ public class SpawnSystem : MonoBehaviour {
         Instantiate(sun, center, Quaternion.identity);
     }
 
-    void initCamera()
+    void initCamera(Vector3 spawnPos)
     {
-        Instantiate(cameraMaster, player.transform.position, Quaternion.identity);
+        Instantiate(cameraMaster, spawnPos, Quaternion.identity);
+        
     }
 
-    void loadPlayerUI()
+    void loadPlayerUI( )
     {
-        Instantiate(UI, player.transform.position, Quaternion.identity);
+        Instantiate(UI, Vector3.zero, Quaternion.identity);
     }
 
     void resetPlanetPrefabs()
@@ -307,7 +325,7 @@ public class SpawnSystem : MonoBehaviour {
                     Debug.Log("Making FROST");
                     frostChild.position = spawnPos - center;
                     frostChild.localScale= new Vector3(size, size, size);
-                    Debug.Log("Child.Posisiton " + frostChild.position +"\nSpawnPos " + spawnPos);
+                    //Debug.Log("Child.Posisiton " + frostChild.position +"\nSpawnPos " + spawnPos);
                     return frost;
 
                 }
@@ -316,7 +334,7 @@ public class SpawnSystem : MonoBehaviour {
                     Debug.Log("Making Purple");
                     purpleChild.position = spawnPos - center;
                     purpleChild.localScale = new Vector3(size, size, size);
-                    Debug.Log("Child.Posisiton " + purpleChild.position + "\nSpawnPos " + spawnPos);
+                    //Debug.Log("Child.Posisiton " + purpleChild.position + "\nSpawnPos " + spawnPos);
                     return purple;
                 }
             case (Planets.WATER):
@@ -324,10 +342,15 @@ public class SpawnSystem : MonoBehaviour {
                     Debug.Log("WATER");
                     waterChild.position = spawnPos - center;
                     waterChild.localScale = new Vector3(size, size, size);
-                    Debug.Log("Child.Posisiton " + waterChild.position + "\nSpawnPos " + spawnPos);
+                    //Debug.Log("Child.Posisiton " + waterChild.position + "\nSpawnPos " + spawnPos);
                     return water;
                 }
         }
         return frost;
+    }
+
+    int getMaxEnemies()
+    {
+        return MAX_ENEMIES;
     }
 }
