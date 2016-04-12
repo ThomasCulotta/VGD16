@@ -18,11 +18,9 @@ public class SpawnSystem : MonoBehaviour {
 
 
     //These number can be tweaked to increase or decrease number of spawns
-    public int MAX_PICKUP_CELLS = 5;
-    public int MAX_PLANET_CELLS = 3;
-    public int MAX_PLANETS = 3;
-    public int MAX_CARGO = 10;
-    public int MAX_ENEMIES = 5;
+    public int MAX_PLANETS;
+    public int MAX_CARGO;
+    public static int MAX_ENEMIES;
 
     //Graphic Util
     public int pixWidth;
@@ -102,27 +100,97 @@ public class SpawnSystem : MonoBehaviour {
 
         /***********************************************************************************/
 
-        //Spawn Area Init
+        switch (SpawnMaster.CURRENT_STATE)
+        {
+            case (SpawnMaster.SpawnState.SMALL):
+                {
+                    spawnSmallSolarSystem();
+                }
+                break;
+            case (SpawnMaster.SpawnState.MEDIUM):
+                {
+                    spawnMediumSolarSystem();
+                }
+                break;
+            case (SpawnMaster.SpawnState.LARGE):
+                {
+                    spawnLargeSolarSystem();
+                }
+                break;
+        }
+
+    }
+
+
+    void spawnSmallSolarSystem()
+    {
+        MAX_GAME_AREA = SpawnMaster.SMALL_MAP_SIZE;
+        MAX_PLANETS   = SpawnMaster.SMALL_PLANET;
+        MAX_CARGO     = SpawnMaster.SMALL_CARGO;
+        MAX_ENEMIES   = SpawnMaster.SMALL_ENEMY;
+
         center = new Vector3(MAX_GAME_AREA / 2, 0, MAX_GAME_AREA / 2);
         posAvailable = new bool[(MAX_GAME_AREA * MAX_GAME_AREA) + 1];
         initAvaiableSpots();
         transform.position = center;
 
-        //Spawning
         resetPlanetPrefabs();
         spawnSun();
-        spawnPlanetsWhite();
-        spawnCargoWhite();
+        spawnPlanetsWhite(MAX_PLANETS);
+        spawnCargoWhite(MAX_CARGO);
         spawnSpaceStation();
         spawnPlayer();
-        spawnEnemiesWhite();
+        spawnEnemiesWhite(MAX_ENEMIES);
         loadPlayerUI();
-
     }
 
-    void spawnPlanetsWhite()
+    void spawnMediumSolarSystem()
     {
-        for(int i=0; i<MAX_PLANETS; i++)
+        MAX_GAME_AREA = SpawnMaster.MEDIUM_MAP_SIZE;
+        MAX_PLANETS   = SpawnMaster.MEDIUM_PLANET;
+        MAX_CARGO     = SpawnMaster.MEDIUM_CARGO;
+        MAX_ENEMIES   = SpawnMaster.MEDIUM_ENEMY;
+
+        center = new Vector3(MAX_GAME_AREA / 2, 0, MAX_GAME_AREA / 2);
+        posAvailable = new bool[(MAX_GAME_AREA * MAX_GAME_AREA) + 1];
+        initAvaiableSpots();
+        transform.position = center;
+
+        resetPlanetPrefabs();
+        spawnSun();
+        spawnPlanetsWhite(MAX_PLANETS);
+        spawnCargoWhite(MAX_CARGO);
+        spawnSpaceStation();
+        spawnPlayer();
+        spawnEnemiesWhite(MAX_ENEMIES);
+        loadPlayerUI();
+    }
+
+    void spawnLargeSolarSystem()
+    {
+        MAX_GAME_AREA = SpawnMaster.LARGE_MAP_SIZE;
+        MAX_PLANETS   = SpawnMaster.LARGE_PLANET;
+        MAX_CARGO     = SpawnMaster.LARGE_CARGO;
+        MAX_ENEMIES   = SpawnMaster.LARGE_ENEMY;
+
+        center = new Vector3(MAX_GAME_AREA / 2, 0, MAX_GAME_AREA / 2);
+        posAvailable = new bool[(MAX_GAME_AREA * MAX_GAME_AREA) + 1];
+        initAvaiableSpots();
+        transform.position = center;
+
+        resetPlanetPrefabs();
+        spawnSun();
+        spawnPlanetsWhite(MAX_PLANETS);
+        spawnCargoWhite(MAX_CARGO);
+        spawnSpaceStation();
+        spawnPlayer();
+        spawnEnemiesWhite(MAX_ENEMIES);
+        loadPlayerUI();
+    }
+
+    void spawnPlanetsWhite(int numPlanets)
+    {
+        for(int i=0; i<numPlanets; i++)
         {
             int spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
             int spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
@@ -148,9 +216,9 @@ public class SpawnSystem : MonoBehaviour {
 
     }
 
-    void spawnCargoWhite()
+    void spawnCargoWhite(int numCargo)
     {
-        for (int i = 0; i < MAX_CARGO; i++)
+        for (int i = 0; i < numCargo; i++)
         {
             int spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
             int spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
@@ -164,14 +232,15 @@ public class SpawnSystem : MonoBehaviour {
             }
 
             AddToList(spawnPos);
+            cargo.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f);
             Instantiate(cargo, spawnPos, Quaternion.identity);
             cargo.tag = "Cargo";
         }
     }
 
-    void spawnEnemiesWhite()
+    void spawnEnemiesWhite(int numEnemies)
     {
-        for (int i = 0; i < MAX_ENEMIES; i++)
+        for (int i = 0; i < numEnemies; i++)
         {
             int spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
             int spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
@@ -222,9 +291,8 @@ public class SpawnSystem : MonoBehaviour {
         }
 
         AddToList(spawnPos);
+        player.GetComponent<PlayerController>().curr_Cargo = 0;
         Instantiate(player, spawnPos, Quaternion.identity);
-        //Debug.Log("SpawnPos " + spawnPos);
-        //Debug.Log("PlayerPo " + player.transform.position);
         player.tag = "Player";
         initCamera(spawnPos);
     }
@@ -290,9 +358,6 @@ public class SpawnSystem : MonoBehaviour {
     {
         Instantiate(cameraMaster, spawnPos, Quaternion.identity);
         Instantiate(AudioController, spawnPos, Quaternion.identity);
-
-        AudioController.transform.parent = cameraMaster.transform;
-        
     }
 
     void loadPlayerUI( )
@@ -356,10 +421,5 @@ public class SpawnSystem : MonoBehaviour {
                 }
         }
         return frost;
-    }
-
-    int getMaxEnemies()
-    {
-        return MAX_ENEMIES;
     }
 }

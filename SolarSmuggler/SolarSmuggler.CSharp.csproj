@@ -83,9 +83,11 @@
     <Compile Include="Assets\Scripts\MoonOrbit.cs" />
     <Compile Include="Assets\Scripts\Orbit.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\SpawnMaster.cs" />
     <Compile Include="Assets\Scripts\SpawnSystem.cs" />
     <Compile Include="Assets\Scripts\Test_Camera_Follow.cs" />
     <Compile Include="Assets\Scripts\Test_Movement.cs" />
+    <Compile Include="Assets\Scripts\WorldSelectController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Plugins\Pixelplacement\iTween\ReadMe!\ReadMe!.txt" />

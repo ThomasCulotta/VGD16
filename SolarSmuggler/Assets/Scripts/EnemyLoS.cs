@@ -19,11 +19,10 @@ public class EnemyLoS : MonoBehaviour
     //Enemy check in
     private static bool init;
     private static ArrayList finishedList = new ArrayList();
-    private static bool ready;
     private int finishedListIndex;
     private int id;
     private bool removed;
-    private int MAX_ENEMIES = 5; 
+    private int MAX_ENEMIES = SpawnSystem.MAX_ENEMIES; 
 
     //Debug Variables
     private const bool DEBUG = false;
@@ -84,7 +83,6 @@ public class EnemyLoS : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         init = true;
-        ready = true;
         playerFound = false;
         shot = true;
         id = GetInstanceID();

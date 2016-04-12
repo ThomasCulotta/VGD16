@@ -41,7 +41,7 @@ RenderSettings:
 LightmapSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 6
-  m_GIWorkflowMode: 1
+  m_GIWorkflowMode: 0
   m_LightmapsMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -113,11 +113,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MAX_GAME_AREA: 300
-  MAX_PICKUP_CELLS: 5
-  MAX_PLANET_CELLS: 3
   MAX_PLANETS: 5
   MAX_CARGO: 10
-  MAX_ENEMIES: 5
   pixWidth: 0
   pixHeight: 0
   xOrg: 0
