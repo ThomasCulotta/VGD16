@@ -36,21 +36,24 @@ public class SpawnSystem : MonoBehaviour {
     bool[] posAvailable;
 
     //Prefabs
-    GameObject frost;
-    GameObject purple;
-    GameObject water;
+    private GameObject frost;
+    private GameObject purple;
+    private GameObject water;
 
-    Transform frostChild;
-    Transform purpleChild;
-    Transform waterChild;
+    private Transform frostChild;
+    private Transform purpleChild;
+    private Transform waterChild;
 
-    GameObject cargo;
-    GameObject player;
-    GameObject enemy;
-    GameObject cameraMaster;
-    GameObject sun;
-    GameObject UI;
-    GameObject spaceStation;
+    private GameObject cargo;
+    private GameObject player;
+    private GameObject enemy;
+    private GameObject cameraMaster;
+    private GameObject sun;
+    private GameObject UI;
+    private GameObject spaceStation;
+    private GameObject AudioController;
+    
+
 
     //Enum is used for random Pickup Spawning
     enum Pickups
@@ -70,31 +73,32 @@ public class SpawnSystem : MonoBehaviour {
         COUNT
     }
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start()
     {
-       
+
         //Prefab Init
         /***********************************************************************************/
 
         //Planet Nulls
-        frost = (GameObject)Resources.Load("Prefabs/Ice Planet", typeof(GameObject));
+        frost  = (GameObject)Resources.Load("Prefabs/Ice Planet", typeof(GameObject));
         purple = (GameObject)Resources.Load("Prefabs/Purple Planet", typeof(GameObject));
-        water = (GameObject)Resources.Load("Prefabs/Planet 2", typeof(GameObject));
+        water  = (GameObject)Resources.Load("Prefabs/Planet 2", typeof(GameObject));
 
         //Planet Childs
-        frostChild = frost.transform.FindChild("Planet 0");
+        frostChild  = frost.transform.FindChild("Planet 0");
         purpleChild = purple.transform.FindChild("Planet 0");
-        waterChild = water.transform.FindChild("Planet 0");
+        waterChild  = water.transform.FindChild("Planet 0");
 
         //Other Prefabs
-        cargo = (GameObject)Resources.Load("Prefabs/Supplies");
-        player = (GameObject)Resources.Load("Prefabs/Player");
-        enemy = (GameObject)Resources.Load("Prefabs/Enemy");
-        cameraMaster = (GameObject)Resources.Load("Prefabs/Game Camera");
-        UI = (GameObject)Resources.Load("Prefabs/Player UI");
-        sun = (GameObject)Resources.Load("Prefabs/Sun");
-        spaceStation = (GameObject)Resources.Load("Prefabs/Space Station");
+        cargo           = (GameObject)Resources.Load("Prefabs/Supplies");
+        player          = (GameObject)Resources.Load("Prefabs/Player");
+        enemy           = (GameObject)Resources.Load("Prefabs/Enemy");
+        cameraMaster    = (GameObject)Resources.Load("Prefabs/Game Camera");
+        UI              = (GameObject)Resources.Load("Prefabs/Player UI");
+        sun             = (GameObject)Resources.Load("Prefabs/Sun");
+        spaceStation    = (GameObject)Resources.Load("Prefabs/Space Station");
+        AudioController = (GameObject)Resources.Load("Prefabs/AudioController");
 
         /***********************************************************************************/
 
@@ -113,6 +117,7 @@ public class SpawnSystem : MonoBehaviour {
         spawnPlayer();
         spawnEnemiesWhite();
         loadPlayerUI();
+
     }
 
     void spawnPlanetsWhite()
@@ -199,6 +204,7 @@ public class SpawnSystem : MonoBehaviour {
         }
 
         AddToList(spawnPos);
+        spaceStation.transform.localScale = new Vector3(1, 1, 1);
         Instantiate(spaceStation, spawnPos, Quaternion.identity);
     }
 
@@ -283,6 +289,9 @@ public class SpawnSystem : MonoBehaviour {
     void initCamera(Vector3 spawnPos)
     {
         Instantiate(cameraMaster, spawnPos, Quaternion.identity);
+        Instantiate(AudioController, spawnPos, Quaternion.identity);
+
+        AudioController.transform.parent = cameraMaster.transform;
         
     }
 
