@@ -41,7 +41,7 @@ public class MenuController : MonoBehaviour {
 
     public void StartLevel()
     {
-        SceneManager.LoadScene("Tyler");
+        SceneManager.LoadScene(1);
     }
 
     public void ExitGame()

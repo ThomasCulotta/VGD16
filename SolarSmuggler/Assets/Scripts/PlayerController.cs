@@ -135,7 +135,6 @@ public class PlayerController : MonoBehaviour
                     if (imCloaked)
                     {
                         imCloaked = false;
-                        imHidden = false;
                         MAX_MOVE = 5;
                     }
                     else
@@ -143,10 +142,10 @@ public class PlayerController : MonoBehaviour
                         MAX_MOVE = 10;
                         if (imHidden)
                         {
-                            imHidden = false;
                             if (Random.Range(0, 10) >= 3)
                                 decreaseHealth();
                         }
+                        imHidden = false;
                     }
                     newMove = true;
                     playerMoveCount = 2;
@@ -633,7 +632,7 @@ public class PlayerController : MonoBehaviour
 
     public void decreaseHealth()
     {
-        curr_Health -= Random.Range(5, 15);
+        curr_Health -= Random.Range(15, 25);
         camNullScript.DamageIndicator();
 
         //need a ratio to from current health & max health to scale the hp bar
