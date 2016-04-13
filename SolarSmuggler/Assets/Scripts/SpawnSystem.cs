@@ -12,8 +12,8 @@ using System.Collections;
 
 public class SpawnSystem : MonoBehaviour {
     //Spawn Area
-    private int START_GAME_AREA = 0;
-    public int MAX_GAME_AREA   = 50;
+    private int START_GAME_AREA;
+    public int MAX_GAME_AREA;
     private Vector3 center;
 
 
@@ -37,10 +37,12 @@ public class SpawnSystem : MonoBehaviour {
     private GameObject frost;
     private GameObject purple;
     private GameObject water;
+    private GameObject moon;
 
     private Transform frostChild;
     private Transform purpleChild;
     private Transform waterChild;
+    private Transform moonChild;
 
     private GameObject cargo;
     private GameObject player;
@@ -82,11 +84,13 @@ public class SpawnSystem : MonoBehaviour {
         frost  = (GameObject)Resources.Load("Prefabs/Ice Planet", typeof(GameObject));
         purple = (GameObject)Resources.Load("Prefabs/Purple Planet", typeof(GameObject));
         water  = (GameObject)Resources.Load("Prefabs/Planet 2", typeof(GameObject));
+        moon   = (GameObject)Resources.Load("Prefabs/Moon", typeof(GameObject));
 
         //Planet Childs
         frostChild  = frost.transform.FindChild("Planet 0");
         purpleChild = purple.transform.FindChild("Planet 0");
         waterChild  = water.transform.FindChild("Planet 0");
+        moonChild   = moon.transform.FindChild("Moon 0");
 
         //Other Prefabs
         cargo           = (GameObject)Resources.Load("Prefabs/Supplies");
@@ -130,7 +134,7 @@ public class SpawnSystem : MonoBehaviour {
         MAX_ENEMIES   = SpawnMaster.SMALL_ENEMY;
 
         center = new Vector3(MAX_GAME_AREA / 2, 0, MAX_GAME_AREA / 2);
-        posAvailable = new bool[(MAX_GAME_AREA * MAX_GAME_AREA) + 1];
+        posAvailable = new bool[(MAX_GAME_AREA * MAX_GAME_AREA) + MAX_GAME_AREA];
         initAvaiableSpots();
         transform.position = center;
 
@@ -206,14 +210,20 @@ public class SpawnSystem : MonoBehaviour {
 
             AddToList(spawnPos);
             GameObject planet = makePlanet(spawnPos);
-            Instantiate(planet, center, Quaternion.identity);
+            GameObject myPlanet = (GameObject)Instantiate(planet, center, Quaternion.identity);
+            int hasMoon = Random.Range(0, 2);
+            if(hasMoon == 1)
+            {
+                spawnMoon(planet.transform.GetChild(0).transform, spawnPos);
+            }
         }
 
     }
 
-    void spawnMoon(GameObject moon)
+    void spawnMoon(Transform parent, Vector3 spawnPos)
     {
-
+        GameObject myMoon = (GameObject)Instantiate(moon, spawnPos, Quaternion.identity);
+        myMoon.transform.parent = parent;
     }
 
     void spawnCargoWhite(int numCargo)
@@ -341,7 +351,6 @@ public class SpawnSystem : MonoBehaviour {
     bool isAvailable(Vector3 pos)
     {
         int index = ((int)pos.x * MAX_GAME_AREA) + (int)pos.z;
-        //Debug.Log("Index: " + index);
         if (posAvailable[index] == true)
             return true;
         else
@@ -390,7 +399,6 @@ public class SpawnSystem : MonoBehaviour {
     {
         Planets spawnType = (Planets)Random.Range((int)Planets.FROST, (int)Planets.COUNT);
         int size = Random.Range(3, 8);
-        int hasMoon = Random.Range(0, 2);
 
         switch (spawnType)
         {
@@ -399,7 +407,6 @@ public class SpawnSystem : MonoBehaviour {
                     Debug.Log("Making FROST");
                     frostChild.position = spawnPos - center;
                     frostChild.localScale= new Vector3(size, size, size);
-                    //Debug.Log("Child.Posisiton " + frostChild.position +"\nSpawnPos " + spawnPos);
                     return frost;
 
                 }
@@ -408,7 +415,6 @@ public class SpawnSystem : MonoBehaviour {
                     Debug.Log("Making Purple");
                     purpleChild.position = spawnPos - center;
                     purpleChild.localScale = new Vector3(size, size, size);
-                    //Debug.Log("Child.Posisiton " + purpleChild.position + "\nSpawnPos " + spawnPos);
                     return purple;
                 }
             case (Planets.WATER):
@@ -416,7 +422,6 @@ public class SpawnSystem : MonoBehaviour {
                     Debug.Log("WATER");
                     waterChild.position = spawnPos - center;
                     waterChild.localScale = new Vector3(size, size, size);
-                    //Debug.Log("Child.Posisiton " + waterChild.position + "\nSpawnPos " + spawnPos);
                     return water;
                 }
         }

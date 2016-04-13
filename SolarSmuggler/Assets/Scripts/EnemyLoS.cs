@@ -40,10 +40,14 @@ public class EnemyLoS : MonoBehaviour
     private ArrayList moveList;
     private Vector3 curPos;
     private Vector3 playerPos;
+    private Material laserMat;
     private bool turnInProgress;
-    private bool playerFound;
     private bool isSelected;
     private bool shot;
+
+    //Public Variables
+    public int shotHit;
+    public bool playerFound;
 
     public struct GridNode
     {
@@ -81,12 +85,14 @@ public class EnemyLoS : MonoBehaviour
 
     void Awake()
     {
+        shotHit = -1;
         player = GameObject.FindGameObjectWithTag("Player");
         init = true;
         playerFound = false;
         shot = true;
         id = GetInstanceID();
         removed = false;
+        laserMat = (Material)Resources.Load("Prefabs/Materials/laser", typeof(Material));
     }
 
     void Update()
@@ -381,7 +387,7 @@ public class EnemyLoS : MonoBehaviour
         float dist = Vector3.Distance(dest, playerPos);
         if (MAX_FIRE_DIST >= dist)
         {
-            int shotHit = Random.Range(0, 2);
+            shotHit = Random.Range(0, 2);
 
             // If disoriented, cut shot chance in half
             if (disoriented && shotHit == 1)
@@ -392,13 +398,7 @@ public class EnemyLoS : MonoBehaviour
             }
 
             if (shotHit == 1)
-            {
-                /*
-                Vector3[] linePos = { transform.position, playerPos };
-                LineRenderer laser = new LineRenderer();
-                laser.SetColors(Color.red, Color.red);
-                laser.SetPositions(linePos);
-                */
+            { 
                 player.GetComponent<PlayerController>().decreaseHealth();
                 Debug.Log("Player has been hit, health is " + (player.GetComponent<PlayerController>().curr_Health) + "\n");
             }

@@ -73,6 +73,7 @@
     <Compile Include="Assets\Scripts\Buttons.cs" />
     <Compile Include="Assets\Scripts\Compass.cs" />
     <Compile Include="Assets\Scripts\EnemyIndicator.cs" />
+    <Compile Include="Assets\Scripts\EnemyLaser.cs" />
     <Compile Include="Assets\Scripts\EnemyLoS.cs" />
     <Compile Include="Assets\Scripts\GameMaster.cs" />
     <Compile Include="Assets\Scripts\GridSpace.cs" />
