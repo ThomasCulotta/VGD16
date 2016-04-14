@@ -228,14 +228,14 @@ public class EnemyLoS : MonoBehaviour
 
             //Checking Boundaries and if visited
             if (yP1 < MAX_SPOT && !EnemySearchPlane[cur.x, yP1].visited) visit(cur.x, yP1); //North
-            if (yM1 > -1 && !EnemySearchPlane[cur.x, yM1].visited) visit(cur.x, yM1); //South
+            if (yM1 > -1       && !EnemySearchPlane[cur.x, yM1].visited) visit(cur.x, yM1); //South
             if (xP1 < MAX_SPOT && !EnemySearchPlane[xP1, cur.y].visited) visit(xP1, cur.y); //East
-            if (xM1 > -1 && !EnemySearchPlane[xM1, cur.y].visited) visit(xM1, cur.y); //West
+            if (xM1 > -1       && !EnemySearchPlane[xM1, cur.y].visited) visit(xM1, cur.y); //West
 
             if (xP1 < MAX_SPOT && yP1 < MAX_SPOT && !EnemySearchPlane[xP1, yP1].visited) visit(xP1, yP1); //NorthEast
-            if (xM1 > -1 && yM1 > -1 && !EnemySearchPlane[xM1, yM1].visited) visit(xM1, yM1); //SouthWest
-            if (xP1 < MAX_SPOT && yM1 > -1 && !EnemySearchPlane[xP1, yM1].visited) visit(xP1, yM1); //SouthEast
-            if (xM1 > -1 && yP1 < MAX_SPOT && !EnemySearchPlane[xM1, yP1].visited) visit(xM1, yP1); //NorthWest
+            if (xM1 > -1       && yM1 > -1       && !EnemySearchPlane[xM1, yM1].visited) visit(xM1, yM1); //SouthWest
+            if (xP1 < MAX_SPOT && yM1 > -1       && !EnemySearchPlane[xP1, yM1].visited) visit(xP1, yM1); //SouthEast
+            if (xM1 > -1       && yP1 < MAX_SPOT && !EnemySearchPlane[xM1, yP1].visited) visit(xM1, yP1); //NorthWest
         }
     }
 

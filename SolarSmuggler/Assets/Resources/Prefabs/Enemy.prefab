@@ -10,6 +10,7 @@ GameObject:
   - 4: {fileID: 469486}
   - 114: {fileID: 11425950}
   - 65: {fileID: 6511384}
+  - 114: {fileID: 11426014}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -115,9 +116,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42ff1508e8be85e49bc38a0119fb3541, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shotHit: 0
+  playerFound: 0
   selectPrefab: {fileID: 112190, guid: 31c0109c653ba4657b80b004d9619899, type: 2}
   empPrefab: {fileID: 131872, guid: 6e4d294c4ec1a4e7e9365d0d054cdead, type: 2}
   disorientedPrefab: {fileID: 196578, guid: eb78f246507de474fbaedb42d434d791, type: 2}
+--- !u!114 &11426014
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 120564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95bffdac9ea477a4aacf26c5a06b7d9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

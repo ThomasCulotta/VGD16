@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+/*
+ * @Author: Patrick Blanchard
+ *
+ */
 
 public class SpawnMaster : MonoBehaviour {
     public static int SMALL_ENEMY  = 5;

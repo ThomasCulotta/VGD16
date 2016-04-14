@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+/*
+ * @Author: Patrick Blanchard
+ *
+ */
 
 public class AudioController : MonoBehaviour {
 

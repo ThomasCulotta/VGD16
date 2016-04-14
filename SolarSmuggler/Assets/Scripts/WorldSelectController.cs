@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+/*
+ * @Author: Patrick Blanchard
+ *
+ */
 
 public class WorldSelectController : MonoBehaviour {
 
