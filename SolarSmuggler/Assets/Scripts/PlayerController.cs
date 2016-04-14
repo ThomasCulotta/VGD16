@@ -89,6 +89,11 @@ public class PlayerController : MonoBehaviour
     ///////////////
     public HUDScript hudScript;
 
+    ///////////////
+    // Sound
+    //////////////
+    private new AudioSource audio;
+
     void Start()
     {
         camNullScript = Camera.main.gameObject.transform.parent.GetComponent<IsoCamera>();
@@ -105,6 +110,8 @@ public class PlayerController : MonoBehaviour
 
         GameObject HUD = GameObject.FindGameObjectWithTag("HUD");
         hudScript = HUD.GetComponent<HUDScript>();
+
+        audio = gameObject.AddComponent<AudioSource>();
     }
 
     void Update()
@@ -240,6 +247,8 @@ public class PlayerController : MonoBehaviour
                                 moveList = new ArrayList();
                                 Pathfind(nextPosition);
                                 MovePlayer();
+                                audio.clip = AudioController.effect[3];
+                                audio.Play();
                             }
                         }
                         else if (Input.GetKeyDown(KeyCode.Alpha1) && hyperCoolDown == 0)
@@ -637,6 +646,8 @@ public class PlayerController : MonoBehaviour
 
         //need a ratio to from current health & max health to scale the hp bar
         hudScript.HealthUpdate(curr_Health, max_Health);
+        audio.clip = AudioController.effect[2];
+        audio.Play();
     }
 
     public void AdjustCargo()

@@ -8,7 +8,7 @@
 - **Tyler Bellue**
   - list
 - **Patrick Blanchard**
-  - list
+  - EnemyLoS, SpawnSystem, AudioController, Music
 - **Brian Chiang**
   - list
 - **Steven Truong**
@@ -77,7 +77,7 @@ You are an interstellar smuggler trying to build his reputation within the Galac
   - [ ] Show projectiles from enemy to player
   - [ ] Damage variation
 3. Pursue Player
-  - [ ] Move to shooting distance if within sight range
+  - [X] Move to shooting distance if within sight range
   - [ ] Move to last known location if not within sight range
 
 #### Extra

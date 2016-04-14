@@ -12,6 +12,7 @@ public class EnemyLaser : MonoBehaviour {
     RaycastHit hit;
     GameObject player;
     Component LoS;
+   
     
 	// Use this for initialization
 	void Awake () {

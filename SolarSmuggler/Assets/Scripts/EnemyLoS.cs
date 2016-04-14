@@ -83,8 +83,12 @@ public class EnemyLoS : MonoBehaviour
     public GameObject disorientedPrefab;
     private GameObject disorientedInst;
 
+    //Sound
+    private new AudioSource audio;
+
     void Awake()
     {
+        audio = gameObject.AddComponent<AudioSource>();
         shotHit = -1;
         player = GameObject.FindGameObjectWithTag("Player");
         init = true;
@@ -132,6 +136,11 @@ public class EnemyLoS : MonoBehaviour
                     emp = false;
                     Destroy(empInst);
                     init = true;
+
+                    //EMP Sound
+                    audio.clip = AudioController.effect[0];
+                    audio.Play();
+
                     Debug.Log("PLAYER_TURN -from enemyLOS EMPed");
                     GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
                 }
@@ -369,6 +378,7 @@ public class EnemyLoS : MonoBehaviour
             empInst = (GameObject)GameObject.Instantiate(empPrefab, new Vector3(transform.position.x, 0.1f, transform.position.z), Quaternion.identity);
             empInst.transform.parent = transform;
         }
+
     }
 
     public void GetDisoriented()
@@ -401,10 +411,16 @@ public class EnemyLoS : MonoBehaviour
             { 
                 player.GetComponent<PlayerController>().decreaseHealth();
                 Debug.Log("Player has been hit, health is " + (player.GetComponent<PlayerController>().curr_Health) + "\n");
+                //Laser Sound
+                audio.clip = AudioController.effect[4];
+                audio.Play();
             }
             else
             {
                 Debug.Log("Enemy has missed player, health is " + player.GetComponent<PlayerController>().curr_Health + "\n");
+                //Laser Sound
+                audio.clip = AudioController.effect[4];
+                audio.Play();
             }
         }
 
