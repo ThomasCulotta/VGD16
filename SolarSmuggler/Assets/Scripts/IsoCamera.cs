@@ -13,7 +13,7 @@ public class IsoCamera : MonoBehaviour
     private Vector3 deltaCam;
     private float deltaRotY;
     private float deltaZoom;
-    private bool  moveToPlayer;
+    private bool  moveToPlayer = true;
 
     private Vector3 prevMousePos = Vector3.zero;
     private Vector3 curMousePos  = Vector3.zero;
@@ -26,7 +26,7 @@ public class IsoCamera : MonoBehaviour
         cam.transform.LookAt(transform.position);
         moveToPlayer = true;
 	}
-	
+
 	void FixedUpdate()
     {
         deltaCam = Vector3.zero;
@@ -46,7 +46,7 @@ public class IsoCamera : MonoBehaviour
         }
         else
             deltaCam = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
-        
+
         // Rotation Y
         if (Input.GetMouseButton(0))
             deltaRotY = prevMousePos.x - curMousePos.x;
@@ -67,7 +67,7 @@ public class IsoCamera : MonoBehaviour
             else
                 transform.Translate(deltaCam * CAM_SPEED * Time.deltaTime);
         }
-        
+
         if (deltaRotY != 0)
             transform.Rotate(0f, deltaRotY * ROT_SPEED * Time.deltaTime, 0f);
 
