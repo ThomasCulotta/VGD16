@@ -15,7 +15,7 @@ public class SpawnSystem : MonoBehaviour {
     private int START_GAME_AREA;
     public int MAX_GAME_AREA;
     private Vector3 center;
-
+    private Vector3 playerPos;
 
     //These number can be tweaked to increase or decrease number of spawns
     public int MAX_PLANETS;
@@ -213,11 +213,12 @@ public class SpawnSystem : MonoBehaviour {
 
     void spawnPlanetsWhite(int numPlanets)
     {
+        Vector3 spawnPos = Vector3.zero;
         for(int i=0; i<numPlanets; i++)
         {
             int spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
             int spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-            Vector3 spawnPos = new Vector3(spawnX, 0, spawnY);
+            spawnPos = new Vector3(spawnX, 0, spawnY);
             
 
             while (!isAvailable(spawnPos))
@@ -240,7 +241,7 @@ public class SpawnSystem : MonoBehaviour {
                 children.ForEach(child => Destroy(child));
             }
         }
-
+        playerPos = new Vector3(spawnPos.x - 6f, 0, spawnPos.z - 6f);
     }
 
     /*
@@ -316,22 +317,22 @@ public class SpawnSystem : MonoBehaviour {
 
     void spawnPlayer()
     {
-        int spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-        int spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-        Vector3 spawnPos = new Vector3(spawnX, 0, spawnY);
+//        int spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
+//        int spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
+//        Vector3 spawnPos = new Vector3(spawnX, 0, spawnY);
 
-        while (!isAvailable(spawnPos))
-        {
-            spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-            spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-            spawnPos = new Vector3(spawnX, 0, spawnY);
-        }
+//        while (!isAvailable(spawnPos))
+//        {
+//            spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
+//            spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
+//            spawnPos = new Vector3(spawnX, 0, spawnY);
+//        }
 
-        AddToList(spawnPos);
+        AddToList(playerPos);
         player.GetComponent<PlayerController>().curr_Cargo = 0;
-        Instantiate(player, spawnPos, Quaternion.identity);
+        Instantiate(player, playerPos, Quaternion.identity);
         player.tag = "Player";
-        initCamera(spawnPos);
+        initCamera(playerPos);
     }
 
     /*

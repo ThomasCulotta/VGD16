@@ -55,12 +55,12 @@ public class IsoCamera : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 rotating = true;
-                iTween.RotateBy(gameObject, iTween.Hash("y", 90f, "time", 0.5f, "oncomplete", "SetRotatingFalse", "oncompletetarget", gameObject));
+                iTween.RotateAdd(gameObject, iTween.Hash("y", 90f, "time", 0.5f, "oncomplete", "SetRotatingFalse", "oncompletetarget", gameObject));
             }
             else if (Input.GetKeyDown(KeyCode.E))
             {
                 rotating = true;
-                iTween.RotateBy(gameObject, iTween.Hash("y", -90f, "time", 0.5f, "oncomplete", "SetRotatingFalse", "oncompletetarget", gameObject));
+                iTween.RotateAdd(gameObject, iTween.Hash("y", -90f, "time", 0.5f, "oncomplete", "SetRotatingFalse", "oncompletetarget", gameObject));
             }
             else if (Input.GetMouseButton(0))
                 deltaRotY = prevMousePos.x - curMousePos.x;
@@ -68,8 +68,10 @@ public class IsoCamera : MonoBehaviour
 
         // Zoom Z
         deltaZoom = Mathf.Clamp(Input.GetAxis("Mouse ScrollWheel"), -1f, 1f);
-        if ((cam.transform.localPosition.z > -3f && deltaZoom > 0) ||
-            (cam.transform.localPosition.z < -10f && deltaZoom < 0))
+        if ((cam.transform.localPosition.z > -3f && deltaZoom > 0)  ||
+            (cam.transform.localPosition.z < -10f && deltaZoom < 0))// ||
+//            (cam.transform.localRotation.x >  40f && deltaZoom < 0) ||
+//            (cam.transform.localRotation.x <  15f && deltaZoom > 0))
             deltaZoom = 0f;
     }
 
@@ -87,7 +89,10 @@ public class IsoCamera : MonoBehaviour
             transform.Rotate(0f, deltaRotY * ROT_SPEED * Time.deltaTime, 0f);
 
         if (deltaZoom != 0)
+        {
             cam.transform.Translate(Vector3.forward * deltaZoom * ZOOM_SPEED * Time.deltaTime);
+            cam.transform.Rotate(Vector3.right, deltaZoom * -3f);
+        }
     }
 
     private void SetRotatingFalse()

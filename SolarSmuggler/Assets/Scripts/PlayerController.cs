@@ -467,6 +467,19 @@ public class PlayerController : MonoBehaviour
                     if (dist + 1 <= 10)
                         BFSQueue.Enqueue(newSpace);
                 }
+                else
+                {
+                    GridSquare newSpace = new GridSquare
+                    {
+                        coordinates = new Vector3(x, 0f, z),
+                        hidden = false,
+                        cargo = false,
+                        distance = 20,
+                        destination = false
+                    };
+
+                    PlayerGrid[(int)posOffset.x, (int)posOffset.y] = newSpace;
+                }
             }
             else if (PlayerGrid[(int)posOffset.x, (int)posOffset.y].distance > (dist + 1))
             {
@@ -523,8 +536,9 @@ public class PlayerController : MonoBehaviour
             curSpace.coordinates = transform.position;
             Vector3 curDir = Vector3.zero;
             float curDur = 0f;
+            Vector3 yBuffer = new Vector3(0f, 0.3f, 0f);
 
-            if (Physics.Linecast(transform.position, new Vector3(finalSquare.coordinates.x, transform.position.y, finalSquare.coordinates.z)))
+            if (!Physics.Linecast(transform.position + yBuffer, finalSquare.coordinates + yBuffer))
             {
                 curDir = finalSquare.coordinates - curSpace.coordinates;
                 curDur = (finalSquare.coordinates - curSpace.coordinates).magnitude * 0.2f;
