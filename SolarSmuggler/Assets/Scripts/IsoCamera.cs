@@ -52,15 +52,17 @@ public class IsoCamera : MonoBehaviour
         // Rotation Y
         if (!rotating)
         {
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (Input.GetKey(KeyCode.Q))
             {
-                rotating = true;
-                iTween.RotateAdd(gameObject, iTween.Hash("y", 90f, "time", 0.5f, "oncomplete", "SetRotatingFalse", "oncompletetarget", gameObject));
+                deltaRotY = -2f;
+//                rotating = true;
+//                iTween.RotateAdd(gameObject, iTween.Hash("y", 45f, "time", 0.5f, "oncomplete", "SetRotatingFalse", "oncompletetarget", gameObject));
             }
-            else if (Input.GetKeyDown(KeyCode.E))
+            else if (Input.GetKey(KeyCode.E))
             {
-                rotating = true;
-                iTween.RotateAdd(gameObject, iTween.Hash("y", -90f, "time", 0.5f, "oncomplete", "SetRotatingFalse", "oncompletetarget", gameObject));
+                deltaRotY = 2f;
+//                rotating = true;
+//                iTween.RotateAdd(gameObject, iTween.Hash("y", -45f, "time", 0.5f, "oncomplete", "SetRotatingFalse", "oncompletetarget", gameObject));
             }
             else if (Input.GetMouseButton(0))
                 deltaRotY = prevMousePos.x - curMousePos.x;

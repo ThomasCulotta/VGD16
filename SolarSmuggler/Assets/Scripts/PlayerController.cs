@@ -537,11 +537,11 @@ public class PlayerController : MonoBehaviour
             Vector3 curDir = Vector3.zero;
             float curDur = 0f;
             Vector3 yBuffer = new Vector3(0f, 0.3f, 0f);
-
-            if (!Physics.Linecast(transform.position + yBuffer, finalSquare.coordinates + yBuffer))
+            RaycastHit hit;
+            if (!Physics.SphereCast(transform.position + yBuffer, 0.5f, finalSquare.coordinates - transform.position, out hit, Vector3.Distance(finalSquare.coordinates, transform.position)))
             {
                 curDir = finalSquare.coordinates - curSpace.coordinates;
-                curDur = (finalSquare.coordinates - curSpace.coordinates).magnitude * 0.2f;
+                curDur = Vector3.Distance(finalSquare.coordinates, curSpace.coordinates) * 0.2f;
                 curSpace = finalSquare;
                 moveList.Clear();
                 // 0.2 seconds per meter
@@ -556,7 +556,7 @@ public class PlayerController : MonoBehaviour
                 do
                 {
                     GridSquare tempSpace = (GridSquare)moveList[moveList.Count - 1];
-                    Vector3 tempDir = curSpace.coordinates - tempSpace.coordinates;
+                    Vector3 tempDir = tempSpace.coordinates - curSpace.coordinates;
                     // Duration based on cardinal or diagonal direction
                     // 0.2 seconds per meter
                     float durDiff = tempDir.magnitude * 0.2f;
