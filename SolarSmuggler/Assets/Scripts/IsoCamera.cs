@@ -11,9 +11,10 @@ public class IsoCamera : MonoBehaviour
     private GameObject cam;
 
     private Vector3 deltaCam;
-    private float deltaRotY;
-    private float deltaZoom;
-    private bool  moveToPlayer = true;
+    private float   deltaRotY;
+    private float   deltaZoom;
+    private bool    moveToPlayer;
+    private bool    rotating;
 
     private Vector3 prevMousePos = Vector3.zero;
     private Vector3 curMousePos  = Vector3.zero;
@@ -25,6 +26,7 @@ public class IsoCamera : MonoBehaviour
         cam = transform.GetChild(0).gameObject;
         cam.transform.LookAt(transform.position);
         moveToPlayer = true;
+        rotating = false;
 	}
 
 	void FixedUpdate()
@@ -48,8 +50,21 @@ public class IsoCamera : MonoBehaviour
             deltaCam = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
 
         // Rotation Y
-        if (Input.GetMouseButton(0))
-            deltaRotY = prevMousePos.x - curMousePos.x;
+        if (!rotating)
+        {
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                rotating = true;
+                iTween.RotateBy(gameObject, iTween.Hash("y", 90f, "time", 0.5f, "oncomplete", "SetRotatingFalse", "oncompletetarget", gameObject));
+            }
+            else if (Input.GetKeyDown(KeyCode.E))
+            {
+                rotating = true;
+                iTween.RotateBy(gameObject, iTween.Hash("y", -90f, "time", 0.5f, "oncomplete", "SetRotatingFalse", "oncompletetarget", gameObject));
+            }
+            else if (Input.GetMouseButton(0))
+                deltaRotY = prevMousePos.x - curMousePos.x;
+        }
 
         // Zoom Z
         deltaZoom = Mathf.Clamp(Input.GetAxis("Mouse ScrollWheel"), -1f, 1f);
@@ -73,6 +88,11 @@ public class IsoCamera : MonoBehaviour
 
         if (deltaZoom != 0)
             cam.transform.Translate(Vector3.forward * deltaZoom * ZOOM_SPEED * Time.deltaTime);
+    }
+
+    private void SetRotatingFalse()
+    {
+        rotating = false;
     }
 
     public void DamageIndicator()

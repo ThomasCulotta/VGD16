@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour
     private bool selectingEnemy = false;
     private bool holdMoves      = false;
     private bool newMove        = false;
-    public bool imHidden       = false;
+    public  bool imHidden       = false;
     private bool imCloaked      = false;
 
     private int hyperCoolDown = 0;
@@ -116,6 +116,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        Debug.DrawRay(transform.position, transform.forward);
         switch (GameMaster.CurrentState)
         {
             case (GameMaster.GameState.GAME_START):
@@ -152,8 +153,8 @@ public class PlayerController : MonoBehaviour
                             if (Random.Range(0, 10) >= 3)
                                 decreaseHealth();
                         }
-                        imHidden = false;
                     }
+                    imHidden = false;
                     newMove = true;
                     playerMoveCount = 2;
                     if (hyperCoolDown > 0)
@@ -517,49 +518,66 @@ public class PlayerController : MonoBehaviour
         // Translate to next GridSquare
         if (moveList.Count > 0)
         {
-            int curRight = 0;
-            int curUp = 0;
-            int spaceCount = 0;
-            float curDur = 0f;
-
-            // Set initial space to player pos
+            GridSquare finalSquare = (GridSquare)moveList[0];
             GridSquare curSpace = new GridSquare();
             curSpace.coordinates = transform.position;
+            Vector3 curDir = Vector3.zero;
+            float curDur = 0f;
 
-            // Check if next space is in same direction if there are still spaces to check
-            do
+            if (Physics.Linecast(transform.position, new Vector3(finalSquare.coordinates.x, transform.position.y, finalSquare.coordinates.z)))
             {
-                GridSquare tempSpace = (GridSquare)moveList[moveList.Count - 1];
-                int tempRight = (int)(tempSpace.coordinates.x - curSpace.coordinates.x);
-                int tempUp = (int)(tempSpace.coordinates.z - curSpace.coordinates.z);
-
-                // Pop last gridspace in list if it's in the same line as prev spaces or if it's the first pass
-                if (spaceCount == 0 ||
-                   (tempRight == curRight && tempUp == curUp))
-                {
-                    curSpace = tempSpace;
-                    moveList.RemoveAt(moveList.Count - 1);
-                    curRight = tempRight;
-                    curUp = tempUp;
-                    curDur += 0.2f;
-
-                    spaceCount++;
-                }
-                // Break if temp space isn't in line with previous spaces
-                else break;
+                curDir = finalSquare.coordinates - curSpace.coordinates;
+                curDur = (finalSquare.coordinates - curSpace.coordinates).magnitude * 0.2f;
+                curSpace = finalSquare;
+                moveList.Clear();
+                // 0.2 seconds per meter
             }
-            while (moveList.Count > 0);
+            else
+            {
+                int spaceCount = 0;
 
-            if (moveList.Count == 0)
-                moveEndSpace = curSpace;
+                // Set initial space to player pos
 
+                // Check if next space is in same direction if there are still spaces to check
+                do
+                {
+                    GridSquare tempSpace = (GridSquare)moveList[moveList.Count - 1];
+                    Vector3 tempDir = curSpace.coordinates - tempSpace.coordinates;
+                    // Duration based on cardinal or diagonal direction
+                    // 0.2 seconds per meter
+                    float durDiff = tempDir.magnitude * 0.2f;
+
+                    // Pop last gridspace in list if it's in the same line as prev spaces or if it's the first pass
+                    if (spaceCount == 0 || tempDir == curDir)
+                    {
+                        curSpace = tempSpace;
+                        moveList.RemoveAt(moveList.Count - 1);
+                        curDir = tempDir;
+                        curDur += durDiff;
+
+                        spaceCount++;
+                    }
+                    // Break if temp space isn't in line with previous spaces
+                    else break;
+                }
+                while (moveList.Count > 0);
+
+                if (moveList.Count == 0)
+                    moveEndSpace = curSpace;
+            }
+
+            ArrayList spaceAndDur = new ArrayList();
+            spaceAndDur.Add(curSpace);
+            spaceAndDur.Add(curDur);
+            float yRotationNeeded = Mathf.Acos(Vector3.Dot(transform.forward, curDir.normalized));
+            float testX = transform.forward.x * Mathf.Cos(yRotationNeeded) - transform.forward.z * Mathf.Sin(yRotationNeeded);
+            float testZ = transform.forward.x * Mathf.Sin(yRotationNeeded) + transform.forward.z * Mathf.Cos(yRotationNeeded);
+            Vector3 testVector = new Vector3(testX, transform.forward.y, testZ);
+            if (testVector.normalized == curDir.normalized)
+                yRotationNeeded = -yRotationNeeded;
+            Debug.Log(yRotationNeeded);
             // Move player to the furthest in-line space
-            iTween.MoveTo(gameObject, iTween.Hash("x", curSpace.coordinates.x,
-                                                  "z", curSpace.coordinates.z,
-                                                  "time", curDur,
-                                                  "easetype", "linear",
-                                                  "oncomplete", "MovePlayer",
-                                                  "oncompletetarget", gameObject));
+            RotatePlayer(yRotationNeeded * 180f / Mathf.PI, spaceAndDur);
         }
         // Snap player to grid
         else
@@ -570,10 +588,10 @@ public class PlayerController : MonoBehaviour
             GridSquare curGrid = moveEndSpace;
 
             destReached = curGrid.destination;
+
             if (hyperJumping)
                 hyperJumping = false;
-
-
+            
             if (curGrid.cargo)
             {
                 Collider[] cargoArray = Physics.OverlapBox(new Vector3(curGrid.coordinates.x, 0f, curGrid.coordinates.z),
@@ -602,6 +620,23 @@ public class PlayerController : MonoBehaviour
                 Destroy((GameObject)gridPlanes[i]);
             gridPlanes.Clear();
         }
+    }
+
+    void RotatePlayer(float yRotationNeeded, ArrayList spaceAndDur)
+    {
+        iTween.RotateAdd(gameObject, iTween.Hash("y", yRotationNeeded, "time", 0.2f, "oncomplete", "TranslatePlayer", "oncompletetarget", gameObject, "oncompleteparams", spaceAndDur));
+    }
+
+    void TranslatePlayer(ArrayList spaceAndDur)
+    {
+        GridSquare curSpace = (GridSquare)spaceAndDur[0];
+        float curDur = (float)spaceAndDur[1];
+        iTween.MoveTo(gameObject, iTween.Hash("x", curSpace.coordinates.x,
+                                              "z", curSpace.coordinates.z,
+                                              "time", curDur,
+                                              "easetype", "linear",
+                                              "oncomplete", "MovePlayer",
+                                              "oncompletetarget", gameObject));
     }
 
     void GetEnemyListInArea(ref ArrayList curList, Vector3 origin, float radius)
