@@ -104,7 +104,7 @@ public class PlayerController : MonoBehaviour
 
         // Initialize player stats...
         curr_Health = max_Health; //set player to maximum health
-        curr_Cargo = max_Cargo; //set cargo to maximum capacity
+        //curr_Cargo = max_Cargo; //set cargo to maximum capacity
         //InvokeRepeating("decreaseHealth", 1f, 1f); just for testing purposes, this decreases health by 2 every second
         //SetCargoBar(curr_Cargo);
 
