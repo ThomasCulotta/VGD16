@@ -1634,8 +1634,8 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -4.7, y: -1.3}
-  m_SizeDelta: {x: 189.4, y: 302.2}
+  m_AnchoredPosition: {x: -4.7, y: -2.8}
+  m_SizeDelta: {x: 189.4, y: 311.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &683413900
 MonoBehaviour:
@@ -1675,13 +1675,14 @@ MonoBehaviour:
     There are 3 different power ups:
 
 
-    Hyper Jump allows you to fast forward to further spaces outside the grid
+    The key "1" activates Hyper Jump - allows you to fast forward to further spaces
+    outside the grid
 
 
-    EMP incapacitates the enemy for 1-2 turns
+    The key "2" activates EMP - incapacitates the enemy for 1-2 turns
 
 
-    Cloaking stealths your ship making you unseeable by enemies'
+    The key "3" activates Cloaking - stealths your ship allowing detection to be avoided'
 --- !u!222 &683413901
 CanvasRenderer:
   m_ObjectHideFlags: 0
