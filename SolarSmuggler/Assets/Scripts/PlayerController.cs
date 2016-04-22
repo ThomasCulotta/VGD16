@@ -489,6 +489,20 @@ public class PlayerController : MonoBehaviour
                 PlayerGrid[(int)posOffset.x, (int)posOffset.y].distance = dist + 1;
             }
         }
+        else if (posOffset.x <= MAX_MOVE * 2 &&
+                posOffset.y <= MAX_MOVE * 2)
+        {
+            GridSquare newSpace = new GridSquare
+            {
+                coordinates = new Vector3(x, 0f, z),
+                hidden = false,
+                cargo = false,
+                distance = 20,
+                destination = false
+            };
+
+            PlayerGrid[(int)posOffset.x, (int)posOffset.y] = newSpace;
+        }
     }
 
     void Pathfind(Vector3 curSpace)
@@ -505,10 +519,10 @@ public class PlayerController : MonoBehaviour
         int loX = (int)posOffset.x - 1;
 
         // Clamp to bounds. Yeah, this leads to duplicate checks.
-        if (hiY > MAX_MOVE * 2) hiY--;
-        if (hiX > MAX_MOVE * 2) hiX--;
-        if (loY < 0) loY++;
-        if (loX < 0) loX++;
+        if (hiY > MAX_MOVE * 2) hiY = MAX_MOVE * 2;
+        if (hiX > MAX_MOVE * 2) hiX = MAX_MOVE * 2;
+        if (loY < 0) loY = 0;
+        if (loX < 0) loX = 0;
 
         if (PlayerGrid[(int)posOffset.x, (int)posOffset.y].distance > 1.4f)
         {
@@ -539,9 +553,9 @@ public class PlayerController : MonoBehaviour
             curSpace.coordinates = transform.position;
             Vector3 curDir = Vector3.zero;
             float curDur = 0f;
-            Vector3 yBuffer = new Vector3(0f, 0.3f, 0f);
             RaycastHit hit;
-            if (!Physics.SphereCast(transform.position + yBuffer, 0.5f, finalSquare.coordinates - transform.position, out hit, Vector3.Distance(finalSquare.coordinates, transform.position)))
+            if (!Physics.SphereCast(transform.position, 0.5f, finalSquare.coordinates - transform.position, 
+                                    out hit, Vector3.Distance(finalSquare.coordinates, transform.position), 255, QueryTriggerInteraction.Ignore))
             {
                 curDir = finalSquare.coordinates - curSpace.coordinates;
                 curDur = Vector3.Distance(finalSquare.coordinates, curSpace.coordinates) * 0.2f;
@@ -641,7 +655,11 @@ public class PlayerController : MonoBehaviour
 
     void RotatePlayer(float yRotationNeeded, ArrayList spaceAndDur)
     {
-        iTween.RotateAdd(gameObject, iTween.Hash("y", yRotationNeeded, "time", 0.2f, "oncomplete", "TranslatePlayer", "oncompletetarget", gameObject, "oncompleteparams", spaceAndDur));
+        iTween.RotateAdd(gameObject, iTween.Hash("y", yRotationNeeded, 
+                                                 "time", 0.2f, 
+                                                 "oncomplete", "TranslatePlayer", 
+                                                 "oncompletetarget", gameObject, 
+                                                 "oncompleteparams", spaceAndDur));
     }
 
     void TranslatePlayer(ArrayList spaceAndDur)
