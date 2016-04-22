@@ -86,6 +86,9 @@ public class EnemyLoS : MonoBehaviour
     //Sound
     private new AudioSource audio;
 
+    //Texture
+    public Texture2D normTexture;
+
     void Awake()
     {
         audio = gameObject.AddComponent<AudioSource>();
@@ -101,6 +104,16 @@ public class EnemyLoS : MonoBehaviour
 
     void Update()
     {
+        if (playerFound == false) // set black
+        {
+            GetComponentInChildren<Renderer>().material.mainTexture = normTexture;
+            GetComponentInChildren<Renderer>().material.SetTexture("BlackMaterial", normTexture);
+        }
+        else // set white
+        {
+            GetComponentInChildren<Renderer>().material.mainTexture = normTexture;
+            GetComponentInChildren<Renderer>().material.SetTexture("pCube5Mat", normTexture);
+        }
         if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
         {
             // Thomas: Added this small debug line so we'll see exactly what the ray is doing when we test this out.
