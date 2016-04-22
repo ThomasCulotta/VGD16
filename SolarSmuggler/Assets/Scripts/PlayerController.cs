@@ -526,9 +526,10 @@ public class PlayerController : MonoBehaviour
 
         if (PlayerGrid[(int)posOffset.x, (int)posOffset.y].distance > 1.4f)
         {
-            // Check cardinal spaces first
-            GridSquare closestSpace = PlayerGrid[meX, loY];
+            GridSquare closestSpace = PlayerGrid[meX, meY];
 
+            // Check cardinal spaces first
+            if (PlayerGrid[meX, loY].distance <= closestSpace.distance && PlayerGrid[meX, loY].distance > 0) closestSpace = PlayerGrid[meX, loY];
             if (PlayerGrid[meX, hiY].distance <= closestSpace.distance && PlayerGrid[meX, hiY].distance > 0) closestSpace = PlayerGrid[meX, hiY];
             if (PlayerGrid[hiX, meY].distance <= closestSpace.distance && PlayerGrid[hiX, meY].distance > 0) closestSpace = PlayerGrid[hiX, meY];
             if (PlayerGrid[loX, meY].distance <= closestSpace.distance && PlayerGrid[loX, meY].distance > 0) closestSpace = PlayerGrid[loX, meY];
@@ -539,7 +540,8 @@ public class PlayerController : MonoBehaviour
             if (PlayerGrid[loX, hiY].distance <= closestSpace.distance && PlayerGrid[loX, hiY].distance > 0) closestSpace = PlayerGrid[loX, hiY];
             if (PlayerGrid[loX, loY].distance <= closestSpace.distance && PlayerGrid[loX, loY].distance > 0) closestSpace = PlayerGrid[loX, loY];
 
-            Pathfind(closestSpace.coordinates);
+            if (closestSpace.distance < PlayerGrid[meX, meY].distance)
+                Pathfind(closestSpace.coordinates);
         }
     }
 
