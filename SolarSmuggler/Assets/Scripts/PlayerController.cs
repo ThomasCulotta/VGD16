@@ -470,7 +470,7 @@ public class PlayerController : MonoBehaviour
                     if (hiddenSpace)
                         tempGS.baseColor = Color.grey;
                     if (cargoSpace)
-                        tempGS.baseColor = Color.blue;
+                        tempGS.baseColor = Color.white;
                     if (destSpace)
                         tempGS.baseColor = Color.green;
                     
@@ -581,6 +581,7 @@ public class PlayerController : MonoBehaviour
                 curDir = finalSquare.coordinates - curSpace.coordinates;
                 curDur = Vector3.Distance(finalSquare.coordinates, curSpace.coordinates) * 0.2f;
                 curSpace = finalSquare;
+                moveEndSpace = curSpace;
                 moveList.Clear();
                 // 0.2 seconds per meter
             }
@@ -646,9 +647,12 @@ public class PlayerController : MonoBehaviour
             
             if (curGrid.cargo)
             {
+                Debug.Log("CARGO GET");
+
                 Collider[] cargoArray = Physics.OverlapBox(new Vector3(curGrid.coordinates.x, 0f, curGrid.coordinates.z),
                                                              new Vector3(0.1f, 10f, 0.1f), Quaternion.identity,
                                                              255, QueryTriggerInteraction.Collide);
+                
                 for (int i = 0; i < cargoArray.Length; i++)
                     if (cargoArray[i].tag.Equals("Cargo"))
                     {

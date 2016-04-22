@@ -260,14 +260,14 @@ public class SpawnSystem : MonoBehaviour {
             spawnPos = new Vector3(center.x, 0, center.z + zOffset);
             AddToList(spawnPos);
 
-            if (needStation && (Random.Range(0, 3) == 0 || i == numPlanets - 1))
+            if (needStation && (Random.Range(0, 3) == 0 || i == numPlanets - 2))
             {
                 needStation = false;
                 spawnSpaceStationBlack(spawnPos);
                 continue;
             }
 
-            if (wantAsteroid < 2 && Random.Range(0, 3) == 0)
+            if (wantAsteroid < 2 && Random.Range(0, 3) == 0 && i != numPlanets - 1)
             {
                 wantAsteroid++;
                 spawnAsteroidFieldBlack(spawnPos);
