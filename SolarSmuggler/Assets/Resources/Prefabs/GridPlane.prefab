@@ -84,7 +84,7 @@ BoxCollider:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 197374}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 10, y: 1, z: 10}
@@ -100,7 +100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e46d280adc58447868e2cf6ad2a93635, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentlyMoving: 0
+  baseColor: {r: 0.19607843, g: 0.5882353, b: 0.9411765, a: 0.78431374}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

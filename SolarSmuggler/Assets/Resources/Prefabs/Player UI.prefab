@@ -604,6 +604,9 @@ MonoBehaviour:
   cargoShard1: {fileID: 11494562}
   cargoShard2: {fileID: 11472336}
   cargoShard3: {fileID: 11470516}
+  iconHyper: {fileID: 11400592}
+  iconEMP: {fileID: 11442318}
+  iconCloak: {fileID: 11492122}
   cargoText: {fileID: 11419154}
   healthText: {fileID: 11426354}
 --- !u!114 &11469164

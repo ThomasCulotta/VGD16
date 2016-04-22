@@ -1352,14 +1352,18 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: '
 
-
     Right click on blue grid spaces (squares) to move. Getting into the asteroid field
-    is a good idea for stealth to hide from enemies.
+    is a good idea for stealth to hide from enemies, but you may end up taking damage
+    from the asteroids.
 
 
-    Hold left click and move the mouse to turn camera view.
+    Hold left click and move the mouse or use Q and E to turn camera view.
 
-'
+
+    Scroll up and down to change the camera angle.
+
+
+    Press Tab to switch between following the player, and WASD camera movement.'
 --- !u!222 &486280685
 CanvasRenderer:
   m_ObjectHideFlags: 0
