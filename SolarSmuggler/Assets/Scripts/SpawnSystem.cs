@@ -23,8 +23,8 @@ public class SpawnSystem : MonoBehaviour {
     public static int MAX_ENEMIES;
 
     //Graphic Util
-    public int pixWidth;
-    public int pixHeight;
+    public int   pixWidth;
+    public int   pixHeight;
     public float xOrg;
     public float yOrg;
     public float scale;
@@ -58,8 +58,10 @@ public class SpawnSystem : MonoBehaviour {
     private GameObject sun;
     private GameObject UI;
     private GameObject spaceStation;
-    private Transform spaceStationChild;
+    private GameObject asteroidField;
     private GameObject AudioController;
+    private Transform  spaceStationChild;
+    private Transform  asteroidFieldChild;
     
 
 
@@ -116,10 +118,12 @@ public class SpawnSystem : MonoBehaviour {
         UI                = (GameObject)Resources.Load("Prefabs/Player UI");
         sun               = (GameObject)Resources.Load("Prefabs/Sun");
         spaceStation      = (GameObject)Resources.Load("Prefabs/Space Station Null");
+        asteroidField     = (GameObject)Resources.Load("Prefabs/Asteroid Null");
         AudioController   = (GameObject)Resources.Load("Prefabs/AudioController");
 
         //Other Prefab Children
         spaceStationChild = spaceStation.transform.FindChild("Space Station");
+        asteroidFieldChild = asteroidField.transform.GetChild(0);
 
         /***********************************************************************************/
 
@@ -248,7 +252,8 @@ public class SpawnSystem : MonoBehaviour {
     {
         Vector3 spawnPos = Vector3.zero;
         float zOffset = 0;
-        bool needStation = true;;
+        bool needStation = true;
+        int wantAsteroid = 0;
         for(int i=0; i<numPlanets; i++)
         {
             zOffset += Random.Range(12f, 18f);
@@ -259,6 +264,13 @@ public class SpawnSystem : MonoBehaviour {
             {
                 needStation = false;
                 spawnSpaceStationBlack(spawnPos);
+                continue;
+            }
+
+            if (wantAsteroid < 2 && Random.Range(0, 3) == 0)
+            {
+                wantAsteroid++;
+                spawnAsteroidFieldBlack(spawnPos);
                 continue;
             }
 
@@ -357,6 +369,16 @@ public class SpawnSystem : MonoBehaviour {
         spaceStation.transform.localScale = new Vector3(1, 1, 1);
         spaceStationChild.position = spawnPos - center;
         Instantiate(spaceStation, center, Quaternion.identity);
+    }
+
+    void spawnAsteroidFieldBlack(Vector3 spawnPos)
+    {
+        AddToList(spawnPos);
+        asteroidField.transform.localScale = new Vector3(1, 1, 1);
+        asteroidFieldChild.position = spawnPos - center;
+        GameObject myAsteroid = (GameObject)Instantiate(asteroidField, center, Quaternion.identity);
+        float yRotation = Random.Range(0f, 330f);
+        myAsteroid.transform.Rotate(Vector3.up, yRotation);
     }
 
     void spawnPlayer()

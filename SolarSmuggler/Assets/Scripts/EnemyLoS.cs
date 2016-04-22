@@ -28,7 +28,7 @@ public class EnemyLoS : MonoBehaviour
     private const bool DEBUG = false;
 
     //Constant Variables
-    private const int MAX_MOVE = 7;
+    private const int MAX_MOVE = 15;
     private const float MAX_SPOT = (MAX_MOVE * 2 + 1);
     private const float MAX_FIRE_DIST = 2f;
 
@@ -349,14 +349,17 @@ public class EnemyLoS : MonoBehaviour
             GridNode curNode = new GridNode();
             curNode.coords = transform.position;
 
-            do
-            {
-                //Debug.Log("MoveList Count: " + moveList.Count);
-                curNode = (GridNode)moveList[0];
-                moveList.RemoveAt(0);
-                curDur += 0.5f;
+            if (Vector3.Distance(curNode.coords, player.transform.position) > 3)
+                do
+                {
+                    //Debug.Log("MoveList Count: " + moveList.Count);
+                    curNode = (GridNode)moveList[0];
+                    moveList.RemoveAt(0);
+                    curDur += 0.2f;
 
-            } while (0 < moveList.Count);
+                } while (0 < moveList.Count && Vector3.Distance(curNode.coords, player.transform.position) > 3);
+
+            moveList.Clear();
             //Debug.Log("MoveList Count: " + moveList.Count);
             iTween.MoveTo(gameObject, iTween.Hash("x", curNode.coords.x,
                                                   "z", curNode.coords.z,
