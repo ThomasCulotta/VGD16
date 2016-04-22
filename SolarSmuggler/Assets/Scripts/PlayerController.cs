@@ -158,11 +158,11 @@ public class PlayerController : MonoBehaviour
                     newMove = true;
                     playerMoveCount = 2;
                     if (hyperCoolDown > 0)
-                        hyperCoolDown--;
+                        hudScript.IconUpdate(1, --hyperCoolDown);
                     if (empCoolDown > 0)
-                        empCoolDown--;
+                        hudScript.IconUpdate(2, --empCoolDown);
                     if (cloakingCoolDown > 0)
-                        cloakingCoolDown--;
+                        hudScript.IconUpdate(3, --cloakingCoolDown);
                 }
                 else if (destReached)
                 {
@@ -206,6 +206,7 @@ public class PlayerController : MonoBehaviour
                                 if (playerMoveCount > 0)
                                     newMove = true;
                                 empCoolDown = 4;
+                                hudScript.IconUpdate(2, empCoolDown);
                             }
                         }
                         else if (Input.GetKeyDown(KeyCode.Escape))
@@ -236,7 +237,8 @@ public class PlayerController : MonoBehaviour
                                 hyperJumping = false;
                                 if (Random.Range(0, 10) >= 3)
                                     decreaseHealth();
-                                hyperCoolDown = 3;
+                                hyperCoolDown = 4;
+                                hudScript.IconUpdate(1, hyperCoolDown);
                                 for (int i = 0; i < gridPlanes.Count; i++)
                                     Destroy((GameObject)gridPlanes[i]);
                                 gridPlanes.Clear();
@@ -300,6 +302,7 @@ public class PlayerController : MonoBehaviour
                             if (playerMoveCount > 0)
                                 newMove = true;
                             cloakingCoolDown = 4;
+                            hudScript.IconUpdate(3, cloakingCoolDown);
                             for (int i = 0; i < gridPlanes.Count; i++)
                                 Destroy((GameObject)gridPlanes[i]);
                             gridPlanes.Clear();
