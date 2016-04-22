@@ -110,8 +110,27 @@ public class PlayerController : MonoBehaviour
 
         GameObject HUD = GameObject.FindGameObjectWithTag("HUD");
         hudScript = HUD.GetComponent<HUDScript>();
-
         audio = gameObject.AddComponent<AudioSource>();
+
+        switch (SpawnMaster.CURRENT_STATE)
+        {
+            case (SpawnMaster.SpawnState.SMALL):
+                {
+                    max_Cargo = SpawnMaster.SMALL_CARGO;
+                }
+                break;
+            case (SpawnMaster.SpawnState.MEDIUM):
+                {
+                    max_Cargo = SpawnMaster.MEDIUM_CARGO;
+                }
+                break;
+            case (SpawnMaster.SpawnState.LARGE):
+                {
+                    max_Cargo = SpawnMaster.LARGE_CARGO;
+                }
+                break;
+        }
+
     }
 
     void Update()
@@ -636,7 +655,9 @@ public class PlayerController : MonoBehaviour
                         GameObject.Destroy(cargoArray[i].gameObject);
                         break;
                     }
-                Add(Random.Range(5, 15), max_Cargo, true);
+                curr_Cargo++;
+                hudScript.CargoUpdate(curr_Cargo, max_Cargo);
+                //Add(Random.Range(5, 15), max_Cargo, true);
             }
 
             imHidden = curGrid.hidden;
@@ -724,6 +745,7 @@ public class PlayerController : MonoBehaviour
 
     public void AdjustCargo()
     {
+        /*
         System.Random rand = new System.Random();
         int randVal;
 
@@ -763,6 +785,7 @@ public class PlayerController : MonoBehaviour
         HUDScript HUDScript = HUD.GetComponent<HUDScript> ();
         HUDScript.CargoUpdate(curr_Cargo, max_Cargo);
         */
+       
     }
 
     void Sub(int randVal, bool isCargo)
