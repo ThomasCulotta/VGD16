@@ -30,7 +30,7 @@ public class EnemyLaser : MonoBehaviour {
             Vector3[] linePos = {transform.position, player.transform.position};
             laser.enabled = true;
             laser.material = laserMat;
-            laser.SetWidth(0.1f, 0.1f);
+            laser.SetWidth(0.25f, 0.25f);
             laser.SetPositions(linePos);
         }
         else

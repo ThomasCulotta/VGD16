@@ -13,6 +13,10 @@ public class HUDScript : MonoBehaviour {
 	public Image cargoShard2;
 	public Image cargoShard3;
 
+    public Image iconHyper;
+    public Image iconEMP;
+    public Image iconCloak;
+
 	public Text cargoText;
 	public Text healthText;
 
@@ -103,4 +107,74 @@ public class HUDScript : MonoBehaviour {
 	{
 		healthText.text = "Health: " + health.ToString() + "/" + max_Health.ToString();
 	}
+
+    public void IconUpdate(int icon, int coolDown)
+    {
+        Color cd = Color.green;
+        switch (coolDown)
+        {
+            case 4:
+            {
+                cd = Color.black;
+            }
+            break;
+
+            case 3:
+            {
+                cd = Color.red / 3f;
+            }
+            break;
+
+            case 2:
+            {
+                cd = Color.red / 3f * 2f;
+            }
+            break;
+
+            case 1:
+            {
+                cd = Color.red;
+            }
+            break;
+
+            case 0:
+            {
+                cd = Color.white;
+            }
+            break;
+
+            default:
+            {
+                Debug.LogWarning("invalid IconUpdate color.");
+            }
+            break;
+        }
+
+        switch (icon)
+        {
+            case 1:
+            {
+                iconHyper.color = cd;
+            }
+            break;
+
+            case 2:
+            {
+                iconEMP.color = cd;
+            }
+            break;
+
+            case 3:
+            {
+                iconCloak.color = cd;
+            }
+            break;
+
+            default:
+            {
+                Debug.LogWarning("invalid IconUpdate.");
+            }
+            break;
+        }
+    }
 }

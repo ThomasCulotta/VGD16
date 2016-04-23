@@ -15,7 +15,7 @@ public class SpawnSystem : MonoBehaviour {
     private int START_GAME_AREA;
     public int MAX_GAME_AREA;
     private Vector3 center;
-
+    private Vector3 playerPos;
 
     //These number can be tweaked to increase or decrease number of spawns
     public int MAX_PLANETS;
@@ -23,8 +23,8 @@ public class SpawnSystem : MonoBehaviour {
     public static int MAX_ENEMIES;
 
     //Graphic Util
-    public int pixWidth;
-    public int pixHeight;
+    public int   pixWidth;
+    public int   pixHeight;
     public float xOrg;
     public float yOrg;
     public float scale;
@@ -58,8 +58,10 @@ public class SpawnSystem : MonoBehaviour {
     private GameObject sun;
     private GameObject UI;
     private GameObject spaceStation;
-    private Transform spaceStationChild;
+    private GameObject asteroidField;
     private GameObject AudioController;
+    private Transform  spaceStationChild;
+    private Transform  asteroidFieldChild;
     
 
 
@@ -116,10 +118,12 @@ public class SpawnSystem : MonoBehaviour {
         UI                = (GameObject)Resources.Load("Prefabs/Player UI");
         sun               = (GameObject)Resources.Load("Prefabs/Sun");
         spaceStation      = (GameObject)Resources.Load("Prefabs/Space Station Null");
+        asteroidField     = (GameObject)Resources.Load("Prefabs/Asteroid Null");
         AudioController   = (GameObject)Resources.Load("Prefabs/AudioController");
 
         //Other Prefab Children
         spaceStationChild = spaceStation.transform.FindChild("Space Station");
+        asteroidFieldChild = asteroidField.transform.GetChild(0);
 
         /***********************************************************************************/
 
@@ -159,9 +163,9 @@ public class SpawnSystem : MonoBehaviour {
 
         resetPlanetPrefabs();
         spawnSun();
-        spawnPlanetsWhite(MAX_PLANETS);
+        spawnPlanetsBlack(MAX_PLANETS);
         spawnCargoWhite(MAX_CARGO);
-        spawnSpaceStation();
+//        spawnSpaceStation();
         spawnPlayer();
         spawnEnemiesWhite(MAX_ENEMIES);
         loadPlayerUI();
@@ -181,9 +185,9 @@ public class SpawnSystem : MonoBehaviour {
 
         resetPlanetPrefabs();
         spawnSun();
-        spawnPlanetsWhite(MAX_PLANETS);
+        spawnPlanetsBlack(MAX_PLANETS);
         spawnCargoWhite(MAX_CARGO);
-        spawnSpaceStation();
+//        spawnSpaceStation();
         spawnPlayer();
         spawnEnemiesWhite(MAX_ENEMIES);
         loadPlayerUI();
@@ -203,9 +207,9 @@ public class SpawnSystem : MonoBehaviour {
 
         resetPlanetPrefabs();
         spawnSun();
-        spawnPlanetsWhite(MAX_PLANETS);
+        spawnPlanetsBlack(MAX_PLANETS);
         spawnCargoWhite(MAX_CARGO);
-        spawnSpaceStation();
+//        spawnSpaceStation();
         spawnPlayer();
         spawnEnemiesWhite(MAX_ENEMIES);
         loadPlayerUI();
@@ -213,11 +217,12 @@ public class SpawnSystem : MonoBehaviour {
 
     void spawnPlanetsWhite(int numPlanets)
     {
+        Vector3 spawnPos = Vector3.zero;
         for(int i=0; i<numPlanets; i++)
         {
             int spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
             int spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-            Vector3 spawnPos = new Vector3(spawnX, 0, spawnY);
+            spawnPos = new Vector3(spawnX, 0, spawnY);
             
 
             while (!isAvailable(spawnPos))
@@ -240,7 +245,51 @@ public class SpawnSystem : MonoBehaviour {
                 children.ForEach(child => Destroy(child));
             }
         }
+        playerPos = new Vector3(spawnPos.x - 6f, 0, spawnPos.z - 6f);
+    }
 
+    void spawnPlanetsBlack(int numPlanets)
+    {
+        Vector3 spawnPos = Vector3.zero;
+        float zOffset = 0;
+        bool needStation = true;
+        int wantAsteroid = 0;
+        for(int i=0; i<numPlanets; i++)
+        {
+            zOffset += Random.Range(12f, 18f);
+            spawnPos = new Vector3(center.x, 0, center.z + zOffset);
+            AddToList(spawnPos);
+
+            if (needStation && (Random.Range(0, 3) == 0 || i == numPlanets - 2))
+            {
+                needStation = false;
+                spawnSpaceStationBlack(spawnPos);
+                continue;
+            }
+
+            if (wantAsteroid < 2 && Random.Range(0, 3) == 0 && i != numPlanets - 1)
+            {
+                wantAsteroid++;
+                spawnAsteroidFieldBlack(spawnPos);
+                continue;
+            }
+
+            GameObject planet = makePlanetBlack(spawnPos);
+            GameObject myPlanet = (GameObject)Instantiate(planet, center, Quaternion.identity);
+            float yRotation = Random.Range(0f, 330f);
+            myPlanet.transform.Rotate(Vector3.up, yRotation);
+            Vector3 tempPos = myPlanet.transform.GetChild(0).position;
+            playerPos = new Vector3(tempPos.x - 6f, 0, tempPos.z - 6f);
+            int hasMoon = Random.Range(0, 2);
+            if(hasMoon == 0)
+            {
+                //spawnMoon(planet.transform.GetChild(0).transform, spawnPos);
+                var children = new System.Collections.Generic.List<GameObject>();
+                foreach(Transform child in myPlanet.transform.FindChild("Planet 0"))
+                    children.Add(child.gameObject);
+                children.ForEach(child => Destroy(child));
+            }
+        }
     }
 
     /*
@@ -314,24 +363,42 @@ public class SpawnSystem : MonoBehaviour {
         Instantiate(spaceStation, center, Quaternion.identity);
     }
 
+    void spawnSpaceStationBlack(Vector3 spawnPos)
+    {
+        AddToList(spawnPos);
+        spaceStation.transform.localScale = new Vector3(1, 1, 1);
+        spaceStationChild.position = spawnPos - center;
+        Instantiate(spaceStation, center, Quaternion.identity);
+    }
+
+    void spawnAsteroidFieldBlack(Vector3 spawnPos)
+    {
+        AddToList(spawnPos);
+        asteroidField.transform.localScale = new Vector3(1, 1, 1);
+        asteroidFieldChild.position = spawnPos - center;
+        GameObject myAsteroid = (GameObject)Instantiate(asteroidField, center, Quaternion.identity);
+        float yRotation = Random.Range(0f, 330f);
+        myAsteroid.transform.Rotate(Vector3.up, yRotation);
+    }
+
     void spawnPlayer()
     {
-        int spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-        int spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-        Vector3 spawnPos = new Vector3(spawnX, 0, spawnY);
+//        int spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
+//        int spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
+//        Vector3 spawnPos = new Vector3(spawnX, 0, spawnY);
 
-        while (!isAvailable(spawnPos))
-        {
-            spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-            spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-            spawnPos = new Vector3(spawnX, 0, spawnY);
-        }
+//        while (!isAvailable(spawnPos))
+//        {
+//            spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
+//            spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
+//            spawnPos = new Vector3(spawnX, 0, spawnY);
+//        }
 
-        AddToList(spawnPos);
+        AddToList(playerPos);
         player.GetComponent<PlayerController>().curr_Cargo = 0;
-        Instantiate(player, spawnPos, Quaternion.identity);
+        Instantiate(player, playerPos, Quaternion.identity);
         player.tag = "Player";
-        initCamera(spawnPos);
+        initCamera(playerPos);
     }
 
     /*
@@ -427,7 +494,7 @@ public class SpawnSystem : MonoBehaviour {
     GameObject makePlanet(Vector3 spawnPos)
     {
         Planets spawnType = (Planets)Random.Range((int)Planets.FROST, (int)Planets.COUNT);
-        int size = Random.Range(3, 8);
+        float size = Random.Range(3f, 6f);
         float moonSize = Random.Range(0.1f, 0.5f);
         Vector3 spawnPoint = spawnPos - center;
 
@@ -461,6 +528,47 @@ public class SpawnSystem : MonoBehaviour {
                     waterMoonChild.localScale = new Vector3(moonSize, moonSize, moonSize);
                     return water;
                 }
+        }
+        return frost;
+    }
+
+    GameObject makePlanetBlack(Vector3 spawnPos)
+    {
+        Planets spawnType = (Planets)Random.Range((int)Planets.FROST, (int)Planets.COUNT);
+        float size = Random.Range(3f, 5f);
+        float moonSize = Random.Range(0.1f, 0.5f);
+        spawnPos -= center;
+
+        switch (spawnType)
+        {
+            case (Planets.FROST):
+            {
+                Debug.Log("Making FROST");
+                frostChild.position = spawnPos;
+                frostChild.localScale = new Vector3(size, size, size);
+                frostMoon.position = spawnPos;
+                frostMoonChild.localScale = new Vector3(moonSize, moonSize, moonSize);
+                return frost;
+
+            }
+            case (Planets.PURPLE):
+            {
+                Debug.Log("Making Purple");
+                purpleChild.position = spawnPos;
+                purpleChild.localScale = new Vector3(size, size, size);
+                purpleMoon.position = spawnPos;
+                purpleMoonChild.localScale = new Vector3(moonSize, moonSize, moonSize);
+                return purple;
+            }
+            case (Planets.WATER):
+            {
+                Debug.Log("WATER");
+                waterChild.position = spawnPos;
+                waterChild.localScale = new Vector3(size, size, size);
+                waterMoon.position = spawnPos;
+                waterMoonChild.localScale = new Vector3(moonSize, moonSize, moonSize);
+                return water;
+            }
         }
         return frost;
     }

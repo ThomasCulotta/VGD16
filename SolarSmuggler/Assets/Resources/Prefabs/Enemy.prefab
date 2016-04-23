@@ -13,7 +13,7 @@ GameObject:
   - 114: {fileID: 11426014}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -103,8 +103,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.7, y: 0.9, z: 0.7}
+  m_Center: {x: 0, y: -1, z: 0}
 --- !u!114 &11425950
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -121,6 +121,7 @@ MonoBehaviour:
   selectPrefab: {fileID: 112190, guid: 31c0109c653ba4657b80b004d9619899, type: 2}
   empPrefab: {fileID: 131872, guid: 6e4d294c4ec1a4e7e9365d0d054cdead, type: 2}
   disorientedPrefab: {fileID: 196578, guid: eb78f246507de474fbaedb42d434d791, type: 2}
+  normTexture: {fileID: 0}
 --- !u!114 &11426014
 MonoBehaviour:
   m_ObjectHideFlags: 1
