@@ -466,16 +466,20 @@ public class PlayerController : MonoBehaviour
                     // Everything is good: make space available for the player, and add it to the queue to be checked
                     GameObject tempGrid = (GameObject)GameObject.Instantiate(gridPlane, new Vector3(x, 0f, z), Quaternion.identity);
                     GridSpace  tempGS = tempGrid.GetComponent<GridSpace>();
-                    tempGS.baseColor = new Color(50f / 255f, 150f / 255f, 240f / 255f);
+
+                    Color gridColor = new Color(50f / 255f, 150f / 255f, 240f / 255f);
+
                     if (hyperJumping)
-                        tempGS.baseColor = Color.yellow;
+                        gridColor = Color.yellow;
                     if (hiddenSpace)
-                        tempGS.baseColor = Color.grey;
+                        gridColor = Color.grey;
                     if (cargoSpace)
-                        tempGS.baseColor = Color.white;
+                        gridColor = Color.white;
                     if (destSpace)
-                        tempGS.baseColor = Color.green;
-                    
+                        gridColor = Color.green;
+
+                    tempGS.baseColor = gridColor;
+                        
                     gridPlanes.Add(tempGrid);
 
                     GridSquare newSpace = new GridSquare
@@ -486,6 +490,12 @@ public class PlayerController : MonoBehaviour
                         distance = dist + 1,
                         destination = destSpace
                     };
+
+                    float gridMod = Mathf.Pow(newSpace.distance, 0.1f);
+
+                    tempGrid.transform.localScale /= gridMod;
+                    BoxCollider col = tempGrid.GetComponent<BoxCollider>();
+                    col.size = new Vector3(col.size.x * gridMod, col.size.y, col.size.z * gridMod);
 
                     PlayerGrid[(int)posOffset.x, (int)posOffset.y] = newSpace;
                     if (dist + 1 <= 10)

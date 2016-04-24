@@ -71,9 +71,7 @@ public class IsoCamera : MonoBehaviour
         // Zoom Z
         deltaZoom = Mathf.Clamp(Input.GetAxis("Mouse ScrollWheel"), -1f, 1f);
         if ((cam.transform.localPosition.z > -3f && deltaZoom > 0)  ||
-            (cam.transform.localPosition.z < -10f && deltaZoom < 0))// ||
-//            (cam.transform.localRotation.x >  40f && deltaZoom < 0) ||
-//            (cam.transform.localRotation.x <  15f && deltaZoom > 0))
+            (cam.transform.localPosition.z < -15f && deltaZoom < 0))
             deltaZoom = 0f;
     }
 
