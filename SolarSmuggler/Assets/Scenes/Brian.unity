@@ -1339,11 +1339,11 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 15
+    m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
-    m_MaxSize: 40
+    m_MaxSize: 300
     m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -1351,6 +1351,7 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: '
+
 
     Right click on blue grid spaces (squares) to move. Getting into the asteroid field
     is a good idea for stealth to hide from enemies, but you may end up taking damage
@@ -1425,7 +1426,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 15
+    m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -1662,7 +1663,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 15
+    m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -1680,13 +1681,13 @@ MonoBehaviour:
 
 
     The key "1" activates Hyper Jump - allows you to fast forward to further spaces
-    outside the grid
+    without taking a turn up
 
 
-    The key "2" activates EMP - incapacitates the enemy for 1-2 turns
+    The key "2" activates EMP - incapacitates the target enemy for the current turn
 
 
-    The key "3" activates Cloaking - stealths your ship allowing detection to be avoided'
+    The key "3" activates Cloaking - stealths your ship to avoid enemy detection'
 --- !u!222 &683413901
 CanvasRenderer:
   m_ObjectHideFlags: 0
