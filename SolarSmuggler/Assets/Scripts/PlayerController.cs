@@ -185,8 +185,8 @@ public class PlayerController : MonoBehaviour
                 }
                 else if (destReached)
                 {
-                    SceneManager.LoadScene(0);
                     GameMaster.CurrentState = GameMaster.GameState.GAME_WIN;
+                    break;
                 }
                 if (newMove)
                 {
@@ -370,7 +370,9 @@ public class PlayerController : MonoBehaviour
             case (GameMaster.GameState.GAME_WIN):
             {
                 // TODO: Some game statistics, then main menu or win scene etc.
-                SceneManager.LoadScene(1);
+                Debug.LogWarning("game win");
+                GameMaster.CurrentState = GameMaster.GameState.GAME_START;
+                SceneManager.LoadScene(0);
             }
             break;
         }

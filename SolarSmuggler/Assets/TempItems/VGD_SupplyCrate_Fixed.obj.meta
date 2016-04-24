@@ -1,17 +1,17 @@
 fileFormatVersion: 2
-guid: 5ed6cd0afe5e1e748ad8ff2d5967983c
-timeCreated: 1460146161
+guid: c87fe7f5668004117b94ae7f5182f6e7
+timeCreated: 1461346339
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
-    100000: pSphere2
+    100000: pCube1
     100002: //RootNode
-    400000: pSphere2
+    400000: pCube1
     400002: //RootNode
-    2300000: pSphere2
-    3300000: pSphere2
-    4300000: pSphere2
+    2300000: pCube1
+    3300000: pCube1
+    4300000: pCube1
   materials:
     importMaterials: 1
     materialName: 0
@@ -36,7 +36,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 0.6
+    globalScale: 1
     meshCompression: 0
     addColliders: 0
     importBlendShapes: 1
