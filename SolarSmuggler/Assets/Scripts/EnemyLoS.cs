@@ -63,6 +63,8 @@ public class EnemyLoS : MonoBehaviour
         public int x;
         //Grid Y
         public int y;
+        //Valid
+        public bool valid;
     }
 
     //Grid Variables
@@ -224,6 +226,7 @@ public class EnemyLoS : MonoBehaviour
         EnemySearchPlane[MAX_MOVE, MAX_MOVE].dist = Vector3.Distance(transform.position, playerPos);
         EnemySearchPlane[MAX_MOVE, MAX_MOVE].x = MAX_MOVE;
         EnemySearchPlane[MAX_MOVE, MAX_MOVE].y = MAX_MOVE;
+        EnemySearchPlane[MAX_MOVE, MAX_MOVE].valid = false;
 
         //Init the Queue to begin the Flood Fill
         BFSQueue = new Queue();
@@ -274,6 +277,7 @@ public class EnemyLoS : MonoBehaviour
         EnemySearchPlane[x, y].dist = Vector3.Distance(EnemySearchPlane[x, y].coords, playerPos);
         EnemySearchPlane[x, y].x = x;
         EnemySearchPlane[x, y].y = y;
+        EnemySearchPlane[x, y].valid = true;
 
         //Player Found, info is loaded into a new Grid Node struct for easy access
         if (EnemySearchPlane[x, y].coords == player.transform.position)
@@ -284,6 +288,14 @@ public class EnemyLoS : MonoBehaviour
             Debug.Log(id + " Found Player at " + playerNode.x + "," + playerNode.y + " He is " + EnemySearchPlane[MAX_MOVE, MAX_MOVE].dist + " away.");
         }
 
+        Collider[] c = Physics.OverlapBox(EnemySearchPlane[x, y].coords, new Vector3(0.499f, 10f, 0.499f), Quaternion.identity,
+                                      255, QueryTriggerInteraction.Ignore);
+
+        foreach (Collider col in c)
+        {
+            if (col.tag.Equals("Enemy"))
+                EnemySearchPlane[x, y].valid = false;
+        }
         //Enque so neighbors can be checked.
         BFSQueue.Enqueue(EnemySearchPlane[x, y]);
     }
@@ -314,16 +326,16 @@ public class EnemyLoS : MonoBehaviour
             closestSpace = EnemySearchPlane[curX, curY];
 
             //Cardinals
-            if (EnemySearchPlane[curX, yP1].dist < closestSpace.dist && EnemySearchPlane[curX, yP1].visited) closestSpace = EnemySearchPlane[curX, yP1]; //North
-            if (EnemySearchPlane[curX, yM1].dist < closestSpace.dist && EnemySearchPlane[curX, yM1].visited) closestSpace = EnemySearchPlane[curX, yM1]; //South
-            if (EnemySearchPlane[xP1, curY].dist < closestSpace.dist && EnemySearchPlane[xP1, curY].visited) closestSpace = EnemySearchPlane[xP1, curY]; //East
-            if (EnemySearchPlane[xM1, curY].dist < closestSpace.dist && EnemySearchPlane[xM1, curY].visited) closestSpace = EnemySearchPlane[xM1, curY]; //West
+            if (EnemySearchPlane[curX, yP1].dist < closestSpace.dist && EnemySearchPlane[curX, yP1].valid) closestSpace = EnemySearchPlane[curX, yP1]; //North
+            if (EnemySearchPlane[curX, yM1].dist < closestSpace.dist && EnemySearchPlane[curX, yM1].valid) closestSpace = EnemySearchPlane[curX, yM1]; //South
+            if (EnemySearchPlane[xP1, curY].dist < closestSpace.dist && EnemySearchPlane[xP1, curY].valid) closestSpace = EnemySearchPlane[xP1, curY]; //East
+            if (EnemySearchPlane[xM1, curY].dist < closestSpace.dist && EnemySearchPlane[xM1, curY].valid) closestSpace = EnemySearchPlane[xM1, curY]; //West
 
             //Diagonals
-            if (EnemySearchPlane[xP1, yP1].dist < closestSpace.dist && EnemySearchPlane[xP1, yP1].visited) closestSpace = EnemySearchPlane[xP1, yP1]; //NorthEast
-            if (EnemySearchPlane[xP1, yM1].dist < closestSpace.dist && EnemySearchPlane[xP1, yM1].visited) closestSpace = EnemySearchPlane[xP1, yM1]; //SouthEast
-            if (EnemySearchPlane[xM1, yP1].dist < closestSpace.dist && EnemySearchPlane[xM1, yP1].visited) closestSpace = EnemySearchPlane[xM1, yP1]; //NorthWest
-            if (EnemySearchPlane[xM1, yM1].dist < closestSpace.dist && EnemySearchPlane[xM1, yM1].visited) closestSpace = EnemySearchPlane[xM1, yM1]; //SouthWest
+            if (EnemySearchPlane[xP1, yP1].dist < closestSpace.dist && EnemySearchPlane[xP1, yP1].valid) closestSpace = EnemySearchPlane[xP1, yP1]; //NorthEast
+            if (EnemySearchPlane[xP1, yM1].dist < closestSpace.dist && EnemySearchPlane[xP1, yM1].valid) closestSpace = EnemySearchPlane[xP1, yM1]; //SouthEast
+            if (EnemySearchPlane[xM1, yP1].dist < closestSpace.dist && EnemySearchPlane[xM1, yP1].valid) closestSpace = EnemySearchPlane[xM1, yP1]; //NorthWest
+            if (EnemySearchPlane[xM1, yM1].dist < closestSpace.dist && EnemySearchPlane[xM1, yM1].valid) closestSpace = EnemySearchPlane[xM1, yM1]; //SouthWest
 
             //Return if playerNode is selected
             if (closestSpace.x == playerNode.x && closestSpace.y == playerNode.y)
