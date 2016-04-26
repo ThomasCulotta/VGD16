@@ -5,7 +5,6 @@ public class MouseCursor : MonoBehaviour {
     public Texture2D cursorTexture;
     public Texture2D cursorTextureHighlight;
 
-
 	void Start () {
         Cursor.SetCursor(this.cursorTexture, Vector2.zero, CursorMode.Auto);
     }
@@ -22,5 +21,15 @@ public class MouseCursor : MonoBehaviour {
             Cursor.SetCursor(this.cursorTexture, Vector2.zero, CursorMode.Auto);
         }
 	}
+
+
+    void OnGUI()
+    {
+        if (Event.current.button == 1)
+        {
+            Debug.Log("Pressed Right click");
+            Cursor.SetCursor(this.cursorTextureHighlight, Vector2.zero, CursorMode.Auto);            
+        }
+    }
 
 }
