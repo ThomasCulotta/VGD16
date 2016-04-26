@@ -19,6 +19,7 @@ public class HUDScript : MonoBehaviour {
 
 	public Text cargoText;
 	public Text healthText;
+    public Text turnText;
 
 	// Use this for initialization
 	void Start () {
@@ -29,6 +30,7 @@ public class HUDScript : MonoBehaviour {
 		int max_Health = (int)playerController.max_Health;
 		int cargo = playerController.curr_Cargo;
 		int max_Cargo = playerController.max_Cargo;
+        int turns = playerController.turnCount;
 
 		HealthUpdate(health, max_Health);
 		CargoUpdate(cargo, max_Cargo);
@@ -100,13 +102,18 @@ public class HUDScript : MonoBehaviour {
 
 	void SetCargoText(int cargo, int max_Cargo)
 	{
-		cargoText.text = "Cargo: " + cargo.ToString() + "/" + max_Cargo.ToString();
+		cargoText.text = cargo.ToString() + "/" + max_Cargo.ToString();
 	}
 
 	void SetHealthText(int health, int max_Health)
 	{
-		healthText.text = "Health: " + health.ToString() + "/" + max_Health.ToString();
+		healthText.text = health.ToString() + "/" + max_Health.ToString();
 	}
+
+    public void SetTurnText(int turns)
+    {
+        turnText.text = "Turn: " + turns.ToString();
+    }
 
     public void IconUpdate(int icon, int coolDown)
     {

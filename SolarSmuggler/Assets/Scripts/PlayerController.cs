@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
     ///////////////
     // Player turn
     ///////////////
+    public int turnCount = 0;
     private IsoCamera camNullScript;
     public  static int playerMoveCount = 0;
     private bool playerStart = true;
@@ -158,6 +159,8 @@ public class PlayerController : MonoBehaviour
                      *       In a coroutine to free current process and allow variable
                      *       speed in populating the grid.
                      */
+                    turnCount++;
+                    hudScript.SetTurnText(turnCount);
                     playerStart = false;
                     if (imCloaked)
                     {
