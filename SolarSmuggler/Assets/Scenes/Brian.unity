@@ -1339,7 +1339,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 13
+    m_FontSize: 12
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -1350,21 +1350,11 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '
-
-
-    Right click on blue grid spaces (squares) to move. Getting into the asteroid field
-    is a good idea for stealth to hide from enemies, but you may end up taking damage
-    from the asteroids.
-
-
-    Hold left click and move the mouse or use Q and E to turn camera view.
-
-
-    Scroll up and down to change the camera angle.
-
-
-    Press Tab to switch between following the player, and WASD camera movement.'
+  m_Text: "\n\n\nRight click on blue grid spaces (squares) to move. Getting into the
+    asteroid field is a good idea for stealth to hide from enemies, but you may end
+    up taking damage from the asteroids. \n\nHold left click and move the mouse or
+    use Q and E to turn camera view.\n\nScroll up and down to change the camera angle.\n\nPress
+    Tab to switch between following the player, and WASD camera movement."
 --- !u!222 &486280685
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1426,7 +1416,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 13
+    m_FontSize: 12
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -1440,12 +1430,13 @@ MonoBehaviour:
   m_Text: '
 
 
+
     You are a smuggler of the galaxy.
 
 
     The goal is to make it to the the destination station and deliver your cargo safely
-    while attemptint to avoid the enemy, because they will drop your hp when they
-    hit you.
+    while attempting to avoid the enemy. Health points and cargo will drop when the
+    player is hit by enemies.
 
 
     Movement is designated by a grid and power ups will be there to aid your endeavour.
@@ -1663,7 +1654,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 13
+    m_FontSize: 12
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -1677,14 +1668,15 @@ MonoBehaviour:
   m_Text: '
 
 
+
     There are 3 different power ups:
 
 
     The key "1" activates Hyper Jump - allows you to fast forward to further spaces
-    without taking a turn up
+    without expending a turn
 
 
-    The key "2" activates EMP - incapacitates the target enemy for the current turn
+    The key "2" activates EMP - incapacitates the target enemy for the next turn
 
 
     The key "3" activates Cloaking - stealths your ship to avoid enemy detection'
