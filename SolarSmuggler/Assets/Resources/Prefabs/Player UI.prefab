@@ -166,10 +166,10 @@ GameObject:
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 4
   m_Component:
-  - 224: {fileID: 22492170}
-  - 222: {fileID: 22235152}
-  - 114: {fileID: 11437854}
-  - 114: {fileID: 11418622}
+  - 224: {fileID: 22434464}
+  - 222: {fileID: 22241600}
+  - 114: {fileID: 11417414}
+  - 114: {fileID: 11410584}
   m_Layer: 5
   m_Name: Control Help
   m_TagString: Untagged
@@ -362,6 +362,24 @@ GameObject:
   - 114: {fileID: 11492122}
   m_Layer: 5
   m_Name: Icon (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &151602
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 22492170}
+  - 222: {fileID: 22235152}
+  - 114: {fileID: 11437854}
+  - 114: {fileID: 11418622}
+  m_Layer: 5
+  m_Name: Power Up Help
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -662,24 +680,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1 &197518
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
-  m_Component:
-  - 224: {fileID: 22434464}
-  - 222: {fileID: 22241600}
-  - 114: {fileID: 11417414}
-  - 114: {fileID: 11410584}
-  m_Layer: 5
-  m_Name: Power Up Help
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!1 &199238
 GameObject:
   m_ObjectHideFlags: 1
@@ -811,7 +811,7 @@ MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 197518}
+  m_GameObject: {fileID: 111474}
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 1297475563, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
@@ -921,13 +921,13 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Power Ups
+  m_Text: Controls
 --- !u!114 &11417414
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 197518}
+  m_GameObject: {fileID: 111474}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -765806418, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
@@ -954,7 +954,7 @@ MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 111474}
+  m_GameObject: {fileID: 151602}
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 1297475563, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
@@ -1196,7 +1196,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 11465398}
-        m_MethodName: PowerUpExit
+        m_MethodName: ControlExit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1273,7 +1273,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Controls
+  m_Text: Power Ups
 --- !u!114 &11433656
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1330,7 +1330,7 @@ MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 111474}
+  m_GameObject: {fileID: 151602}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -765806418, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
@@ -1664,7 +1664,7 @@ MonoBehaviour:
   turnText: {fileID: 11426750}
   menu: {fileID: 180352}
   control: {fileID: 111474}
-  powerUp: {fileID: 197518}
+  powerUp: {fileID: 151602}
 --- !u!114 &11466352
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2028,7 +2028,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 11465398}
-        m_MethodName: ControlExit
+        m_MethodName: PowerUpExit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2213,11 +2213,17 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Right click on blue grid spaces (squares) to move. Getting into the asteroid
-    field is a good idea for stealth to hide from enemies, but you may end up taking
-    damage from the asteroids. \n\nHold left click and move the mouse or use Q and
-    E to turn camera view.\n\nScroll up and down to change the camera angle.\n\nPress
-    Tab to switch between following the player, and WASD camera movement."
+  m_Text: 'There are 3 different power ups:
+
+
+    The key "1" activates Hyper Jump - allows you to fast forward to further spaces
+    without expending a turn
+
+
+    The key "2" activates EMP - incapacitates the target enemy for the next turn
+
+
+    The key "3" activates Cloaking - stealths your ship to avoid enemy detection'
 --- !u!114 &11490722
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2541,7 +2547,7 @@ CanvasRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 111474}
+  m_GameObject: {fileID: 151602}
 --- !u!222 &22235582
 CanvasRenderer:
   m_ObjectHideFlags: 1
@@ -2571,7 +2577,7 @@ CanvasRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 197518}
+  m_GameObject: {fileID: 111474}
 --- !u!222 &22241894
 CanvasRenderer:
   m_ObjectHideFlags: 1
@@ -2800,7 +2806,7 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 116.5, y: -302}
+  m_AnchoredPosition: {x: 116.5, y: -307.5}
   m_SizeDelta: {x: 145, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &22415624
@@ -2814,7 +2820,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 22485742}
-  m_RootOrder: 9
+  m_RootOrder: 6
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0.25}
@@ -2927,7 +2933,7 @@ RectTransform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 197518}
+  m_GameObject: {fileID: 111474}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -2936,7 +2942,7 @@ RectTransform:
   - {fileID: 22410534}
   - {fileID: 22433036}
   m_Father: {fileID: 22485742}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 4, y: -6}
@@ -3009,7 +3015,7 @@ RectTransform:
   - {fileID: 22454078}
   - {fileID: 22446392}
   m_Father: {fileID: 22485742}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -2}
@@ -3282,10 +3288,10 @@ RectTransform:
   - {fileID: 22481412}
   - {fileID: 22466264}
   - {fileID: 22486926}
+  - {fileID: 22415624}
   - {fileID: 22444570}
   - {fileID: 22492170}
   - {fileID: 22434464}
-  - {fileID: 22415624}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_AnchorMin: {x: 0, y: 0}
@@ -3368,7 +3374,7 @@ RectTransform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 111474}
+  m_GameObject: {fileID: 151602}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -3377,7 +3383,7 @@ RectTransform:
   - {fileID: 22408528}
   - {fileID: 22465570}
   m_Father: {fileID: 22485742}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 4, y: -6}
