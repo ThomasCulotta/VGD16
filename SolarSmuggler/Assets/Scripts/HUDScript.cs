@@ -36,7 +36,9 @@ public class HUDScript : MonoBehaviour {
         menu.SetActive(false);
         control.SetActive(false);
         powerUp.SetActive(false);
-        redBorder.enabled = false;
+        Color c = redBorder.color;
+        c.a = 0;
+        redBorder.color = c;
         menuOpen = false;
 
 		int health = (int)playerController.curr_Health;

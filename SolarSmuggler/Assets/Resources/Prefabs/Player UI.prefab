@@ -1484,7 +1484,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 175528}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -765806418, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
   m_Name: 
@@ -1658,6 +1658,7 @@ MonoBehaviour:
   iconHyper: {fileID: 11400592}
   iconEMP: {fileID: 11442318}
   iconCloak: {fileID: 11492122}
+  redBorder: {fileID: 11454600}
   cargoText: {fileID: 11419154}
   healthText: {fileID: 11426354}
   turnText: {fileID: 11426750}
