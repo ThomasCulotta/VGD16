@@ -762,51 +762,6 @@ public class PlayerController : MonoBehaviour
         audio.Play();
     }
 
-    public void AdjustCargo()
-    {
-        /*
-        System.Random rand = new System.Random();
-        int randVal;
-
-        switch (cargoResult)
-        {
-            case 1: // Good negotiation, pirates are happy
-                randVal = rand.Next(1, 5) * 6;
-                Sub(randVal, true);
-                break;
-            case 2: // Decent negotiation, pirates are alright with you
-                randVal = rand.Next(2, 6) * 7;
-                Sub(randVal, true);
-                break;
-            case 3: // Bad negotiation, pirates hate you
-                randVal = rand.Next(3, 8) * 8;
-                Sub(randVal, true);
-                break;
-            case 4: // You've run into the space police and were caught, but let go; cargo forfeited
-                curr_Cargo = 0;
-                break;
-            case 5: // Run into space police or pirates and tried to run but got shot so lost some cargo
-                randVal = rand.Next(2, 5) * 10;
-                Sub(randVal, true);
-                break;
-            case 6: // Attempted recovery of cargo after being shot
-                randVal = rand.Next(2, 5) * 5;
-                Add(randVal, max_Cargo, true);
-                break;
-            case 7: // Found random cargo near asteroid or something and went to loot it
-                randVal = rand.Next(3, 6) * 6;
-                Add(randVal, max_Cargo, true);
-                break;
-                //Do I need a default case?
-        }
-        /* Not for now
-        GameObject HUD = GameObject.FindWithTag("HUD");
-        HUDScript HUDScript = HUD.GetComponent<HUDScript> ();
-        HUDScript.CargoUpdate(curr_Cargo, max_Cargo);
-        */
-       
-    }
-
     void Sub(int randVal, bool isCargo)
     {
         int min_limit = 0;

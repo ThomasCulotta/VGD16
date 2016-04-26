@@ -18,6 +18,8 @@ public class HUDScript : MonoBehaviour {
     public Image iconEMP;
     public Image iconCloak;
 
+    public Image redBorder;
+
 	public Text cargoText;
 	public Text healthText;
     public Text turnText;
@@ -34,6 +36,7 @@ public class HUDScript : MonoBehaviour {
         menu.SetActive(false);
         control.SetActive(false);
         powerUp.SetActive(false);
+        redBorder.enabled = false;
         menuOpen = false;
 
 		int health = (int)playerController.curr_Health;
