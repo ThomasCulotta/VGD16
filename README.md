@@ -2,17 +2,17 @@
 
 ### Team: Space Fence
 - **Thomas Culotta**
-  - list
+  - Grid, State Machine, Camera
 - **Derin Acar**
-  - list
+  - Art
 - **Tyler Bellue**
-  - list
+  - Prefab creation, Asteroid design, Preliminary World 
 - **Patrick Blanchard**
   - EnemyLoS, SpawnSystem, AudioController, Music
 - **Brian Chiang**
-  - list
+  - Health & Cargo interaction, UI
 - **Steven Truong**
-  - list
+  - Camera, Mouse Cursor ineraction, UI
 
 ===
 
