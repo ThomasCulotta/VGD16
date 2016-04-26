@@ -18,6 +18,8 @@ public class AudioController : MonoBehaviour {
     //Music & Sounds
     private AudioSource musicPlayer;
     private AudioClip[] music;
+    private int prevTrack;
+    private int currTrack;
 
     public static AudioClip[] effect;
 
@@ -25,11 +27,13 @@ public class AudioController : MonoBehaviour {
     void Awake () {
         musicPlayer = gameObject.AddComponent<AudioSource>();
         music       = Resources.LoadAll <AudioClip> ("Audio/Music/");
-        effect      = Resources.LoadAll <AudioClip> ("Audio/Sounds");
+        effect      = Resources.LoadAll <AudioClip> ("Audio/Sounds/");
 
         if (!musicPlayer.playOnAwake)
         {
-            musicPlayer.clip = music[Random.Range(0, music.Length)];
+            currTrack = Random.Range(0, music.Length);
+            prevTrack = currTrack;
+            musicPlayer.clip = music[currTrack];
             musicPlayer.Play();
         }
     }
@@ -38,8 +42,16 @@ public class AudioController : MonoBehaviour {
 	void Update () {
         if (!musicPlayer.isPlaying)
         {
-            musicPlayer.clip = music[Random.Range(0, music.Length)];
-            musicPlayer.Play();
+            if(prevTrack == currTrack)
+            {
+                currTrack = Random.Range(0, music.Length);
+            }
+            else
+            {
+                musicPlayer.clip = music[currTrack];
+                musicPlayer.Play();
+            }
+            
         }
 	}
 }

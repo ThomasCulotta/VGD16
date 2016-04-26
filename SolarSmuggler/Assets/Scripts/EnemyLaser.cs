@@ -9,9 +9,11 @@ public class EnemyLaser : MonoBehaviour {
     //Util Vars
     LineRenderer laser;
     Material laserMat;
-    RaycastHit hit;
+    //RaycastHit hit;
     GameObject player;
     Component LoS;
+
+    
    
     
 	// Use this for initialization
@@ -19,37 +21,27 @@ public class EnemyLaser : MonoBehaviour {
 	    laser    = gameObject.AddComponent<LineRenderer>();
         laserMat = (Material)Resources.Load("Prefabs/Materials/laser", typeof(Material));
         LoS = gameObject.GetComponent<EnemyLoS>();
+        player = GameObject.FindWithTag("Player");
+        laser.material = laserMat;
+        laser.SetWidth(0.1f, 0.1f);
     }
 	
-	// Update is called once per frame
-	void Update () {
-
-        if (isShot() && (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN) && playerFound())
+	// timeToLive determines how long to laser will be in
+    // veiw to the player.
+	public void Shootlaser(float timeToLive)
+    {
+        float timeRemaining = timeToLive;
+        
+        if(timeRemaining > 0)
         {
-            player = GameObject.FindWithTag("Player");
+            Debug.Log("Laser is Active");
+            Debug.Log("TTL: " + timeRemaining);
             Vector3[] linePos = {transform.position, player.transform.position};
             laser.enabled = true;
-            laser.material = laserMat;
-            laser.SetWidth(0.25f, 0.25f);
             laser.SetPositions(linePos);
+            timeRemaining -= Time.deltaTime;
         }
-        else
-        {
-            laser.enabled = false;
-        }
+
+        laser.enabled = false;
 	}
-
-    bool isShot()
-    {
-        if (gameObject.GetComponent<EnemyLoS>().shotHit == 1)
-            return true;
-        return false;
-    }
-
-    bool playerFound()
-    {
-        if (gameObject.GetComponent<EnemyLoS>().playerFound)
-            return true;
-        return false;
-    }
 }

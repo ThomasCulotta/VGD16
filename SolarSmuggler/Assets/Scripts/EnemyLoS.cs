@@ -40,14 +40,26 @@ public class EnemyLoS : MonoBehaviour
     private ArrayList moveList;
     private Vector3 curPos;
     private Vector3 playerPos;
-    private Material laserMat;
     private bool turnInProgress;
     private bool isSelected;
     private bool shot;
+    private int shotHit;
+
+    //Laser Variables
+    private LineRenderer laser;
+    private Material laserMat;
+    Vector3[] linePos;
+    private float laserRenderTime;
+    private float laserDecayTime;
+
+    //Fog of War Variables
+    private Renderer rend;
+    private Material hiddenMat;
+    private Material spottedMat;
 
     //Public Variables
-    public int shotHit;
     public bool playerFound;
+    public bool isShooting;
 
     public struct GridNode
     {
@@ -85,7 +97,7 @@ public class EnemyLoS : MonoBehaviour
     public GameObject disorientedPrefab;
     private GameObject disorientedInst;
 
-    //Sound
+    //Sound Variables
     private new AudioSource audio;
 
     //Texture
@@ -93,34 +105,73 @@ public class EnemyLoS : MonoBehaviour
 
     void Awake()
     {
-        audio = gameObject.AddComponent<AudioSource>();
-        shotHit = -1;
-        player = GameObject.FindGameObjectWithTag("Player");
+        //Instance Init Status
         init = true;
-        playerFound = false;
-        shot = true;
         id = GetInstanceID();
         removed = false;
+
+        //Init Player Status
+        player = GameObject.FindGameObjectWithTag("Player");
+        playerFound = false;
+
+        //Init Audio
+        audio = gameObject.AddComponent<AudioSource>();
+
+        //Init Laser
+        laser = gameObject.transform.FindChild("pCube5").GetComponent<LineRenderer>();
         laserMat = (Material)Resources.Load("Prefabs/Materials/laser", typeof(Material));
+        laser.material = laserMat;
+        laser.SetWidth(0.05f, 0.05f);
+        laserRenderTime = 1f;
+        laser.enabled = false;
+        laserDecayTime = laserRenderTime;
+        linePos = new Vector3[2];
+        linePos[0] = transform.position;
+        linePos[1] = player.transform.position;
+
+        //Init Fog of War 
+        hiddenMat  = (Material)Resources.Load("Prefabs/Materials/HiddenEnemy", typeof(Material));
+        spottedMat = (Material)Resources.Load("Prefabs/Materials/SpottedEnemy", typeof(Material));
+
+        //Init Attack Status
+        isShooting = false;
+        shotHit = -1;
+        shot = true;
     }
 
     void Update()
     {
         if (playerFound == false) // set black
         {
-            GetComponentInChildren<Renderer>().material.mainTexture = normTexture;
-            GetComponentInChildren<Renderer>().material.SetTexture("BlackMaterial", normTexture);
+            gameObject.GetComponentInChildren<Renderer>().material = hiddenMat;
         }
         else // set white
         {
-            GetComponentInChildren<Renderer>().material.mainTexture = normTexture;
-            GetComponentInChildren<Renderer>().material.SetTexture("pCube5Mat", normTexture);
+            gameObject.GetComponentInChildren<Renderer>().material = spottedMat;
         }
+
+        //Sets a timer for the laser
+        if (laser.enabled)
+        {
+            laserDecayTime -= Time.deltaTime;
+            laser.material = laserMat;
+            linePos[0] = transform.position;
+            linePos[1] = player.transform.position;
+            laser.useLightProbes = true;
+            laser.SetPositions(linePos);
+
+            if (laserDecayTime < 0)
+            {
+                laser.enabled = false;
+            }
+        }
+        else
+        {
+            laserDecayTime = laserRenderTime;
+        }
+
         if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
         {
-            // Thomas: Added this small debug line so we'll see exactly what the ray is doing when we test this out.
-            //Debug.DrawLine(transform.position, player.transform.position, Color.cyan, 0.5f);
-
             //Reset Game Board.
             if (init)
             {
@@ -185,7 +236,12 @@ public class EnemyLoS : MonoBehaviour
                                 //Combat
                                 if (shot)
                                 {
+
                                     ShootAtPlayer(dest.coords);
+                                    linePos[0] = transform.position;
+                                    linePos[1] = player.transform.position;
+                                    laser.SetPositions(linePos);
+                                    laser.enabled = true;
                                     shot = false;
                                 }
                             }
