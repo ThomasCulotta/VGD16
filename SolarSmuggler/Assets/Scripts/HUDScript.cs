@@ -66,6 +66,14 @@ public class HUDScript : MonoBehaviour {
         }
     }
 
+    public void BorderFlash() {
+        Color c = redBorder.color;
+        c.a = 1;
+        redBorder.color = c;
+
+        redBorder.CrossFadeAlpha(0,3f,false);
+    }
+
     public void HealthUpdate (int health, int max_Health) 
 	{
 		float bars_filled = (float)health / ((float)max_Health/4.0f);

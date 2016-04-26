@@ -755,6 +755,7 @@ public class PlayerController : MonoBehaviour
     {
         curr_Health -= Random.Range(15, 25);
         camNullScript.DamageIndicator();
+        hudScript.BorderFlash();
 
         //need a ratio to from current health & max health to scale the hp bar
         hudScript.HealthUpdate(curr_Health, max_Health);
