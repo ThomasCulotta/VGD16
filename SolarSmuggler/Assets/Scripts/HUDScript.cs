@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class HUDScript : MonoBehaviour {
 
@@ -21,10 +22,19 @@ public class HUDScript : MonoBehaviour {
 	public Text healthText;
     public Text turnText;
 
+    public GameObject menu;
+    public GameObject control;
+    public GameObject powerUp;
+    private bool menuOpen;
+
 	// Use this for initialization
 	void Start () {
 		GameObject player = GameObject.FindWithTag("Player");
 		PlayerController playerController = player.GetComponent<PlayerController> ();
+        menu.SetActive(false);
+        control.SetActive(false);
+        powerUp.SetActive(false);
+        menuOpen = false;
 
 		int health = (int)playerController.curr_Health;
 		int max_Health = (int)playerController.max_Health;
@@ -38,10 +48,20 @@ public class HUDScript : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-	
-	}
+        if (Input.GetKey(KeyCode.Escape)) {
+            if (!menuOpen)
+            {
+                menu.SetActive(true);
+                menuOpen = true;
+            }
+            //else {
+            //    menu.SetActive(false);
+            //    menuOpen = false;
+            //}
+        }
+    }
 
-	public void HealthUpdate (int health, int max_Health) 
+    public void HealthUpdate (int health, int max_Health) 
 	{
 		float bars_filled = (float)health / ((float)max_Health/4.0f);
 		if (bars_filled <= 1.0f) 
@@ -183,5 +203,40 @@ public class HUDScript : MonoBehaviour {
             }
             break;
         }
+    }
+
+    public void Resume()
+    {
+        menu.SetActive(false);
+        menuOpen = false;
+    }
+
+    public void MenuLoad()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    public void ControlMenu()
+    {
+        menu.SetActive(false);
+        control.SetActive(true);
+    }
+
+    public void ControlExit()
+    {
+        menu.SetActive(true);
+        control.SetActive(false);
+    }
+
+    public void PowerUpMenu()
+    {
+        menu.SetActive(false);
+        powerUp.SetActive(true);
+    }
+
+    public void PowerUpExit()
+    {
+        menu.SetActive(true);
+        powerUp.SetActive(false);
     }
 }

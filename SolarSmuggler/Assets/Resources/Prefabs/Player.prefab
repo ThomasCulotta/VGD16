@@ -224,6 +224,7 @@ MonoBehaviour:
   curr_Health: 100
   max_Cargo: 100
   curr_Cargo: 0
+  turnCount: 0
   imHidden: 0
   gridPlane: {fileID: 197374, guid: 8fa79261a207341a098e5d60406a6fd0, type: 2}
   timer: 2
