@@ -1822,6 +1822,7 @@ MonoBehaviour:
   curr_Health: 0
   max_Cargo: 100
   curr_Cargo: 0
+  turnCount: 0
   imHidden: 0
   gridPlane: {fileID: 0}
   timer: 2
@@ -1895,6 +1896,7 @@ GameObject:
   - 92: {fileID: 736075336}
   - 124: {fileID: 736075335}
   - 81: {fileID: 736075334}
+  - 114: {fileID: 736075339}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1969,6 +1971,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+--- !u!114 &736075339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 736075333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dc449a9bf0e159409fc381e9f7e7103, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cursorTexture: {fileID: 2800000, guid: 574dee8aadfa0c3468422d412309df3d, type: 3}
+  cursorTextureHighlight: {fileID: 2800000, guid: 1890323db0c985d44bd1125168cbe1d8,
+    type: 3}
 --- !u!1 &779563279
 GameObject:
   m_ObjectHideFlags: 0
