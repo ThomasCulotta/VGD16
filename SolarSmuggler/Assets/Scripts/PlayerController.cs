@@ -382,7 +382,10 @@ public class PlayerController : MonoBehaviour
                 // TODO: Some game statistics, then main menu or win scene etc.
                 Debug.LogWarning("game win");
                 GameMaster.CurrentState = GameMaster.GameState.GAME_START;
-                SceneManager.LoadScene(0);
+                PlayerPrefs.SetInt("Health", curr_Health);
+                PlayerPrefs.SetInt("Cargo", curr_Cargo);
+                PlayerPrefs.SetInt("Turns", turnCount);
+                SceneManager.LoadScene(3);
             }
             break;
         }

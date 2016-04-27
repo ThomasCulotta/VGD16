@@ -28,6 +28,8 @@ public class HUDScript : MonoBehaviour {
     public GameObject control;
     public GameObject powerUp;
     private bool menuOpen;
+    private bool controlOpen;
+    private bool powerUpOpen;
 
 	// Use this for initialization
 	void Start () {
@@ -40,6 +42,8 @@ public class HUDScript : MonoBehaviour {
         c.a = 0;
         redBorder.color = c;
         menuOpen = false;
+        controlOpen = false;
+        powerUpOpen = false;
 
 		int health = (int)playerController.curr_Health;
 		int max_Health = (int)playerController.max_Health;
@@ -53,16 +57,28 @@ public class HUDScript : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKey(KeyCode.Escape)) {
+        if (Input.GetKeyDown(KeyCode.Escape)) {
             if (!menuOpen)
             {
                 menu.SetActive(true);
                 menuOpen = true;
             }
-            //else {
-            //    menu.SetActive(false);
-            //    menuOpen = false;
-            //}
+            else if (controlOpen)
+            {
+                control.SetActive(false);
+                menu.SetActive(true);
+                controlOpen = false;
+            }
+            else if (powerUpOpen) {
+                powerUp.SetActive(false);
+                menu.SetActive(true);
+                powerUpOpen = false;
+            }
+            else
+            {
+                menu.SetActive(false);
+                menuOpen = false;
+            }
         }
     }
 
@@ -240,23 +256,27 @@ public class HUDScript : MonoBehaviour {
     {
         menu.SetActive(false);
         control.SetActive(true);
+        controlOpen = true;
     }
 
     public void ControlExit()
     {
         menu.SetActive(true);
         control.SetActive(false);
+        controlOpen = false;
     }
 
     public void PowerUpMenu()
     {
         menu.SetActive(false);
         powerUp.SetActive(true);
+        powerUpOpen = true;
     }
 
     public void PowerUpExit()
     {
         menu.SetActive(true);
         powerUp.SetActive(false);
+        powerUpOpen = false;
     }
 }
