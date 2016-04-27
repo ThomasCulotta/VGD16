@@ -5,7 +5,7 @@ public class IsoCamera : MonoBehaviour
 {
     private const float CAM_SPEED = 6f;
     private const float ROT_SPEED = 35f;
-    private const float ZOOM_SPEED = 50f;
+    private const float ZOOM_SPEED = 500f;
 
     private GameObject player;
     private GameObject cam;
