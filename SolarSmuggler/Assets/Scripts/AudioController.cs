@@ -50,6 +50,7 @@ public class AudioController : MonoBehaviour {
             {
                 musicPlayer.clip = music[currTrack];
                 musicPlayer.Play();
+                prevTrack = currTrack;
             }
             
         }

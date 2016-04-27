@@ -318,8 +318,8 @@ public class SpawnSystem : MonoBehaviour {
 
             AddToList(spawnPos);
             cargo.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f);
-            Instantiate(cargo, spawnPos, Quaternion.identity);
             cargo.tag = "Cargo";
+            Instantiate(cargo, spawnPos, Quaternion.identity);
         }
     }
 
@@ -340,7 +340,7 @@ public class SpawnSystem : MonoBehaviour {
 
             AddToList(spawnPos);
             Instantiate(enemy, spawnPos, Quaternion.identity);
-            cargo.tag = "Enemy";
+            enemy.tag = "Enemy";
         }
     }
 
