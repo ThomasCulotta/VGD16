@@ -10,7 +10,6 @@ GameObject:
   - 4: {fileID: 469486}
   - 114: {fileID: 11425950}
   - 65: {fileID: 6511384}
-  - 114: {fileID: 11426014}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -28,7 +27,7 @@ GameObject:
   - 4: {fileID: 446506}
   - 33: {fileID: 3326054}
   - 23: {fileID: 2325344}
-  - 120: {fileID: 12024512}
+  - 120: {fileID: 12049664}
   m_Layer: 0
   m_Name: pCube5
   m_TagString: Untagged
@@ -123,18 +122,7 @@ MonoBehaviour:
   empPrefab: {fileID: 131872, guid: 6e4d294c4ec1a4e7e9365d0d054cdead, type: 2}
   disorientedPrefab: {fileID: 196578, guid: eb78f246507de474fbaedb42d434d791, type: 2}
   normTexture: {fileID: 0}
---- !u!114 &11426014
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 120564}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95bffdac9ea477a4aacf26c5a06b7d9e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!120 &12024512
+--- !u!120 &12049664
 LineRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -179,7 +167,27 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: m_Positions.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Parameters.endWidth
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Parameters.startWidth
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Positions.Array.data[1].z
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 120564}
