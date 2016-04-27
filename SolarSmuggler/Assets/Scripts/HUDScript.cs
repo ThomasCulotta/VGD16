@@ -70,8 +70,15 @@ public class HUDScript : MonoBehaviour {
         Color c = redBorder.color;
         c.a = 1;
         redBorder.color = c;
+        //redBorder.CrossFadeAlpha(0.01f,3f,false);
+        StartCoroutine("FadeOut");
+    }
 
-        redBorder.CrossFadeAlpha(0,3f,false);
+    IEnumerator FadeOut() {
+        redBorder.CrossFadeAlpha(1.0f,0.1f,false);
+        yield return new WaitForSeconds(0.1f);
+        redBorder.CrossFadeAlpha(0.01f, 3.0f, false);
+        yield return null;
     }
 
     public void HealthUpdate (int health, int max_Health) 
