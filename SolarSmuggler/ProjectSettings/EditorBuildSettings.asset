@@ -11,3 +11,5 @@ EditorBuildSettings:
     path: Assets/Scenes/WorldSelection.unity
   - enabled: 1
     path: Assets/Scenes/SpawnTest.unity
+  - enabled: 1
+    path: Assets/Scenes/Victory.unity

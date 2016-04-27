@@ -136,6 +136,13 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        //if (Input.GetKey(KeyCode.P)) {
+        //    PlayerPrefs.SetInt("Health", curr_Health);
+        //    PlayerPrefs.SetInt("Cargo", curr_Cargo);
+        //    PlayerPrefs.SetInt("Turns", turnCount);
+        //    SceneManager.LoadScene(3);
+        //}
+
         Debug.DrawRay(transform.position, transform.forward);
         switch (GameMaster.CurrentState)
         {
