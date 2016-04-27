@@ -1,19 +1,18 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class StatsScript : MonoBehaviour {
 
-    public GUIText health;
-    public GUIText cargo;
-    public GUIText turns;
+    public Text health;
+    public Text cargo;
+    public Text turns;
 
 	// Use this for initialization
 	void Start () {
-        GameObject player = GameObject.FindWithTag("Player");
-        PlayerController playerController = player.GetComponent<PlayerController>();
-        health.text = playerController.curr_Health.ToString();
-        cargo.text  = playerController.curr_Cargo.ToString();
-        turns.text = playerController.turnCount.ToString();
+        health.text = "Health: " + PlayerPrefs.GetInt("Health").ToString();
+        cargo.text  = "Cargo: " + PlayerPrefs.GetInt("Cargo").ToString();
+        turns.text = "Turns: " + PlayerPrefs.GetInt("Turns").ToString();
 	}
 	
 	// Update is called once per frame
