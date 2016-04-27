@@ -28,6 +28,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 486990}
   - 114: {fileID: 11446094}
+  - 114: {fileID: 11439758}
   m_Layer: 0
   m_Name: Game Camera
   m_TagString: Untagged
@@ -108,6 +109,20 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 146694}
   m_Enabled: 1
+--- !u!114 &11439758
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 173010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dc449a9bf0e159409fc381e9f7e7103, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cursorTexture: {fileID: 2800000, guid: 574dee8aadfa0c3468422d412309df3d, type: 3}
+  cursorTextureHighlight: {fileID: 2800000, guid: 1890323db0c985d44bd1125168cbe1d8,
+    type: 3}
 --- !u!114 &11446094
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -157,6 +172,14 @@ Prefab:
       propertyPath: m_LocalRotation.y
       value: 0.17364822
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: cursorTextureHighlight
+      value: 
+      objectReference: {fileID: 2800000, guid: 1890323db0c985d44bd1125168cbe1d8, type: 3}
+    - target: {fileID: 0}
+      propertyPath: cursorTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 574dee8aadfa0c3468422d412309df3d, type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 173010}
