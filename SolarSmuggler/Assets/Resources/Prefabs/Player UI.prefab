@@ -142,6 +142,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &109340
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 22419682}
+  m_Layer: 5
+  m_Name: Icon Bar
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &111102
 GameObject:
   m_ObjectHideFlags: 1
@@ -176,7 +191,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &116336
 GameObject:
   m_ObjectHideFlags: 1
@@ -593,21 +608,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1 &179914
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
-  m_Component:
-  - 224: {fileID: 22444798}
-  m_Layer: 5
-  m_Name: Icon Bar
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!1 &180352
 GameObject:
   m_ObjectHideFlags: 0
@@ -789,11 +789,11 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Right click on blue grid spaces (squares) to move. Getting into the asteroid
-    field is a good idea for stealth to hide from enemies, but you may end up taking
-    damage from the asteroids. \n\nHold left click and move the mouse or use Q and
-    E to turn camera view.\n\nScroll up and down to change the camera angle.\n\nPress
-    Tab to switch between following the player, and WASD camera movement."
+  m_Text: "Right click on blue grid spaces to move. Getting into the asteroid field
+    is a good idea for stealth to hide from enemies, but you may end up taking damage
+    from the asteroids. \n\nHold left click and move the mouse or use Q and E to turn
+    camera view.\n\nScroll up and down to change the camera angle.\n\nPress Tab to
+    switch between following the player, and WASD camera movement."
 --- !u!114 &11400592
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1576,7 +1576,7 @@ MonoBehaviour:
   m_Script: {fileID: 1980459831, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
@@ -2821,7 +2821,7 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 116.5, y: -307.5}
+  m_AnchoredPosition: {x: 118.5, y: -308}
   m_SizeDelta: {x: 145, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &22415624
@@ -2838,8 +2838,8 @@ RectTransform:
   m_RootOrder: 4
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 956, y: 529.5}
+  m_AnchoredPosition: {x: 0.00000667572, y: -0.000002861023}
+  m_SizeDelta: {x: 819, y: 464}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &22417270
 RectTransform:
@@ -2858,6 +2858,26 @@ RectTransform:
   m_AnchoredPosition: {x: 10, y: 31.950005}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!224 &22419682
+RectTransform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 109340}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 22481412}
+  - {fileID: 22466264}
+  - {fileID: 22486926}
+  m_Father: {fileID: 22485742}
+  m_RootOrder: 3
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 4}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!224 &22421184
 RectTransform:
   m_ObjectHideFlags: 1
@@ -2940,8 +2960,8 @@ RectTransform:
   m_RootOrder: 2
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -3}
-  m_SizeDelta: {x: 172, y: 242}
+  m_AnchoredPosition: {x: 0, y: -8}
+  m_SizeDelta: {x: 172, y: 252}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &22434464
 RectTransform:
@@ -2960,7 +2980,7 @@ RectTransform:
   m_RootOrder: 7
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 24}
   m_SizeDelta: {x: 237, y: 341}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &22441658
@@ -3033,29 +3053,9 @@ RectTransform:
   m_RootOrder: 5
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 24.000004}
   m_SizeDelta: {x: 195, y: 304}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!224 &22444798
-RectTransform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 179914}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 22481412}
-  - {fileID: 22466264}
-  - {fileID: 22486926}
-  m_Father: {fileID: 22485742}
-  m_RootOrder: 3
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 10}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0}
 --- !u!224 &22446392
 RectTransform:
   m_ObjectHideFlags: 1
@@ -3188,7 +3188,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 22475326}
-  m_Father: {fileID: 22444798}
+  m_Father: {fileID: 22419682}
   m_RootOrder: 1
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -3274,7 +3274,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 22460078}
-  m_Father: {fileID: 22444798}
+  m_Father: {fileID: 22419682}
   m_RootOrder: 0
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -3320,7 +3320,7 @@ RectTransform:
   - {fileID: 22485462}
   - {fileID: 22410368}
   - {fileID: 445306}
-  - {fileID: 22444798}
+  - {fileID: 22419682}
   - {fileID: 22415624}
   - {fileID: 22444570}
   - {fileID: 22492170}
@@ -3343,7 +3343,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 22467010}
-  m_Father: {fileID: 22444798}
+  m_Father: {fileID: 22419682}
   m_RootOrder: 2
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -3419,7 +3419,7 @@ RectTransform:
   m_RootOrder: 6
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 23.999996}
   m_SizeDelta: {x: 237, y: 341}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &22495066
