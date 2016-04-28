@@ -374,6 +374,13 @@ public class PlayerController : MonoBehaviour
             case (GameMaster.GameState.GAME_LOSS):
             {
                 // TODO: Some game statistics, then main menu or lose scene etc.
+                Debug.LogWarning("game lose");
+                GameMaster.CurrentState = GameMaster.GameState.GAME_START;
+                PlayerPrefs.SetInt("Health", curr_Health);
+                PlayerPrefs.SetInt("Cargo", curr_Cargo);
+                PlayerPrefs.SetInt("Turns", turnCount);
+                // Whatever our lose scene is
+                SceneManager.LoadScene(0);
             }
             break;
 
@@ -763,9 +770,19 @@ public class PlayerController : MonoBehaviour
 
     public void decreaseHealth()
     {
-        curr_Health -= Random.Range(15, 25);
+        int rand = Random.Range(15, 25);
+        if ((curr_Health - rand) <= 0)
+        {
+            curr_Health = 0;
+            GameMaster.CurrentState = GameMaster.GameState.GAME_LOSS;
+        }
+        else
+        {
+            curr_Health -= rand;
+        }
         camNullScript.DamageIndicator();
         hudScript.BorderFlash();
+
 
         //need a ratio to from current health & max health to scale the hp bar
         hudScript.HealthUpdate(curr_Health, max_Health);
