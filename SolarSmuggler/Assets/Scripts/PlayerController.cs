@@ -24,9 +24,6 @@ public class PlayerController : MonoBehaviour
     public int max_Cargo  = 100;
     public int curr_Cargo = 0;
 
-    // Used for determining what happens to cargo
-    private int cargoResult = 0;
-
     ///////////////
     // Player turn
     ///////////////

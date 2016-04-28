@@ -156,7 +156,7 @@ public class EnemyLoS : MonoBehaviour
         if (Physics.Raycast(transform.position, spotVector, out hit, MAX_SPOT)) // set white
         {
             gameObject.GetComponentInChildren<Renderer>().material = spottedMat;
-            if (alert)
+            if (alert && !player.GetComponent<PlayerController>().imHidden)
             {
                 alarmSound.Play();
                 alert = false;
@@ -164,8 +164,7 @@ public class EnemyLoS : MonoBehaviour
         }
         else // set black
         {
-           
-            gameObject.GetComponentInChildren<Renderer>().material = hiddenMat;
+           gameObject.GetComponentInChildren<Renderer>().material = hiddenMat;
         }
 
         //Sets a timer for the laser
@@ -222,8 +221,16 @@ public class EnemyLoS : MonoBehaviour
                         scan = false;
                     }
 
+                    //Player is hidden
+                    if (player.GetComponent<PlayerController>().imHidden)
+                    {
+                        turnQueue.Clear();
+                        finishedList.Clear();
+                        GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
+                    }
+
                     //Player ended enemy turn with emp.
-                    if (emp)
+                    else if (emp)
                     {
                         emp = false;
                         Destroy(empInst);
