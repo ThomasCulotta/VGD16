@@ -30,7 +30,7 @@ public class EnemyLoS : MonoBehaviour
     private const bool DEBUG = false;
 
     //Constant Variables
-    private const int MAX_MOVE = 15;
+    private const int MAX_MOVE = 10;
     private const float MAX_SPOT = (MAX_MOVE * 2 + 1);
     private const float MAX_FIRE_DIST = 2f;
 
@@ -100,7 +100,10 @@ public class EnemyLoS : MonoBehaviour
     private GameObject disorientedInst;
 
     //Sound Variables
-    private new AudioSource audio;
+    private AudioSource laserSound;
+    private AudioSource alarmSound;
+    private AudioSource empSound;
+    private static bool alert;
 
     //Texture
     public Texture2D normTexture;
@@ -117,7 +120,12 @@ public class EnemyLoS : MonoBehaviour
         playerFound = false;
 
         //Init Audio
-        audio = gameObject.AddComponent<AudioSource>();
+        laserSound = gameObject.AddComponent<AudioSource>();
+        alarmSound = gameObject.AddComponent<AudioSource>();
+        empSound   = gameObject.AddComponent<AudioSource>();
+        laserSound.clip = AudioController.effect[6];
+        alarmSound.clip = AudioController.effect[0];
+        empSound.clip   = AudioController.effect[2];
 
         //Init Laser
         laser = gameObject.transform.FindChild("pCube5").GetComponent<LineRenderer>();
@@ -139,18 +147,25 @@ public class EnemyLoS : MonoBehaviour
         isShooting = false;
         shotHit = -1;
         shot = true;
-        turnQueue.Enqueue(id);
+        alert = false;
     }
 
     void Update()
     {
-        if (playerFound == false) // set black
-        {
-            gameObject.GetComponentInChildren<Renderer>().material = hiddenMat;
-        }
-        else // set white
+        Vector3 spotVector = player.transform.position - transform.position + new Vector3(0f, -1f, 0f);
+        if (Physics.Raycast(transform.position, spotVector, out hit, MAX_SPOT)) // set white
         {
             gameObject.GetComponentInChildren<Renderer>().material = spottedMat;
+            if (alert)
+            {
+                alarmSound.Play();
+                alert = false;
+            }
+        }
+        else // set black
+        {
+           
+            gameObject.GetComponentInChildren<Renderer>().material = hiddenMat;
         }
 
         //Sets a timer for the laser
@@ -215,9 +230,10 @@ public class EnemyLoS : MonoBehaviour
                         init = true;
 
                         //EMP Sound
-                        audio.clip = AudioController.effect[0];
-                        audio.Play();
+                        empSound.Play();
 
+                        turnQueue.Clear();
+                        finishedList.Clear();
                         Debug.Log("PLAYER_TURN -from enemyLOS EMPed");
                         GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
                     }
@@ -273,6 +289,7 @@ public class EnemyLoS : MonoBehaviour
                     {
                         Debug.Log("PLAYER_TURN -from enemyLOS");
                         init = true;
+                        alert = true;
                         GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
                     }
 
@@ -355,6 +372,7 @@ public class EnemyLoS : MonoBehaviour
             EnemySearchPlane[x, y].hasPlayer = true;
             playerNode = EnemySearchPlane[x, y];
             playerFound = true;
+            alert = true;
             Debug.Log(id + " Found Player at " + playerNode.x + "," + playerNode.y + " He is " + EnemySearchPlane[MAX_MOVE, MAX_MOVE].dist + " away.");
         }
 
@@ -511,15 +529,13 @@ public class EnemyLoS : MonoBehaviour
                 player.GetComponent<PlayerController>().decreaseHealth();
                 Debug.Log("Player has been hit, health is " + (player.GetComponent<PlayerController>().curr_Health) + "\n");
                 //Laser Sound
-                audio.clip = AudioController.effect[4];
-                audio.Play();
+                laserSound.Play();
             }
             else
             {
                 Debug.Log("Enemy has missed player, health is " + player.GetComponent<PlayerController>().curr_Health + "\n");
                 //Laser Sound
-                audio.clip = AudioController.effect[4];
-                audio.Play();
+                laserSound.Play();
             }
         }
 

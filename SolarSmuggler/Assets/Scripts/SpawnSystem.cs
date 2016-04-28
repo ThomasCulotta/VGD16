@@ -58,7 +58,7 @@ public class SpawnSystem : MonoBehaviour {
     private GameObject sun;
     private GameObject UI;
     private GameObject spaceStation;
-    private GameObject asteroidField;
+    private GameObject[] asteroidFieldList;
     private GameObject AudioController;
     private Transform  spaceStationChild;
     private Transform  asteroidFieldChild;
@@ -118,12 +118,11 @@ public class SpawnSystem : MonoBehaviour {
         UI                = (GameObject)Resources.Load("Prefabs/Player UI");
         sun               = (GameObject)Resources.Load("Prefabs/Sun");
         spaceStation      = (GameObject)Resources.Load("Prefabs/Space Station Null");
-        asteroidField     = (GameObject)Resources.Load("Prefabs/Asteroid Null");
         AudioController   = (GameObject)Resources.Load("Prefabs/AudioController");
+        asteroidFieldList = Resources.LoadAll<GameObject>("Prefabs/Asteroid Field Prefabs");
 
         //Other Prefab Children
         spaceStationChild = spaceStation.transform.FindChild("Space Station");
-        asteroidFieldChild = asteroidField.transform.GetChild(0);
 
         /***********************************************************************************/
 
@@ -373,10 +372,14 @@ public class SpawnSystem : MonoBehaviour {
 
     void spawnAsteroidFieldBlack(Vector3 spawnPos)
     {
+        int index = Random.Range(0, asteroidFieldList.Length);
         AddToList(spawnPos);
-        asteroidField.transform.localScale = new Vector3(1, 1, 1);
-        asteroidFieldChild.position = spawnPos - center;
-        GameObject myAsteroid = (GameObject)Instantiate(asteroidField, center, Quaternion.identity);
+        Transform asteroidFieldChild = asteroidFieldList[index].transform.FindChild("Child");
+        asteroidFieldList[index].transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+        asteroidFieldChild.transform.localPosition = Vector3.zero;
+        asteroidFieldChild.transform.position = spawnPos - center;
+        Debug.Log(spawnPos - center);
+        GameObject myAsteroid = (GameObject)Instantiate(asteroidFieldList[index], center, Quaternion.identity);
         float yRotation = Random.Range(0f, 330f);
         myAsteroid.transform.Rotate(Vector3.up, yRotation);
     }

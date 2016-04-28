@@ -279,7 +279,7 @@ public class PlayerController : MonoBehaviour
                                 moveList = new ArrayList();
                                 Pathfind(nextPosition);
                                 MovePlayer();
-                                audio.clip = AudioController.effect[3];
+                                audio.clip = AudioController.effect[5];
                                 audio.Play();
                             }
                         }
@@ -786,7 +786,7 @@ public class PlayerController : MonoBehaviour
 
         //need a ratio to from current health & max health to scale the hp bar
         hudScript.HealthUpdate(curr_Health, max_Health);
-        audio.clip = AudioController.effect[2];
+        audio.clip = AudioController.effect[4];
         audio.Play();
     }
 
