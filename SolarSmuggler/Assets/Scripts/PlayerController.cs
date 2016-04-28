@@ -143,7 +143,6 @@ public class PlayerController : MonoBehaviour
         //    SceneManager.LoadScene(3);
         //}
 
-        Debug.DrawRay(transform.position, transform.forward);
         switch (GameMaster.CurrentState)
         {
             case (GameMaster.GameState.GAME_START):
@@ -260,7 +259,6 @@ public class PlayerController : MonoBehaviour
                             */
                             if (hyperJumping)
                             {
-                                transform.position = nextPosition;
                                 curPosition = nextPosition;
                                 newMove = true;
                                 hyperJumping = false;
@@ -268,8 +266,14 @@ public class PlayerController : MonoBehaviour
                                     decreaseHealth();
                                 hyperCoolDown = 4;
                                 hudScript.IconUpdate(1, hyperCoolDown);
+
+                                Vector2 posOffset = new Vector2(curPosition.x - transform.position.x + MAX_MOVE, curPosition.z - transform.position.z + MAX_MOVE);
+                                GridSquare finalSquare = PlayerGrid[(int)posOffset.x, (int)posOffset.y];
+
+                                transform.position = nextPosition;
                                 for (int i = 0; i < gridPlanes.Count; i++)
                                     Destroy((GameObject)gridPlanes[i]);
+                                processFinalGridSquare(finalSquare);
                                 gridPlanes.Clear();
                             }
                             else
@@ -286,7 +290,6 @@ public class PlayerController : MonoBehaviour
                         else if (Input.GetKeyDown(KeyCode.Alpha1) && hyperCoolDown == 0)
                         {
                             // Hyper jump
-                            Debug.Log("HYPER JUMPING");
                             if (!hyperJumping)
                             {
                                 hyperJumping = true;
@@ -306,7 +309,6 @@ public class PlayerController : MonoBehaviour
                         }
                         else if (Input.GetKeyDown(KeyCode.Alpha2) && empCoolDown == 0)
                         {
-                            Debug.Log("EMP SELECTION");
                             selectingEnemy = true;
 
                             if (selectableEnemies == null)
@@ -314,7 +316,6 @@ public class PlayerController : MonoBehaviour
 
                             if (selectableEnemies.Count > 0)
                             {
-                                Debug.Log("Selectable enemies exist.");
                                 curSelectedIndex = 0;
                                 SelectEnemy();
                             }
@@ -323,7 +324,6 @@ public class PlayerController : MonoBehaviour
                         }
                         else if (Input.GetKeyDown(KeyCode.Alpha3) && cloakingCoolDown == 0)
                         {
-                            Debug.Log("CLOAKING");
                             // Cloaking
                             imHidden = true;
                             imCloaked = true;
@@ -401,7 +401,6 @@ public class PlayerController : MonoBehaviour
     IEnumerator Timer()
     {
         yield return new WaitForSeconds (timer);
-        //      Debug.Log("Evironment_TURN -from Orbit");
         GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN; //starts the player's turn
     }
 
@@ -660,7 +659,6 @@ public class PlayerController : MonoBehaviour
             Vector3 testVector = new Vector3(testX, transform.forward.y, testZ);
             if (testVector.normalized == curDir.normalized)
                 yRotationNeeded = -yRotationNeeded;
-            Debug.Log(yRotationNeeded);
             // Move player to the furthest in-line space
             RotatePlayer(yRotationNeeded * 180f / Mathf.PI, spaceAndDur);
         }
@@ -670,45 +668,45 @@ public class PlayerController : MonoBehaviour
             transform.position = new Vector3(curPosition.x, 0f, curPosition.z);
             playerMoveCount--;
 
-            GridSquare curGrid = moveEndSpace;
-
-            destReached = curGrid.destination;
-
-            if (hyperJumping)
-                hyperJumping = false;
-            
-            if (curGrid.cargo)
-            {
-                Debug.Log("CARGO GET");
-
-                Collider[] cargoArray = Physics.OverlapBox(new Vector3(curGrid.coordinates.x, 0f, curGrid.coordinates.z),
-                                                             new Vector3(0.1f, 10f, 0.1f), Quaternion.identity,
-                                                             255, QueryTriggerInteraction.Collide);
-                
-                for (int i = 0; i < cargoArray.Length; i++)
-                    if (cargoArray[i].tag.Equals("Cargo"))
-                    {
-                        GameObject.Destroy(cargoArray[i].gameObject);
-                        break;
-                    }
-                curr_Cargo++;
-                hudScript.CargoUpdate(curr_Cargo, max_Cargo);
-                //Add(Random.Range(5, 15), max_Cargo, true);
-            }
-
-            imHidden = curGrid.hidden;
-            if (imHidden)
-                Debug.Log("YAY");
-
-            if (!destReached && playerMoveCount > 0)
-            {
-                newMove = true;
-                holdMoves = false;
-            }
+            processFinalGridSquare(moveEndSpace);
 
             for (int i = 0; i < gridPlanes.Count; i++)
                 Destroy((GameObject)gridPlanes[i]);
             gridPlanes.Clear();
+        }
+    }
+
+    void processFinalGridSquare(GridSquare curGrid)
+    {
+        Debug.Log("final square");
+        destReached = curGrid.destination;
+
+        if (curGrid.cargo)
+        {
+            Collider[] cargoArray = Physics.OverlapBox(new Vector3(curGrid.coordinates.x, 0f, curGrid.coordinates.z),
+                                                           new Vector3(0.1f, 10f, 0.1f), Quaternion.identity,
+                                                           255, QueryTriggerInteraction.Collide);
+
+            for (int i = 0; i < cargoArray.Length; i++)
+                if (cargoArray[i].tag.Equals("Cargo"))
+                {
+                    GameObject.Destroy(cargoArray[i].gameObject);
+                    break;
+                }
+            curr_Cargo++;
+            hudScript.CargoUpdate(curr_Cargo, max_Cargo);
+            //Add(Random.Range(5, 15), max_Cargo, true);
+        }
+
+        imHidden = curGrid.hidden;
+
+        if (hyperJumping)
+            hyperJumping = false;
+
+        if (!destReached && playerMoveCount > 0)
+        {
+            newMove = true;
+            holdMoves = false;
         }
     }
 
@@ -747,8 +745,6 @@ public class PlayerController : MonoBehaviour
 
     void SelectEnemy()
     {
-        Debug.Log("Select new.");
-
         if (curSelectedEnemy != null && selectableEnemies.Count == 1)
             return;
 

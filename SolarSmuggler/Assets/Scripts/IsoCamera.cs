@@ -5,7 +5,7 @@ public class IsoCamera : MonoBehaviour
 {
     private const float CAM_SPEED = 6f;
     private const float ROT_SPEED = 35f;
-    private const float ZOOM_SPEED = 500f;
+    private const float ZOOM_SPEED = 50f;
 
     private GameObject player;
     private GameObject cam;
@@ -71,7 +71,7 @@ public class IsoCamera : MonoBehaviour
         // Zoom Z
         deltaZoom = Mathf.Clamp(Input.GetAxis("Mouse ScrollWheel"), -1f, 1f);
         if ((cam.transform.localPosition.z > -3f && deltaZoom > 0)  ||
-            (cam.transform.localPosition.z < -15f && deltaZoom < 0))
+            (cam.transform.localPosition.z < -10f && deltaZoom < 0))
             deltaZoom = 0f;
     }
 
@@ -91,7 +91,7 @@ public class IsoCamera : MonoBehaviour
         if (deltaZoom != 0)
         {
             cam.transform.Translate(Vector3.forward * deltaZoom * ZOOM_SPEED * Time.deltaTime);
-            cam.transform.Rotate(Vector3.right, deltaZoom * -3f);
+            cam.transform.Rotate(Vector3.right, deltaZoom * -2f);
         }
     }
 
