@@ -308,8 +308,7 @@ public class PlayerController : MonoBehaviour
                         {
                             selectingEnemy = true;
 
-                            if (selectableEnemies == null)
-                                GetEnemyListInArea(ref selectableEnemies, transform.position, 10f);
+                            GetEnemyListInArea(ref selectableEnemies, transform.position, 10f);
 
                             if (selectableEnemies.Count > 0)
                             {
