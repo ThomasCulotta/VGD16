@@ -380,7 +380,7 @@ public class PlayerController : MonoBehaviour
                 PlayerPrefs.SetInt("Cargo", curr_Cargo);
                 PlayerPrefs.SetInt("Turns", turnCount);
                 // Whatever our lose scene is
-                SceneManager.LoadScene(0);
+                SceneManager.LoadScene(4);
             }
             break;
 
