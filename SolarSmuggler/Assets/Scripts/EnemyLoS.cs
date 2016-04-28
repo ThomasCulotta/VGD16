@@ -19,9 +19,11 @@ public class EnemyLoS : MonoBehaviour
     //Enemy check in
     private static bool init;
     private static ArrayList finishedList = new ArrayList();
+    private static Queue turnQueue = new Queue();
     private int finishedListIndex;
     private int id;
     private bool removed;
+    private bool scan;
     private int MAX_ENEMIES = SpawnSystem.MAX_ENEMIES; 
 
     //Debug Variables
@@ -48,7 +50,7 @@ public class EnemyLoS : MonoBehaviour
     //Laser Variables
     private LineRenderer laser;
     private Material laserMat;
-    Vector3[] linePos;
+    private Vector3[] linePos;
     private float laserRenderTime;
     private float laserDecayTime;
 
@@ -137,6 +139,7 @@ public class EnemyLoS : MonoBehaviour
         isShooting = false;
         shotHit = -1;
         shot = true;
+        turnQueue.Enqueue(id);
     }
 
     void Update()
@@ -178,6 +181,7 @@ public class EnemyLoS : MonoBehaviour
                 turnInProgress = true;
                 playerFound = false;
                 shot = true;
+                scan = true;
                 playerNode = new GridNode();
                 playerPos = player.transform.position;
                 curPos = transform.position;
@@ -185,86 +189,96 @@ public class EnemyLoS : MonoBehaviour
                 if (!finishedList.Contains(id))
                 {
                     EnemySearchPlane = new GridNode[(int)MAX_SPOT, (int)MAX_SPOT];
-                    StartCoroutine("initESP");
                     finishedList.Add(id);
+                    turnQueue.Enqueue(id);
                     Debug.Log(id + " Checking in, finishedList Count: " + finishedList.Count);
                 }
 
                 if (MAX_ENEMIES == finishedList.Count)
                     init = false;
-
             }
             else
             {
-                //Player ended enemy turn with emp.
-                if (emp)
+                if (turnQueue.Peek().Equals(id))
                 {
-                    emp = false;
-                    Destroy(empInst);
-                    init = true;
-
-                    //EMP Sound
-                    audio.clip = AudioController.effect[0];
-                    audio.Play();
-
-                    Debug.Log("PLAYER_TURN -from enemyLOS EMPed");
-                    GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
-                }
-                else if (finishedList.Count > 0 && finishedList.Contains(id))
-                {
-                    //Movement
-                    if (playerFound)
+                    if(scan)
                     {
-                        moveList = new ArrayList();
-                        PathFinding(MAX_MOVE, MAX_MOVE);
-                        if (moveList.Count > 0)
-                        {
-                            dest = (GridNode)moveList[moveList.Count - 1];
-                            moveEnemy();
-                        }
-                        else
-                        {
-                            dest.coords = transform.position;
-                        }
+                        StartCoroutine("initESP");
+                        scan = false;
+                    }
 
-                        if (moveList.Count == 0)
+                    //Player ended enemy turn with emp.
+                    if (emp)
+                    {
+                        emp = false;
+                        Destroy(empInst);
+                        init = true;
+
+                        //EMP Sound
+                        audio.clip = AudioController.effect[0];
+                        audio.Play();
+
+                        Debug.Log("PLAYER_TURN -from enemyLOS EMPed");
+                        GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
+                    }
+
+                    else if (finishedList.Count > 0 && finishedList.Contains(id))
+                    {
+                        //Movement
+                        if (playerFound)
                         {
-                            //Checks if player is obstructed by obstacle. 
-                            Vector3 heading = player.transform.position - transform.position + new Vector3(0f, -1f, 0f);
-                            if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
+                            moveList = new ArrayList();
+                            PathFinding(MAX_MOVE, MAX_MOVE);
+                            if (moveList.Count > 0)
                             {
-                                //Combat
-                                if (shot)
-                                {
+                                dest = (GridNode)moveList[moveList.Count - 1];
+                                moveEnemy();
+                            }
+                            else
+                            {
+                                dest.coords = transform.position;
+                            }
 
-                                    ShootAtPlayer(dest.coords);
-                                    linePos[0] = transform.position;
-                                    linePos[1] = player.transform.position;
-                                    laser.SetPositions(linePos);
-                                    laser.enabled = true;
-                                    shot = false;
+                            if (moveList.Count == 0)
+                            {
+                                //Checks if player is obstructed by obstacle. 
+                                Vector3 heading = player.transform.position - transform.position + new Vector3(0f, -1f, 0f);
+                                if (Physics.Raycast(transform.position, heading, out hit, MAX_SPOT))
+                                {
+                                    //Combat
+                                    if (shot)
+                                    {
+
+                                        ShootAtPlayer(dest.coords);
+                                        linePos[0] = transform.position;
+                                        linePos[1] = player.transform.position;
+                                        laser.SetPositions(linePos);
+                                        laser.enabled = true;
+                                        shot = false;
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                //Change the Game State to PLAYER_TURN.
-                if (finishedList.Count > 0 && finishedList.Contains(id))
-                {
-                    finishedList.Remove(id);
-                    Debug.Log(id + " Checking out, finishedList Count: " + finishedList.Count);
-                }
+                    //Change the Game State to PLAYER_TURN.
+                    if (finishedList.Count > 0 && finishedList.Contains(id))
+                    {
+                        finishedList.Remove(id);
+                        turnQueue.Dequeue();
+                        Debug.Log(id + " Checking out, finishedList Count: " + finishedList.Count);
+                    }
 
-                if (finishedList.Count <= 0)
-                {
-                    Debug.Log("PLAYER_TURN -from enemyLOS");
-                    init = true;
-                    GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
-                }
+                    if (finishedList.Count <= 0)
+                    {
+                        Debug.Log("PLAYER_TURN -from enemyLOS");
+                        init = true;
+                        GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
+                    }
 
-                //Recalculating enemy instance Array posistion. 
-                //UpdateIndex();
+                    //Recalculating enemy instance Array posistion. 
+                    //UpdateIndex();
+                }
             }
         }
     }
@@ -352,6 +366,7 @@ public class EnemyLoS : MonoBehaviour
             if (col.tag.Equals("Enemy"))
                 EnemySearchPlane[x, y].valid = false;
         }
+
         //Enque so neighbors can be checked.
         BFSQueue.Enqueue(EnemySearchPlane[x, y]);
     }
