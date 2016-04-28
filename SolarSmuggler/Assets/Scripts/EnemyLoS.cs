@@ -300,6 +300,12 @@ public class EnemyLoS : MonoBehaviour
                         Debug.Log("PLAYER_TURN -from enemyLOS");
                         init = true;
                         alert = true;
+                        if (disoriented)
+                        {
+                            disoriented = false;
+                            Destroy(disorientedInst);
+                        }
+                        emp = false;
                         GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
                     }
 
@@ -494,7 +500,7 @@ public class EnemyLoS : MonoBehaviour
 
     public void GetEMPed()
     {
-        if (Random.Range(0, 3) == 2)
+        if (Random.Range(0, 4) == 3)
         {
             GetDisoriented();
             return;
@@ -524,15 +530,18 @@ public class EnemyLoS : MonoBehaviour
         float dist = Vector3.Distance(dest, playerPos);
         if (MAX_FIRE_DIST >= dist)
         {
-            shotHit = Random.Range(0, 2);
+            int shotChance = 2;
 
-            // If disoriented, cut shot chance in half
-            if (disoriented && shotHit == 1)
+            // If disoriented, cut shot chance
+            if (disoriented)
             {
                 disoriented = false;
                 Destroy(disorientedInst);
-                shotHit = Random.Range(0, 2);
+                shotChance = 5;
             }
+
+            shotHit = Random.Range(0, shotChance);
+
 
             if (shotHit == 1)
             { 

@@ -606,11 +606,11 @@ public class PlayerController : MonoBehaviour
                                     out hit, Vector3.Distance(finalSquare.coordinates, transform.position), 255, QueryTriggerInteraction.Ignore))
             {
                 curDir = finalSquare.coordinates - curSpace.coordinates;
+                // 0.2 seconds per meter
                 curDur = Vector3.Distance(finalSquare.coordinates, curSpace.coordinates) * 0.2f;
                 curSpace = finalSquare;
                 moveEndSpace = curSpace;
                 moveList.Clear();
-                // 0.2 seconds per meter
             }
             else
             {
@@ -680,7 +680,7 @@ public class PlayerController : MonoBehaviour
         if (curGrid.cargo)
         {
             Collider[] cargoArray = Physics.OverlapBox(new Vector3(curGrid.coordinates.x, 0f, curGrid.coordinates.z),
-                                                           new Vector3(0.1f, 10f, 0.1f), Quaternion.identity,
+                                                           new Vector3(0.4f, 4f, 0.4f), Quaternion.identity,
                                                            255, QueryTriggerInteraction.Collide);
 
             for (int i = 0; i < cargoArray.Length; i++)
