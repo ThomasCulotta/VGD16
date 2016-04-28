@@ -153,7 +153,7 @@ public class EnemyLoS : MonoBehaviour
     void Update()
     {
         Vector3 spotVector = player.transform.position - transform.position + new Vector3(0f, -1f, 0f);
-        if (Physics.Raycast(transform.position, spotVector, out hit, MAX_SPOT)) // set white
+        if (Physics.Raycast(transform.position, spotVector, out hit, MAX_MOVE - 3)) // set white
         {
             gameObject.GetComponentInChildren<Renderer>().material = spottedMat;
             if (alert && !player.GetComponent<PlayerController>().imHidden)

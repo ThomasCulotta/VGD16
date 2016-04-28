@@ -119,7 +119,7 @@ public class SpawnSystem : MonoBehaviour {
         sun               = (GameObject)Resources.Load("Prefabs/Sun");
         spaceStation      = (GameObject)Resources.Load("Prefabs/Space Station Null");
         AudioController   = (GameObject)Resources.Load("Prefabs/AudioController");
-        asteroidFieldList = Resources.LoadAll<GameObject>("Prefabs/Asteroid Field Prefabs");
+//        asteroidFieldList = Resources.LoadAll<GameObject>("Prefabs/Asteroid Field Prefabs");
 
         //Other Prefab Children
         spaceStationChild = spaceStation.transform.FindChild("Space Station");
@@ -266,12 +266,12 @@ public class SpawnSystem : MonoBehaviour {
                 continue;
             }
 
-            if (wantAsteroid < 2 && Random.Range(0, 3) == 0 && i != numPlanets - 1)
-            {
-                wantAsteroid++;
-                spawnAsteroidFieldBlack(spawnPos);
-                continue;
-            }
+//            if (wantAsteroid < 2 && Random.Range(0, 3) == 0 && i != numPlanets - 1)
+//            {
+//                wantAsteroid++;
+//                spawnAsteroidFieldBlack(spawnPos);
+//                continue;
+//            }
 
             GameObject planet = makePlanetBlack(spawnPos);
             GameObject myPlanet = (GameObject)Instantiate(planet, center, Quaternion.identity);
@@ -444,7 +444,8 @@ public class SpawnSystem : MonoBehaviour {
     void AddToList(Vector3 pos)
     {
         int index = ((int)pos.x * MAX_GAME_AREA) + (int)pos.z;
-        posAvailable[index] = false;
+        if (index < posAvailable.Length)
+            posAvailable[index] = false;
     }
 
     bool isAvailable(Vector3 pos)

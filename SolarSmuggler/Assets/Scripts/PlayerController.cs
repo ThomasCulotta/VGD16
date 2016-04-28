@@ -60,7 +60,7 @@ public class PlayerController : MonoBehaviour
     private ArrayList      gridPlanes;
 
     public  GameObject gridPlane;
-    private int  MAX_MOVE = 10;
+    private int  MAX_MOVE = 7;
 
     private ArrayList moveList;
     private bool destReached = false;
