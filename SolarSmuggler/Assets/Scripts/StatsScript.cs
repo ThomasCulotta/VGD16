@@ -15,7 +15,7 @@ public class StatsScript : MonoBehaviour {
         health.text =   "Health: "              + PlayerPrefs.GetInt("Health").ToString();
         cargo.text  =   "Cargo: "               + PlayerPrefs.GetInt("Cargo").ToString();
         turns.text  =   "Turns Taken: "         + PlayerPrefs.GetInt("Turns").ToString();
-        shot.text   =   "Times Shot:"           + PlayerPrefs.GetInt("beingShot").ToString();
+        shot.text   =   "Times Shot: "           + PlayerPrefs.GetInt("beingShot").ToString();
 	}
 	
 	// Update is called once per frame
