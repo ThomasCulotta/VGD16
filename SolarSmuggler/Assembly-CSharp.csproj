@@ -58,6 +58,7 @@
      <Compile Include="Assets\Scripts\IndicatorMovement.cs" />
      <Compile Include="Assets\Scripts\IsoCamera.cs" />
      <Compile Include="Assets\Scripts\MenuController.cs" />
+     <Compile Include="Assets\Scripts\MenuSystem.cs" />
      <Compile Include="Assets\Scripts\MoonOrbit.cs" />
      <Compile Include="Assets\Scripts\MouseCursor.cs" />
      <Compile Include="Assets\Scripts\Orbit.cs" />
