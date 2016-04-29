@@ -57,6 +57,9 @@ public class HUDScript : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+        GameObject player = GameObject.FindWithTag("Player");
+        PlayerController playerController = player.GetComponent<PlayerController> ();
+
         if (Input.GetKeyDown(KeyCode.Escape)) {
             if (!menuOpen)
             {

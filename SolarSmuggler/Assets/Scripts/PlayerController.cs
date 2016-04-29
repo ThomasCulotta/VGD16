@@ -96,7 +96,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        GameMaster.CurrentState = GameMaster.GameState.GAME_START;
+        GameMaster.CurrentState = GameMaster.GameState.PLAYER_TURN;
         camNullScript = Camera.main.gameObject.transform.parent.GetComponent<IsoCamera>();
         nextPosition = curPosition = transform.position;
         // Force player to grid
@@ -145,7 +145,7 @@ public class PlayerController : MonoBehaviour
         //    SceneManager.LoadScene(3);
         //}
 
-        if (gameObject == null)
+        if (transform.GetChild(0).gameObject == null)
         {
             GameMaster.CurrentState = GameMaster.GameState.GAME_START;
             SceneManager.LoadScene(2);

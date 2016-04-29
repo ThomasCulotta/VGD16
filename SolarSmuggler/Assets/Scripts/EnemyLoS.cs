@@ -156,7 +156,7 @@ public class EnemyLoS : MonoBehaviour
     void Update()
     {
         //Debug.Log("Health" + player.GetComponent<PlayerController>().curr_Health);
-
+        player = GameObject.FindGameObjectWithTag("Player");
         Vector3 spotVector = player.transform.position - transform.position + new Vector3(0f, -1f, 0f);
         if (Physics.Raycast(transform.position, spotVector, out hit, MAX_MOVE - 3)) // set white
         {

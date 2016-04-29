@@ -47,6 +47,7 @@ public class IsoCamera : MonoBehaviour
         // Translation X and Z
         if (moveToPlayer)
         {
+            player = GameObject.FindGameObjectWithTag("Player");
             deltaCam = player.transform.position - transform.position;
             if (deltaCam.magnitude < 0.05f)
                 deltaCam = Vector3.zero;
