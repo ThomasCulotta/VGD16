@@ -102,7 +102,6 @@ public class EnemyLoS : MonoBehaviour
     //Sound Variables
     private AudioSource laserSound;
     private AudioSource alarmSound;
-    private AudioSource empSound;
     private static bool alert;
 
     //Texture
@@ -122,10 +121,8 @@ public class EnemyLoS : MonoBehaviour
         //Init Audio
         laserSound = gameObject.AddComponent<AudioSource>();
         alarmSound = gameObject.AddComponent<AudioSource>();
-        empSound   = gameObject.AddComponent<AudioSource>();
         laserSound.clip = AudioController.effect[7];
         alarmSound.clip = AudioController.effect[0];
-        empSound.clip   = AudioController.effect[2];
 
         //Init Laser
         laser = gameObject.transform.FindChild("pCube5").GetComponent<LineRenderer>();
@@ -238,9 +235,6 @@ public class EnemyLoS : MonoBehaviour
                         emp = false;
                         Destroy(empInst);
                         init = true;
-
-                        //EMP Sound
-                        empSound.Play();
 
                         turnQueue.Clear();
                         finishedList.Clear();

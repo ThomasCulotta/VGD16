@@ -91,9 +91,11 @@ public class PlayerController : MonoBehaviour
     // Sound
     //////////////
     private new AudioSource audio;
+    private AudioSource empSound;
 
     void Start()
     {
+        GameMaster.CurrentState = GameMaster.GameState.GAME_START;
         camNullScript = Camera.main.gameObject.transform.parent.GetComponent<IsoCamera>();
         nextPosition = curPosition = transform.position;
         // Force player to grid
@@ -109,6 +111,8 @@ public class PlayerController : MonoBehaviour
         GameObject HUD = GameObject.FindGameObjectWithTag("HUD");
         hudScript = HUD.GetComponent<HUDScript>();
         audio = gameObject.AddComponent<AudioSource>();
+        empSound   = gameObject.AddComponent<AudioSource>();
+        empSound.clip   = AudioController.effect[2];
 
         switch (SpawnMaster.CURRENT_STATE)
         {
@@ -224,6 +228,9 @@ public class PlayerController : MonoBehaviour
                             {
                                 EnemyLoS curLos = curSelectedEnemy.GetComponent<EnemyLoS>();
                                 curLos.GetEMPed();
+
+                                //EMP Sound
+                                empSound.Play();
 
                                 DeselectEnemy();
                                 selectingEnemy = false;
