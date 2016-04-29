@@ -266,12 +266,12 @@ public class SpawnSystem : MonoBehaviour {
                 continue;
             }
 
-//            if (wantAsteroid < 2 && Random.Range(0, 3) == 0 && i != numPlanets - 1)
-//            {
-//                wantAsteroid++;
-//                spawnAsteroidFieldBlack(spawnPos);
-//                continue;
-//            }
+            if (wantAsteroid < 2 && Random.Range(0, 3) == 0 && i != numPlanets - 1)
+            {
+                wantAsteroid++;
+                spawnAsteroidFieldBlack(spawnPos);
+                continue;
+            }
 
             GameObject planet = makePlanetBlack(spawnPos);
             GameObject myPlanet = (GameObject)Instantiate(planet, center, Quaternion.identity);
