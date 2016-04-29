@@ -8,11 +8,14 @@ using System.Collections;
 public class AudioController : MonoBehaviour {
     /*
      * effect index legend:
-     * (0) - EMP
-     * (1) - Explosion
-     * (2) - Explosion2
-     * (3) - Moving
-     * (4) - WeaponSound
+     * (0) - Alarm
+     * (1) - Defeat
+     * (2) - EMP
+     * (3) - Explosion
+     * (4) - Explosion w/Phaser & Reverb
+     * (5) - Moving
+     * (6) - Victory
+     * (7) - Weapon
      */
 
     //Music & Sounds
