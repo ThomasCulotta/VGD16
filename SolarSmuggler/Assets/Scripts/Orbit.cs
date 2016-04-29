@@ -11,7 +11,10 @@ public class Orbit : MonoBehaviour
          * Took out gameobject reference to reduce mem/calcs. Script can be attached 
          * to the null which rotates around it's own axis.
          */
-        rotationSpeed = Random.Range(0.1f, 0.3f);
+        if (gameObject.tag.Equals("Moon"))
+            rotationSpeed = Random.Range(-0.3f, -0.6f);
+        else
+            rotationSpeed = Random.Range(0.1f, 0.3f);
 	}
 
 	void Update()
