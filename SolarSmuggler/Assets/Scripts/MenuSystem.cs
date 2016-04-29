@@ -10,17 +10,15 @@
 using UnityEngine;
 using System.Collections;
 
-public class SpawnSystem : MonoBehaviour {
+public class MenuSystem : MonoBehaviour 
+{
     //Spawn Area
     private int START_GAME_AREA;
     public int MAX_GAME_AREA;
     private Vector3 center;
-    private Vector3 playerPos;
 
     //These number can be tweaked to increase or decrease number of spawns
     public int MAX_PLANETS;
-    public int MAX_CARGO;
-    public static int MAX_ENEMIES;
 
     //Graphic Util
     public int   pixWidth;
@@ -51,15 +49,8 @@ public class SpawnSystem : MonoBehaviour {
     private Transform purpleMoonChild;
     private Transform waterMoonChild;
 
-    private GameObject cargo;
-    private GameObject player;
-    private GameObject enemy;
-    private GameObject cameraMaster;
     private GameObject sun;
-    private GameObject UI;
     private GameObject spaceStation;
-    private GameObject[] asteroidFieldList;
-    private GameObject AudioController;
     private Transform  spaceStationChild;
     private Transform  asteroidFieldChild;
     
@@ -86,7 +77,7 @@ public class SpawnSystem : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-
+        GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
         //Prefab Init
         /***********************************************************************************/
 
@@ -111,73 +102,24 @@ public class SpawnSystem : MonoBehaviour {
         waterMoonChild  = waterMoon.transform.FindChild("Moon 0");
 
         //Other Prefabs
-        cargo             = (GameObject)Resources.Load("Prefabs/Supplies");
-        player            = (GameObject)Resources.Load("Prefabs/Player");
-        enemy             = (GameObject)Resources.Load("Prefabs/Enemy");
-        cameraMaster      = (GameObject)Resources.Load("Prefabs/Game Camera");
-        UI                = (GameObject)Resources.Load("Prefabs/Player UI");
         sun               = (GameObject)Resources.Load("Prefabs/Sun");
         spaceStation      = (GameObject)Resources.Load("Prefabs/Space Station Null");
-        AudioController   = (GameObject)Resources.Load("Prefabs/AudioController");
-        asteroidFieldList = Resources.LoadAll<GameObject>("Prefabs/Asteroid Field Prefabs");
 
         //Other Prefab Children
         spaceStationChild = spaceStation.transform.FindChild("Space Station");
 
         /***********************************************************************************/
 
-        switch (SpawnMaster.CURRENT_STATE)
-        {
-            case (SpawnMaster.SpawnState.SMALL):
-                {
-                    spawnSmallSolarSystem();
-                }
-                break;
-            case (SpawnMaster.SpawnState.MEDIUM):
-                {
-                    spawnMediumSolarSystem();
-                }
-                break;
-            case (SpawnMaster.SpawnState.LARGE):
-                {
-                    spawnLargeSolarSystem();
-                }
-                break;
-        }
+        spawnMediumSolarSystem();
 
-    }
-
-
-    void spawnSmallSolarSystem()
-    {
-        MAX_GAME_AREA = SpawnMaster.SMALL_MAP_SIZE;
-        MAX_PLANETS   = SpawnMaster.SMALL_PLANET;
-        MAX_CARGO     = SpawnMaster.SMALL_CARGO;
-        MAX_ENEMIES   = SpawnMaster.SMALL_ENEMY;
-
-        center = new Vector3(MAX_GAME_AREA / 2, 0, MAX_GAME_AREA / 2);
-        posAvailable = new bool[(MAX_GAME_AREA * MAX_GAME_AREA) + MAX_GAME_AREA + 1];
-        initAvaiableSpots();
-        transform.position = center;
-
-        resetPlanetPrefabs();
-        spawnSun();
-        spawnPlanetsBlack(MAX_PLANETS);
-        spawnCargoWhite(MAX_CARGO);
-//        spawnSpaceStation();
-        spawnPlayer();
-        spawnEnemiesWhite(MAX_ENEMIES);
-        loadPlayerUI();
     }
 
     void spawnMediumSolarSystem()
     {
         MAX_GAME_AREA = SpawnMaster.MEDIUM_MAP_SIZE;
         MAX_PLANETS   = SpawnMaster.MEDIUM_PLANET;
-        MAX_CARGO     = SpawnMaster.MEDIUM_CARGO;
-        MAX_ENEMIES   = SpawnMaster.MEDIUM_ENEMY;
 
-        center = new Vector3(MAX_GAME_AREA / 2, 0, MAX_GAME_AREA / 2);
+        center = transform.position;
         posAvailable = new bool[(MAX_GAME_AREA * MAX_GAME_AREA) + MAX_GAME_AREA + 1];
         initAvaiableSpots();
         transform.position = center;
@@ -185,33 +127,6 @@ public class SpawnSystem : MonoBehaviour {
         resetPlanetPrefabs();
         spawnSun();
         spawnPlanetsBlack(MAX_PLANETS);
-        spawnCargoWhite(MAX_CARGO);
-//        spawnSpaceStation();
-        spawnPlayer();
-        spawnEnemiesWhite(MAX_ENEMIES);
-        loadPlayerUI();
-    }
-
-    void spawnLargeSolarSystem()
-    {
-        MAX_GAME_AREA = SpawnMaster.LARGE_MAP_SIZE;
-        MAX_PLANETS   = SpawnMaster.LARGE_PLANET;
-        MAX_CARGO     = SpawnMaster.LARGE_CARGO;
-        MAX_ENEMIES   = SpawnMaster.LARGE_ENEMY;
-
-        center = new Vector3(MAX_GAME_AREA / 2, 0, MAX_GAME_AREA / 2);
-        posAvailable = new bool[(MAX_GAME_AREA * MAX_GAME_AREA) + MAX_GAME_AREA + 1];
-        initAvaiableSpots();
-        transform.position = center;
-
-        resetPlanetPrefabs();
-        spawnSun();
-        spawnPlanetsBlack(MAX_PLANETS);
-        spawnCargoWhite(MAX_CARGO);
-//        spawnSpaceStation();
-        spawnPlayer();
-        spawnEnemiesWhite(MAX_ENEMIES);
-        loadPlayerUI();
     }
 
     void spawnPlanetsWhite(int numPlanets)
@@ -244,7 +159,6 @@ public class SpawnSystem : MonoBehaviour {
                 children.ForEach(child => Destroy(child));
             }
         }
-        playerPos = new Vector3(spawnPos.x - 6f, 0, spawnPos.z - 6f);
     }
 
     void spawnPlanetsBlack(int numPlanets)
@@ -278,7 +192,7 @@ public class SpawnSystem : MonoBehaviour {
             float yRotation = Random.Range(0f, 330f);
             myPlanet.transform.Rotate(Vector3.up, yRotation);
             Vector3 tempPos = myPlanet.transform.GetChild(0).position;
-            playerPos = new Vector3(tempPos.x - 6f, 0, tempPos.z - 6f);
+
             int hasMoon = Random.Range(0, 2);
             if(hasMoon == 0)
             {
@@ -299,49 +213,6 @@ public class SpawnSystem : MonoBehaviour {
     }
     */
 
-
-    void spawnCargoWhite(int numCargo)
-    {
-        for (int i = 0; i < numCargo; i++)
-        {
-            int spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-            int spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-            Vector3 spawnPos = new Vector3(spawnX, 0, spawnY);
-
-            while (!isAvailable(spawnPos))
-            {
-                spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-                spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-                spawnPos = new Vector3(spawnX, 0, spawnY);
-            }
-
-            AddToList(spawnPos);
-            cargo.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f);
-            cargo.tag = "Cargo";
-            Instantiate(cargo, spawnPos, Quaternion.identity);
-        }
-    }
-
-    void spawnEnemiesWhite(int numEnemies)
-    {
-        for (int i = 0; i < numEnemies; i++)
-        {
-            int spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-            int spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-            Vector3 spawnPos = new Vector3(spawnX, 0, spawnY);
-
-            while (!isAvailable(spawnPos))
-            {
-                spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-                spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-                spawnPos = new Vector3(spawnX, 0, spawnY);
-            }
-
-            AddToList(spawnPos);
-            Instantiate(enemy, spawnPos, Quaternion.identity);
-            enemy.tag = "Enemy";
-        }
-    }
 
     void spawnSpaceStation()
     {
@@ -370,39 +241,6 @@ public class SpawnSystem : MonoBehaviour {
         Instantiate(spaceStation, center, Quaternion.identity);
     }
 
-    void spawnAsteroidFieldBlack(Vector3 spawnPos)
-    {
-        int index = Random.Range(0, asteroidFieldList.Length);
-        AddToList(spawnPos);
-        Transform asteroidFieldChild = asteroidFieldList[index].transform.FindChild("Child");
-        asteroidFieldList[index].transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-        asteroidFieldChild.transform.localPosition = Vector3.zero;
-        asteroidFieldChild.transform.position = spawnPos - center;
-        Debug.Log(spawnPos - center);
-        GameObject myAsteroid = (GameObject)Instantiate(asteroidFieldList[index], center, Quaternion.identity);
-        float yRotation = Random.Range(0f, 330f);
-        myAsteroid.transform.Rotate(Vector3.up, yRotation);
-    }
-
-    void spawnPlayer()
-    {
-//        int spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-//        int spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-//        Vector3 spawnPos = new Vector3(spawnX, 0, spawnY);
-
-//        while (!isAvailable(spawnPos))
-//        {
-//            spawnX = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-//            spawnY = Random.Range(START_GAME_AREA, MAX_GAME_AREA + 1);
-//            spawnPos = new Vector3(spawnX, 0, spawnY);
-//        }
-
-        AddToList(playerPos);
-        player.GetComponent<PlayerController>().curr_Cargo = 0;
-        Instantiate(player, playerPos, Quaternion.identity);
-        player.tag = "Player";
-        initCamera(playerPos);
-    }
 
     /*
     void createTexture(GameObject moon)
@@ -463,16 +301,7 @@ public class SpawnSystem : MonoBehaviour {
         Instantiate(sun, center, Quaternion.identity);
     }
 
-    void initCamera(Vector3 spawnPos)
-    {
-        Instantiate(cameraMaster, spawnPos, Quaternion.identity);
-        Instantiate(AudioController, spawnPos, Quaternion.identity);
-    }
 
-    void loadPlayerUI( )
-    {
-        Instantiate(UI, Vector3.zero, Quaternion.identity);
-    }
 
     void resetPlanetPrefabs()
     {
