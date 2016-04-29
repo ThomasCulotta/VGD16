@@ -108,8 +108,14 @@ public class EnemyLoS : MonoBehaviour
     //Texture
     public Texture2D normTexture;
 
+    //Game State Variable;
+    public static bool gameLoss;
+
     void Awake()
     {
+        //Game State Init
+        gameLoss = false;
+
         //Instance Init Status
         init = true;
         id = GetInstanceID();
@@ -152,6 +158,8 @@ public class EnemyLoS : MonoBehaviour
 
     void Update()
     {
+        //Debug.Log("Health" + player.GetComponent<PlayerController>().curr_Health);
+
         Vector3 spotVector = player.transform.position - transform.position + new Vector3(0f, -1f, 0f);
         if (Physics.Raycast(transform.position, spotVector, out hit, MAX_MOVE - 3)) // set white
         {
@@ -168,6 +176,12 @@ public class EnemyLoS : MonoBehaviour
         else // set black
         {
            gameObject.GetComponentInChildren<Renderer>().material = hiddenMat;
+        }
+
+        if (GameMaster.CurrentState == GameMaster.GameState.GAME_LOSS)
+        {
+            gameLoss = true;
+            Debug.Log("Game has been lost");
         }
 
         //Sets a timer for the laser
@@ -282,6 +296,11 @@ public class EnemyLoS : MonoBehaviour
                                         laser.enabled = true;
                                         shot = false;
                                     }
+                                    if(player.GetComponent<PlayerController>().curr_Health <= 0)
+                                    {
+                                        gameLoss = true;
+                                        Debug.Log("Game Loss = " + gameLoss);
+                                    }
                                 }
                             }
                         }
@@ -292,6 +311,11 @@ public class EnemyLoS : MonoBehaviour
                     {
                         finishedList.Remove(id);
                         turnQueue.Dequeue();
+                        if (gameLoss)
+                        {
+                            finishedList.Clear();
+                            turnQueue.Clear();
+                        }
                         Debug.Log(id + " Checking out, finishedList Count: " + finishedList.Count);
                     }
 
@@ -305,8 +329,15 @@ public class EnemyLoS : MonoBehaviour
                             disoriented = false;
                             Destroy(disorientedInst);
                         }
+
                         emp = false;
-                        GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
+                        if(!gameLoss)
+                            GameMaster.CurrentState = GameMaster.GameState.ENVIRONMENT_TURN;
+                        else
+                        {
+                            Debug.Log("Game Loss in finish list check");
+                            GameMaster.CurrentState = GameMaster.GameState.GAME_LOSS;
+                        }
                     }
 
                     //Recalculating enemy instance Array posistion. 
