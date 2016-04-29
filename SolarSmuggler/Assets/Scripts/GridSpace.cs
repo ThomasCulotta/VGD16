@@ -26,6 +26,10 @@ public class GridSpace : MonoBehaviour
             transform.position = new Vector3(transform.position.x, 0f, transform.position.z);
             transform.GetComponent<Renderer>().material.color = baseColor;
         }
+        if (GameMaster.CurrentState == GameMaster.GameState.ENEMY_TURN)
+        {
+            Destroy(gameObject);
+        }
 	}
     
     void OnMouseEnter()
