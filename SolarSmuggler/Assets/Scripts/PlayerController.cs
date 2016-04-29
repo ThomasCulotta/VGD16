@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
         public float distance;
         public bool destination;
     }
+    public static int beingShot = 0;
 
     ///////////////
     // Ship stats
@@ -381,6 +382,7 @@ public class PlayerController : MonoBehaviour
                 PlayerPrefs.SetInt("Health", curr_Health);
                 PlayerPrefs.SetInt("Cargo", curr_Cargo);
                 PlayerPrefs.SetInt("Turns", turnCount);
+                    PlayerPrefs.SetInt("beingShot", beingShot);
                 // Whatever our lose scene is
                 SceneManager.LoadScene(4);
                 GameMaster.CurrentState = GameMaster.GameState.GAME_START;
@@ -395,7 +397,8 @@ public class PlayerController : MonoBehaviour
                 PlayerPrefs.SetInt("Health", curr_Health);
                 PlayerPrefs.SetInt("Cargo", curr_Cargo);
                 PlayerPrefs.SetInt("Turns", turnCount);
-                SceneManager.LoadScene(3);
+                    PlayerPrefs.SetInt("beingShot", beingShot);
+                    SceneManager.LoadScene(3);
             }
             break;
         }

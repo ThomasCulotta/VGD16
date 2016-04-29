@@ -582,6 +582,7 @@ public class EnemyLoS : MonoBehaviour
                 laserSound.Play();
             }
         }
+        PlayerController.beingShot++;
 
     }
 
