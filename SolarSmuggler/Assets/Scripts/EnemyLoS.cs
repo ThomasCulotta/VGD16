@@ -123,7 +123,7 @@ public class EnemyLoS : MonoBehaviour
         laserSound = gameObject.AddComponent<AudioSource>();
         alarmSound = gameObject.AddComponent<AudioSource>();
         empSound   = gameObject.AddComponent<AudioSource>();
-        laserSound.clip = AudioController.effect[6];
+        laserSound.clip = AudioController.effect[7];
         alarmSound.clip = AudioController.effect[0];
         empSound.clip   = AudioController.effect[2];
 

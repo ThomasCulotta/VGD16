@@ -119,7 +119,7 @@ public class SpawnSystem : MonoBehaviour {
         sun               = (GameObject)Resources.Load("Prefabs/Sun");
         spaceStation      = (GameObject)Resources.Load("Prefabs/Space Station Null");
         AudioController   = (GameObject)Resources.Load("Prefabs/AudioController");
-//        asteroidFieldList = Resources.LoadAll<GameObject>("Prefabs/Asteroid Field Prefabs");
+        asteroidFieldList = Resources.LoadAll<GameObject>("Prefabs/Asteroid Field Prefabs");
 
         //Other Prefab Children
         spaceStationChild = spaceStation.transform.FindChild("Space Station");
