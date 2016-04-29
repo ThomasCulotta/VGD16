@@ -62,7 +62,9 @@ public class SpawnSystem : MonoBehaviour {
     private GameObject AudioController;
     private Transform  spaceStationChild;
     private Transform  asteroidFieldChild;
-    
+
+    private GameObject playerObj;
+    private Vector3 curPlayerPos = Vector3.zero;
 
 
     //Enum is used for random Pickup Spawning
@@ -147,6 +149,15 @@ public class SpawnSystem : MonoBehaviour {
 
     }
 
+    void Update()
+    {
+        curPlayerPos = PlayerController.nextPosition;
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            Destroy(playerObj);
+            playerObj = (GameObject)Instantiate(player, curPlayerPos, Quaternion.identity);
+        }
+    }
 
     void spawnSmallSolarSystem()
     {
@@ -399,8 +410,9 @@ public class SpawnSystem : MonoBehaviour {
 
         AddToList(playerPos);
         player.GetComponent<PlayerController>().curr_Cargo = 0;
-        Instantiate(player, playerPos, Quaternion.identity);
+        playerObj = (GameObject)Instantiate(player, playerPos, Quaternion.identity);
         player.tag = "Player";
+//        player.transform.Rotate(Vector3.up, 180f);
         initCamera(playerPos);
     }
 

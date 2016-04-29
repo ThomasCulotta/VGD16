@@ -145,6 +145,12 @@ public class PlayerController : MonoBehaviour
         //    SceneManager.LoadScene(3);
         //}
 
+        if (gameObject == null)
+        {
+            GameMaster.CurrentState = GameMaster.GameState.GAME_START;
+            SceneManager.LoadScene(2);
+        }
+
         switch (GameMaster.CurrentState)
         {
             case (GameMaster.GameState.GAME_START):

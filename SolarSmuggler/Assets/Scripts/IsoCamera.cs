@@ -9,6 +9,7 @@ public class IsoCamera : MonoBehaviour
 
     private GameObject player;
     private GameObject cam;
+    private Vector3    initCamPosition;
 
     private Vector3 deltaCam;
     private float   deltaRotY;
@@ -24,6 +25,7 @@ public class IsoCamera : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         cam = transform.GetChild(0).gameObject;
+        initCamPosition = cam.transform.localPosition;
         cam.transform.LookAt(transform.position);
         moveToPlayer = true;
         rotating = false;
@@ -38,6 +40,9 @@ public class IsoCamera : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Tab))
             moveToPlayer = !moveToPlayer;
+
+        if (Input.GetKeyDown(KeyCode.G))
+            cam.transform.localPosition = initCamPosition;
 
         // Translation X and Z
         if (moveToPlayer)
