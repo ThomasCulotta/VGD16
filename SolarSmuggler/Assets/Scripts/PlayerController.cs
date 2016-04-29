@@ -81,7 +81,7 @@ public class PlayerController : MonoBehaviour
     // Timer
     ///////////////
     private bool timerInit = false;
-    public float timer = 2f;
+    public float timer = 3f;
 
     ///////////////
     // UI
@@ -687,18 +687,20 @@ public class PlayerController : MonoBehaviour
         Debug.Log("final square");
         destReached = curGrid.destination;
 
+        Collider[] cargoArray = Physics.OverlapBox(new Vector3(curPosition.x, 0f, curPosition.z),
+                                                       new Vector3(0.4f, 4f, 0.4f), Quaternion.identity,
+                                                       255, QueryTriggerInteraction.Collide);
+
+        for (int i = 0; i < cargoArray.Length; i++)
+            if (cargoArray[i].tag.Equals("Cargo"))
+            {
+                GameObject.Destroy(cargoArray[i].gameObject);
+                curGrid.cargo = true;
+                break;
+            }
+        
         if (curGrid.cargo)
         {
-            Collider[] cargoArray = Physics.OverlapBox(new Vector3(curGrid.coordinates.x, 0f, curGrid.coordinates.z),
-                                                           new Vector3(0.4f, 4f, 0.4f), Quaternion.identity,
-                                                           255, QueryTriggerInteraction.Collide);
-
-            for (int i = 0; i < cargoArray.Length; i++)
-                if (cargoArray[i].tag.Equals("Cargo"))
-                {
-                    GameObject.Destroy(cargoArray[i].gameObject);
-                    break;
-                }
             curr_Cargo++;
             hudScript.CargoUpdate(curr_Cargo, max_Cargo);
             //Add(Random.Range(5, 15), max_Cargo, true);
