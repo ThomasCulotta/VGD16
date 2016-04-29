@@ -378,13 +378,13 @@ public class PlayerController : MonoBehaviour
             {
                 // TODO: Some game statistics, then main menu or lose scene etc.
                 Debug.LogWarning("game lose");
-                GameMaster.CurrentState = GameMaster.GameState.GAME_START;
                 PlayerPrefs.SetInt("Health", curr_Health);
                 PlayerPrefs.SetInt("Cargo", curr_Cargo);
                 PlayerPrefs.SetInt("Turns", turnCount);
                 // Whatever our lose scene is
                 SceneManager.LoadScene(4);
-            }
+                GameMaster.CurrentState = GameMaster.GameState.GAME_START;
+                }
             break;
 
             case (GameMaster.GameState.GAME_WIN):
